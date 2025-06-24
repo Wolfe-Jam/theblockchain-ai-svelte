@@ -102,13 +102,16 @@
     
     <div class="vertical-container">
       <div class="problem-box card-red">
-        <p><span class="problem-red">CRITICAL PROBLEM #1:</span> Data is siloed, insecure, and inaccessible, stalling innovation.</p>
+        <p><span class="problem-red">CRITICAL PROBLEM #1:</span></p>
+        <p>Data is siloed, insecure, and inaccessible, stalling innovation.</p>
       </div>
       <div class="problem-box card-green">
-         <p><span class="problem-green">CRITICAL PROBLEM #2:</span> AI models are "black boxes," creating enormous compliance and ethical risks.</p>
+        <p><span class="problem-green">CRITICAL PROBLEM #2:</span></p>
+        <p>AI models are "black boxes," creating enormous compliance and ethical risks.</p>
       </div>
       <div class="problem-box card-blue">
-         <p><span class="problem-blue">CRITICAL PROBLEM #3:</span> Developers lack IP protection and are subject to unfair platform fees.</p>
+        <p><span class="problem-blue">CRITICAL PROBLEM #3:</span></p>
+        <p>Developers lack IP protection and are subject to unfair platform fees.</p>
       </div>
     </div>
 
@@ -200,7 +203,7 @@
   .feature-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    gap: 2rem;
     justify-items: center;
     align-items: start;
   }
