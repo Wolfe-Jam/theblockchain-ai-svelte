@@ -44,7 +44,7 @@
 
 <div class="app-container">
   <Header />
-  <main class="pt-20 min-h-screen"> <!-- Added padding-top to account for fixed header -->
+  <main class="min-h-screen">
     {#if currentPath === '/'}
       <HomePage />
     {:else}
