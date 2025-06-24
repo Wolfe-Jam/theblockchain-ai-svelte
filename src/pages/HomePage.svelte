@@ -73,18 +73,23 @@
     // Toggle the clicked accordion
     accordionItems[id] = !accordionItems[id];
     
-    // If accordion is opening, scroll to make sure content AND CTA buttons are visible
+    // Only scroll if the expanded content would go off-screen
+    // Don't move the accordion itself
     if (accordionItems[id]) {
       setTimeout(() => {
-        const ctaSection = document.querySelector('.cta-section');
-        if (ctaSection) {
-          ctaSection.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'end', // Show the CTA buttons at bottom of viewport
-            inline: 'nearest'
+        const accordionElement = document.querySelector(`#${id}`);
+        const rect = accordionElement.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        
+        // Only scroll if accordion + content would extend below viewport
+        if (rect.bottom > windowHeight * 0.7) {
+          // Gentle scroll to show more content, but keep accordion header visible
+          window.scrollBy({
+            top: Math.min(200, rect.bottom - windowHeight * 0.8),
+            behavior: 'smooth'
           });
         }
-      }, 200); // Delay to let accordion animation complete
+      }, 300); // Wait for animation to complete
     }
   }
   
