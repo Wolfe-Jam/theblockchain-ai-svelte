@@ -81,7 +81,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq1')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">1. What is the core mission of theBlockchain.ai?</h3>
+            <h3 class="text-lg font-semibold text-white">What is the core mission of theBlockchain.ai?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq1'}></i>
           </div>
@@ -105,7 +105,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq2')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">2. How does theBlockchain.ai ensure trust in AI models and data?</h3>
+            <h3 class="text-lg font-semibold text-white">How does theBlockchain.ai ensure trust in AI models and data?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq2'}></i>
           </div>
@@ -129,7 +129,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq7')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">7. How does theBlockchain.ai address challenges like data silos and "black box" AI models?</h3>
+            <h3 class="text-lg font-semibold text-white">How does theBlockchain.ai address challenges like data silos and "black box" AI models?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq7'}></i>
           </div>
@@ -153,7 +153,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq9')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">9. What is Federated Learning and how does it relate to theBlockchain.ai?</h3>
+            <h3 class="text-lg font-semibold text-white">What is Federated Learning and how does it relate to theBlockchain.ai?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq9'}></i>
           </div>
@@ -177,7 +177,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq10')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">10. How is theBlockchain.ai positioned competitively against existing AI or blockchain platforms?</h3>
+            <h3 class="text-lg font-semibold text-white">How is theBlockchain.ai positioned competitively against existing AI or blockchain platforms?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq10'}></i>
           </div>
@@ -199,7 +199,7 @@
       </div>
 
       <!-- Group: For Developers -->
-      <div class="faq-group group-devs mb-8">
+      <div class="faq-group group-devs mb-8 mt-12">
         <h2 class="faq-group-title text-2xl font-bold mb-6 text-center" style="color: var(--brand-orange);">
           For Developers
         </h2>
@@ -211,7 +211,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq4')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">4. How do developers get paid for their code on your platform?</h3>
+            <h3 class="text-lg font-semibold text-white">How do developers get paid for their code on your platform?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq4'}></i>
           </div>
@@ -234,7 +234,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq8')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">8. Is the intellectual property (IP) of AI models protected on the platform?</h3>
+            <h3 class="text-lg font-semibold text-white">Is the intellectual property (IP) of AI models protected on the platform?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq8'}></i>
           </div>
@@ -253,7 +253,7 @@
       </div>
 
       <!-- Group: For Businesses & Commerce -->
-      <div class="faq-group group-commerce mb-8">
+      <div class="faq-group group-commerce mb-8 mt-12">
         <h2 class="faq-group-title text-2xl font-bold mb-6 text-center" style="color: var(--brand-cyan);">
           For Businesses & Commerce
         </h2>
@@ -265,7 +265,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq3')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">3. What is 'The OUTPUT Marketplace' and who is it for?</h3>
+            <h3 class="text-lg font-semibold text-white">What is 'The OUTPUT Marketplace' and who is it for?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq3'}></i>
           </div>
@@ -289,7 +289,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq5')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">5. What are 'Code-In-Action (CIA)' solutions?</h3>
+            <h3 class="text-lg font-semibold text-white">What are 'Code-In-Action (CIA)' solutions?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq5'}></i>
           </div>
@@ -308,7 +308,7 @@
       </div>
 
       <!-- Group: For Token & Investors -->
-      <div class="faq-group group-token-investors mb-8">
+      <div class="faq-group group-token-investors mb-8 mt-12">
         <h2 class="faq-group-title text-2xl font-bold mb-6 text-center" style="color: var(--brand-blue);">
           For Token & Investors
         </h2>
@@ -320,7 +320,7 @@
                on:keydown={(e) => e.key === 'Enter' && toggleAccordion('faq6')}
                role="button"
                tabindex="0">
-            <h3 class="text-lg font-semibold text-white">6. How does the $BAI Token fit into the ecosystem?</h3>
+            <h3 class="text-lg font-semibold text-white">How does the $BAI Token fit into the ecosystem?</h3>
             <i class="fas fa-chevron-down transition-transform duration-300" 
                class:rotate-180={activeAccordion === 'faq6'}></i>
           </div>
