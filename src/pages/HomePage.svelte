@@ -281,7 +281,11 @@
       {/if}
     </div>
   </div>
-{/if}    background-color: var(--brand-orange);
+{/if}
+
+<style>
+  .submit-btn {
+    background-color: var(--brand-orange);
     color: white;
     border: none;
     border-radius: 9999px;
