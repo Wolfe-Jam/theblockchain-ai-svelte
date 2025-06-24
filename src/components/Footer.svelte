@@ -1,9 +1,7 @@
 <!-- src/components/Footer.svelte -->
 <footer>
   <div class="footer-content">
-    <p>&copy; 2025 theBlockchain.ai</p>
-    <p>Building the Future of Trusted AI</p>
-    <p>Version 1.0.0</p>
+    <p>&copy; 2025 theBlockchain.ai - Building the Future of Trusted AI</p>
     <p>Contact: <a href="mailto:info@theblockchain.ai">info@theblockchain.ai</a></p>
   </div>
 </footer>

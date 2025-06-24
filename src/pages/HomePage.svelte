@@ -1,13 +1,66 @@
 <!-- HomePage.svelte - The Masterpiece -->
 <script>
   import { onMount } from 'svelte';
+  import { fly, fade, scale, blur } from 'svelte/transition';
+  import { spring, tweened } from 'svelte/motion';
+  import { quintOut, backOut, elasticOut } from 'svelte/easing';
   
   let showModal = false;
   let showThankYou = false;
   let accordionItems = {};
   
+  // Svelte animation stores
+  const titleOpacity = tweened(0.3, {
+    duration: 800,
+    easing: quintOut
+  });
+  
+  const subTitleOpacity = tweened(0, {
+    duration: 600,
+    easing: quintOut
+  });
+  
+  let titleHovered = false;
+  
+  function handleTitleHover() {
+    titleHovered = true;
+    titleOpacity.set(1);
+    subTitleOpacity.set(0.9);
+  }
+  
+  function handleTitleLeave() {
+    titleHovered = false;
+    titleOpacity.set(0.3);
+    subTitleOpacity.set(0);
+  }
+  
   function scrollToFacts() {
-    document.getElementById('one-pager').scrollIntoView({ behavior: 'smooth' });
+    // When arrow is clicked, scroll just enough to show Fact 3
+    const sceneContainer = document.querySelector('.scene-container');
+    const containerHeight = sceneContainer.offsetHeight;
+    
+    // Scroll to about 45% to reveal Fact 3 without showing too much more
+    const targetPosition = containerHeight * 0.45;
+    
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
+  }
+  
+  function scrollToBoats() {
+    // Calculate the position to show boats AND sun in the viewport
+    const sceneContainer = document.querySelector('.scene-container');
+    const containerHeight = sceneContainer.offsetHeight;
+    
+    // Back to 30% for smooth, predictable landing
+    const targetPosition = containerHeight * 0.3;
+    
+    // Smooth scroll with browser's native smooth behavior - no joltiness
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    });
   }
   
   function toggleAccordion(id) {
@@ -19,6 +72,20 @@
     });
     // Toggle the clicked accordion
     accordionItems[id] = !accordionItems[id];
+    
+    // If accordion is opening, scroll to make sure content AND CTA buttons are visible
+    if (accordionItems[id]) {
+      setTimeout(() => {
+        const ctaSection = document.querySelector('.cta-section');
+        if (ctaSection) {
+          ctaSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'end', // Show the CTA buttons at bottom of viewport
+            inline: 'nearest'
+          });
+        }
+      }, 200); // Delay to let accordion animation complete
+    }
   }
   
   function openModal() {
@@ -88,9 +155,14 @@
   
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="title-container" on:click={() => {}}>
-    <h1 class="main-title">theBlockchain.ai</h1>
-    <p class="sub-title">The Economic Layer for Open-Source</p>
+  <div 
+    class="title-container" 
+    on:click={scrollToBoats}
+    on:mouseenter={handleTitleHover}
+    on:mouseleave={handleTitleLeave}
+  >
+    <h1 class="main-title" style="opacity: {$titleOpacity}">theBlockchain.ai</h1>
+    <p class="sub-title" style="opacity: {$subTitleOpacity}">The Economic Layer for Open-Source</p>
   </div>
   
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -107,7 +179,7 @@
     <h1 class="group-title problem-title">The Problem</h1>
     
     <!-- Problem Fact 1 -->
-    <div class="accordion-item problem-accordion" class:active={accordionItems['problem1']}>
+    <div id="problem1" class="accordion-item problem-accordion" class:active={accordionItems['problem1']}>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="accordion-header" on:click={() => toggleAccordion('problem1')}>
@@ -115,7 +187,7 @@
         <i class="fas fa-chevron-down icon" class:rotated={accordionItems['problem1']}></i>
       </div>
       {#if accordionItems['problem1']}
-        <div class="accordion-content">
+        <div class="accordion-content" in:fly="{{ y: -20, duration: 400, easing: quintOut }}" out:fly="{{ y: -20, duration: 300 }}">
           <div class="content-wrapper">
             <ul>
               <li>The global economy runs on open-source, yet its creators aren't paid for its value.</li>
@@ -128,7 +200,7 @@
     </div>
 
     <!-- Problem Fact 2 -->
-    <div class="accordion-item problem-accordion" class:active={accordionItems['problem2']}>
+    <div id="problem2" class="accordion-item problem-accordion" class:active={accordionItems['problem2']}>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="accordion-header" on:click={() => toggleAccordion('problem2')}>
@@ -136,7 +208,7 @@
         <i class="fas fa-chevron-down icon" class:rotated={accordionItems['problem2']}></i>
       </div>
       {#if accordionItems['problem2']}
-        <div class="accordion-content">
+        <div class="accordion-content" in:fly="{{ y: -20, duration: 400, easing: quintOut }}" out:fly="{{ y: -20, duration: 300 }}">
           <div class="content-wrapper">
             <ul>
               <li>The world's code sits in passive, isolated silos (GitHub, etc.).</li>
@@ -149,7 +221,7 @@
     </div>
 
     <!-- Problem Fact 3 -->
-    <div class="accordion-item problem-accordion" class:active={accordionItems['problem3']}>
+    <div id="problem3" class="accordion-item problem-accordion" class:active={accordionItems['problem3']}>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="accordion-header" on:click={() => toggleAccordion('problem3')}>
@@ -157,7 +229,7 @@
         <i class="fas fa-chevron-down icon" class:rotated={accordionItems['problem3']}></i>
       </div>
       {#if accordionItems['problem3']}
-        <div class="accordion-content">
+        <div class="accordion-content" in:fly="{{ y: -20, duration: 400, easing: quintOut }}" out:fly="{{ y: -20, duration: 300 }}">
           <div class="content-wrapper">
             <ul>
               <li>AI models and automation tools are often "black boxes" with no verifiable origin or audit trail.</li>
@@ -172,7 +244,7 @@
     <h1 class="group-title solution-title">The Solution</h1>
 
     <!-- Solution Fact 1 -->
-    <div class="accordion-item solution-accordion" class:active={accordionItems['solution1']}>
+    <div id="solution1" class="accordion-item solution-accordion" class:active={accordionItems['solution1']}>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="accordion-header" on:click={() => toggleAccordion('solution1')}>
@@ -180,7 +252,7 @@
         <i class="fas fa-chevron-down icon" class:rotated={accordionItems['solution1']}></i>
       </div>
       {#if accordionItems['solution1']}
-        <div class="accordion-content">
+        <div class="accordion-content" in:fly="{{ y: -20, duration: 400, easing: quintOut }}" out:fly="{{ y: -20, duration: 300 }}">
           <div class="content-wrapper">
             <ul>
               <li><strong>Developers Win:</strong> Get paid directly for your code <span class="term">OUTPUT</span>.</li>
@@ -193,7 +265,7 @@
     </div>
 
     <!-- Solution Fact 2 -->
-    <div class="accordion-item solution-accordion" class:active={accordionItems['solution2']}>
+    <div id="solution2" class="accordion-item solution-accordion" class:active={accordionItems['solution2']}>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="accordion-header" on:click={() => toggleAccordion('solution2')}>
@@ -201,7 +273,7 @@
         <i class="fas fa-chevron-down icon" class:rotated={accordionItems['solution2']}></i>
       </div>
       {#if accordionItems['solution2']}
-        <div class="accordion-content">
+        <div class="accordion-content" in:fly="{{ y: -20, duration: 400, easing: quintOut }}" out:fly="{{ y: -20, duration: 300 }}">
           <div class="content-wrapper">
             <ul>
               <li><strong>Immutable Trust:</strong> Transactions and code history are permanent and cannot be altered.</li>
@@ -214,7 +286,7 @@
     </div>
 
     <!-- CTA Section -->
-    <div class="text-center mt-24">
+    <div class="text-center mt-24 cta-section">
       <h2 class="text-3xl font-extrabold text-center mb-6 text-white">Ready to Build the Future of Trusted AI?</h2>
       
       <div class="founder-promo-box my-8">
@@ -240,10 +312,16 @@
 {#if showModal}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="modal-overlay" on:click={closeModal}>
+  <div class="modal-overlay" 
+       in:fade="{{ duration: 300 }}" 
+       out:fade="{{ duration: 200 }}" 
+       on:click={closeModal}>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="modal-content" on:click|stopPropagation>
+    <div class="modal-content" 
+         in:scale="{{ duration: 400, easing: backOut, start: 0.7 }}" 
+         out:scale="{{ duration: 200, start: 0.9 }}" 
+         on:click|stopPropagation>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <button class="close-btn" on:click={closeModal}>&times;</button>
@@ -432,8 +510,8 @@
     font-size: 2.5rem;
     font-weight: 700;
     letter-spacing: -0.025em;
-    color: rgba(255, 255, 255, 0.3);
-    transition: color 0.4s ease, text-shadow 0.4s ease;
+    color: white;
+    text-shadow: 0 0 8px rgba(255, 145, 77, 0.8);
   }
 
   .sub-title {
@@ -442,18 +520,7 @@
     font-weight: 500;
     color: white;
     text-shadow: 0 1px 5px rgba(0,0,0,0.5);
-    opacity: 0;
-    transition: opacity 0.4s ease 0.2s;
     padding-top: 0.5rem;
-  }
-
-  .title-container:hover .main-title {
-    color: white;
-    text-shadow: 0 0 8px rgba(255, 145, 77, 0.8);
-  }
-
-  .title-container:hover .sub-title {
-    opacity: 0.9;
   }
 
   .scroll-down {
@@ -476,7 +543,7 @@
 
   /* One Pager Section */
   .one-pager {
-    padding: 6rem 2rem;
+    padding: 2rem 2rem;
     background-color: #020617;
   }
 
