@@ -21,3 +21,7 @@ node_modules/
 
 # Logs
 *.log
+
+# Marketing & Strategy (Private)
+*.md
+!README.md
