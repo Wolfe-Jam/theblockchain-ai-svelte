@@ -332,9 +332,12 @@
   .rollout-phase h4,
   .problem-box p {
     margin-top: 0;
-    color: #F8FAFC;
     font-size: 1.1rem;
     font-weight: 500;
+  }
+
+  .problem-box p {
+    color: #F8FAFC;
   }
 
   .rollout-phase p {
