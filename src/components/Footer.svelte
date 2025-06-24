@@ -2,7 +2,7 @@
 <footer>
   <div class="footer-content">
     <p class="main-text">&copy; 2025 theBlockchain.ai - Building the Future of Trusted AI</p>
-    <p class="contact-text">Contact: <a href="mailto:info@theblockchain.ai">info@theblockchain.ai</a></p>
+    <p class="contact-text">Contact: <a href="mailto:invest@theblockchain.ai">invest@theblockchain.ai</a></p>
   </div>
 </footer>
 
