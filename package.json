@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
-    "node-fetch": "^2.7.0"
+    "@google/generative-ai": "^0.11.0",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
