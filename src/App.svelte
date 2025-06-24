@@ -3,6 +3,7 @@
   import Header from './components/Header.svelte';
   import Footer from './components/Footer.svelte';
   import HomePage from './pages/HomePage.svelte';
+  import FAQsPage from './pages/FAQsPage.svelte';
   
   // Basic routing logic (will be expanded later with a proper router)
   let currentPath = window.location.pathname;
@@ -32,6 +33,11 @@
           <h1 class="text-4xl text-white text-center py-20">FAQs Page (Svelte)</h1>
           <p class="text-xl text-slate-300 text-center">Content from faqs.html will go here.</p>
         `;
+      } else if (currentPath === '/faqs') {
+        pageContent = `
+          <h1 class="text-4xl text-white text-center py-20">FAQs Page (Svelte)</h1>
+          <p class="text-xl text-slate-300 text-center">Content from faqs.html will go here.</p>
+        `;
       } else {
         pageContent = `
           <h1 class="text-4xl text-white text-center py-20">404 - Page Not Found</h1>
@@ -47,6 +53,8 @@
   <main class="min-h-screen">
     {#if currentPath === '/'}
       <HomePage />
+    {:else if currentPath === '/faqs'}
+      <FAQsPage />
     {:else}
       {@html pageContent} <!-- Renders the HTML string from pageContent -->
     {/if}

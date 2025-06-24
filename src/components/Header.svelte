@@ -44,6 +44,7 @@
             <a href="/">Home</a>
             <a href="/vision">Vision</a>
             <a href="/report">Deep Dive</a>
+            <a href="/faqs">FAQs</a>
             <a href="mailto:invest@theblockchain.ai">Invest</a>
         </div>
     </nav>
