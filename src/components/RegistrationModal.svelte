@@ -15,15 +15,33 @@
   }
   
   let showThankYou = false;
+  let isSubmitting = false;
   
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    // Show thank you message instead of form
-    showThankYou = true;
+    isSubmitting = true;
     
-    // You could add actual form submission logic here
-    // const formData = new FormData(event.target);
-    // Submit to your backend/Netlify
+    const formData = new FormData(event.target);
+    
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString()
+      });
+      
+      if (response.ok) {
+        showThankYou = true;
+      } else {
+        console.error('Form submission failed');
+        // You could show an error message here
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      // You could show an error message here
+    } finally {
+      isSubmitting = false;
+    }
   }
 </script>
 
@@ -39,7 +57,8 @@
           <h3 class="modal-title">Join the Founder's Program</h3>
           <p class="modal-description">🎉 Congrats, you've got Early Access.<br>Claim your Founder's Stake now & help shape<br>the future of open-source with Trusted AI.</p>
           
-          <form on:submit={handleSubmit}>
+          <form on:submit={handleSubmit} name="founder-registration" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="founder-registration">
             <div class="form-group">
               <label for="email">Email Address</label>
               <input type="email" id="email" name="email" placeholder="you@example.com" required>
@@ -67,7 +86,9 @@
               </div>
             </div>
             
-            <button type="submit" class="submit-btn">Get In Early</button>
+            <button type="submit" class="submit-btn" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Get In Early'}
+            </button>
           </form>
         </div>
       {:else}
@@ -200,6 +221,17 @@
   .submit-btn:hover {
     background-color: rgba(255, 145, 77, 0.7); /* Slightly more opaque on hover */
     transform: translateY(-1px);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .submit-btn:disabled:hover {
+    background-color: rgba(255, 145, 77, 0.5);
+    transform: none;
   }
 
   .thank-you-message {

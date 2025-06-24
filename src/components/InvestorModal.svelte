@@ -15,15 +15,33 @@
   }
   
   let showThankYou = false;
+  let isSubmitting = false;
   
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    // Show thank you message instead of form
-    showThankYou = true;
+    isSubmitting = true;
     
-    // You could add actual form submission logic here
-    // const formData = new FormData(event.target);
-    // Submit to your backend/Netlify for investor leads
+    const formData = new FormData(event.target);
+    
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString()
+      });
+      
+      if (response.ok) {
+        showThankYou = true;
+      } else {
+        console.error('Form submission failed');
+        // You could show an error message here
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      // You could show an error message here
+    } finally {
+      isSubmitting = false;
+    }
   }
 </script>
 
@@ -39,7 +57,8 @@
           <h3 class="modal-title">Investment Interest</h3>
           <p class="modal-description">Join our investor network for updates on funding rounds, financial reports, and exclusive investment opportunities.</p>
           
-          <form on:submit={handleSubmit}>
+          <form on:submit={handleSubmit} name="investor-interest" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="investor-interest">
             <div class="form-group">
               <label for="email">Professional Email Address</label>
               <input type="email" id="email" name="email" placeholder="investor@firm.com" required>
@@ -99,7 +118,9 @@
               </div>
             </div>
             
-            <button type="submit" class="submit-btn">Submit Investment Interest</button>
+            <button type="submit" class="submit-btn" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Submit Investment Interest'}
+            </button>
           </form>
           
           <p class="accredited-note">* This opportunity is available to accredited investors only</p>
@@ -261,6 +282,18 @@
     background-color: #0CC0DF;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(12, 192, 223, 0.3);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .submit-btn:disabled:hover {
+    background-color: rgba(12, 192, 223, 0.9);
+    transform: none;
+    box-shadow: none;
   }
 
   .accredited-note {

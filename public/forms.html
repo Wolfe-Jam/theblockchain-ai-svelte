@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Netlify Forms Detection</title>
+</head>
+<body style="display: none;">
+    <!-- This hidden file helps Netlify detect our forms during build -->
+    
+    <!-- Founder Registration Form -->
+    <form name="founder-registration" netlify netlify-honeypot="bot-field" hidden>
+        <input type="text" name="email" />
+        <input type="checkbox" name="role" />
+    </form>
+    
+    <!-- Investor Interest Form -->
+    <form name="investor-interest" netlify netlify-honeypot="bot-field" hidden>
+        <input type="text" name="email" />
+        <input type="text" name="name" />
+        <input type="text" name="organization" />
+        <input type="checkbox" name="interest" />
+        <input type="radio" name="investment-range" />
+    </form>
+</body>
+</html>
