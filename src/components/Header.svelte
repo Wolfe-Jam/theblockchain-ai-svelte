@@ -1,8 +1,17 @@
 <!-- src/components/Header.svelte -->
 <script>
   import { onMount } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
+  
+  const dispatch = createEventDispatcher();
   
   let showHeader = false;
+  
+  function openAskAI(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch('openAskAI');
+  }
   
   onMount(() => {
     // Ensure page has focus for keyboard events
@@ -44,8 +53,8 @@
             <a href="/">Home</a>
             <a href="/vision">Vision</a>
             <a href="/report">Deep Dive</a>
-            <a href="/faqs">FAQs</a>
             <a href="mailto:invest@theblockchain.ai">Invest</a>
+            <button type="button" class="ask-ai-link" on:click={openAskAI}>Ask AI 🤖</button>
         </div>
     </nav>
 </header>
@@ -96,7 +105,22 @@
     transition: color 0.3s ease;
   }
 
+  .ask-ai-link {
+    font-family: 'Roboto Mono', monospace !important;
+    font-weight: 600;
+    color: white !important;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 2rem;
+    transition: color 0.3s ease;
+  }
+
   .nav-links a:hover {
     color: white;
+  }
+
+  .ask-ai-link:hover {
+    color: white !important;
   }
 </style>

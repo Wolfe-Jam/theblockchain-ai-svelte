@@ -8,9 +8,47 @@
   let userQuestion = '';
   let isLoading = false;
   let searchInput; // Reference to the input element
+  let dailyJoke = '';
+  let jokeRating = null; // null, 'up', or 'down'
+  
+  // Joke database - mixed humor types
+  const jokes = [
+    "Why did the robot cross the road? He was crash testing!",
+    "Why did the smart contract break up? It had trust issues!",
+    "Why don't VCs make good comedians? Their jokes never scale!",
+    "There are only 10 types of people: those who understand binary and those who don't.",
+    "Why do programmers prefer dark mode? Because light attracts bugs!",
+    "What do you call a blockchain that tells jokes? A laugh-chain!",
+    "Why did the AI go to therapy? It had deep learning issues!",
+    "How do you make a cryptocurrency laugh? Tell it a bit-coin joke!",
+    "Why don't robots ever panic? They always keep their cool circuits!",
+    "What's a blockchain developer's favorite type of music? Crypto-punk!"
+  ];
+  
+  function getDailyJoke() {
+    // Get today's date as seed for consistent daily joke
+    const today = new Date().toDateString();
+    const jokeIndex = Math.abs(today.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0)) % jokes.length;
+    return jokes[jokeIndex];
+  }
+  
+  function rateJoke(rating) {
+    jokeRating = rating;
+    // TODO: Send rating data to analytics/database
+    console.log(`Joke rated: ${rating} - "${dailyJoke}"`);
+    
+    // Show brief feedback
+    setTimeout(() => {
+      jokeRating = null;
+    }, 2000);
+  }
   
   onMount(() => {
     document.title = "TheBlockchain.AI: Strategic Deep Dive";
+    dailyJoke = getDailyJoke();
   });
   
   function closeModal() {
@@ -216,6 +254,24 @@
                 <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
               </svg>
             </button>
+          </div>
+        </div>
+        
+        <!-- Joke of the Day -->
+        <div class="joke-section">
+          <div class="joke-container">
+            <span class="joke-label">🤣 Joke of the Day:</span>
+            <span class="joke-text">"{dailyJoke}"</span>
+            <div class="joke-rating">
+              {#if jokeRating === null}
+                <button class="rating-btn" on:click={() => rateJoke('up')}>👍</button>
+                <button class="rating-btn" on:click={() => rateJoke('down')}>👎</button>
+              {:else if jokeRating === 'up'}
+                <span class="rating-feedback">Thanks! 😄</span>
+              {:else}
+                <span class="rating-feedback">Noted! 😅 We'll do better!</span>
+              {/if}
+            </div>
           </div>
         </div>
       {/if}
@@ -594,6 +650,71 @@
   .search-button:hover {
     background-color: rgba(12, 192, 223, 0.1);
     transform: scale(1.05);
+  }
+
+  /* Joke of the Day Styles */
+  .joke-section {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .joke-container {
+    max-width: 500px;
+    background-color: rgba(255, 145, 77, 0.1);
+    border: 1px solid rgba(255, 145, 77, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .joke-label {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 600;
+    color: var(--brand-orange);
+    font-size: 0.9rem;
+  }
+
+  .joke-text {
+    display: block;
+    margin: 0.5rem 0;
+    color: white;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .joke-rating {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .rating-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+  }
+
+  .rating-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+
+  .rating-feedback {
+    color: var(--brand-cyan);
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .submit-button {
