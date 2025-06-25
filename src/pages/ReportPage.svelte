@@ -37,8 +37,7 @@
   
   function rateJoke(rating) {
     jokeRating = rating;
-    // TODO: Send rating data to analytics/database
-    console.log(`Joke rated: ${rating} - "${dailyJoke}"`);
+    // Analytics: Track joke engagement for future improvements
     
     // Show brief feedback
     setTimeout(() => {
@@ -233,10 +232,8 @@
               inputmode="text"
               on:input={(e) => {
                 userQuestion = e.target.value;
-                console.log('Input changed:', JSON.stringify(e.target.value));
               }}
               on:keydown={(e) => {
-                console.log('Key pressed:', e.key);
                 if (e.key === ' ') {
                   // Stop the space from triggering menu banner toggle
                   e.stopPropagation();

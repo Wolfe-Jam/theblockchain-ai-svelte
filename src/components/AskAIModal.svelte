@@ -37,7 +37,6 @@
   
   function rateJoke(rating) {
     jokeRating = rating;
-    console.log(`Joke rated: ${rating} - "${dailyJoke}"`);
     // Close modal after rating
     setTimeout(() => {
       closeModal();

@@ -4,7 +4,6 @@
   import { fly, fade, scale, blur, crossfade } from 'svelte/transition';
   import { spring, tweened } from 'svelte/motion';
   import { quintOut, backOut, elasticOut, expoOut } from 'svelte/easing';
-  import { derived } from 'svelte/store';
   
   let showModal = false;
   let showThankYou = false;
@@ -29,10 +28,6 @@
     duration: 1200,
     easing: expoOut
   });
-  
-  // Derived states for better reactivity
-  const isInProblemsSection = derived(scrollPosition, $pos => $pos > 0.2);
-  const isInSolutionSection = derived(scrollPosition, $pos => $pos > 0.6);
   
   // OPTIMIZED: Single master ocean rhythm (60fps smooth)
   const oceanTime = tweened(0, {
@@ -109,9 +104,8 @@
   }
   
   function scrollToFacts() {
-    // When arrow is clicked, scroll just enough to show Fact 3
-    const sceneContainer = document.querySelector('.scene-container');
-    const containerHeight = sceneContainer.offsetHeight;
+    // Svelte-powered smooth scrolling using bound element
+    const containerHeight = sceneContainer?.offsetHeight || window.innerHeight;
     
     // Scroll to about 45% to reveal Fact 3 without showing too much more
     const targetPosition = containerHeight * 0.45;
@@ -137,14 +131,8 @@
   }
   
   function scrollToSolution() {
-    // Scroll to reveal The Solution section
-    const solutionTitle = document.querySelector('.solution-title');
-    if (solutionTitle) {
-      solutionTitle.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
+    // Scroll to reveal The Solution section using Svelte approach
+    scrollPosition.set(0.8);
   }
   
   function handleArrowClick() {
@@ -154,11 +142,8 @@
   }
   
   function scrollToBoats() {
-    // Calculate the position to show boats AND sun in the viewport
-    const sceneContainer = document.querySelector('.scene-container');
-    const containerHeight = sceneContainer.offsetHeight;
-    
-    // Back to 30% for smooth, predictable landing
+    // Show boats with Svelte-powered positioning using bound element
+    const containerHeight = sceneContainer?.offsetHeight || window.innerHeight;
     const targetPosition = containerHeight * 0.3;
     
     // Smooth scroll with browser's native smooth behavior - no joltiness
