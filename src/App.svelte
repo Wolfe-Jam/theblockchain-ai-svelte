@@ -3,6 +3,7 @@
   import Header from './components/Header.svelte';
   import Footer from './components/Footer.svelte';
   import AskAIModal from './components/AskAIModal.svelte';
+  import AboutModal from './components/AboutModal.svelte';
   import HomePage from './pages/HomePage.svelte';
   import VisionPage from './pages/VisionPage.svelte';
   import ReportPage from './pages/ReportPage.svelte';
@@ -12,6 +13,7 @@
   // Basic routing logic (will be expanded later with a proper router)
   let currentPath = window.location.pathname;
   let showAskAI = false;
+  let showAbout = false;
   
   // Listen for navigation changes (e.g., when user clicks a link)
   window.addEventListener('popstate', () => {
@@ -21,10 +23,14 @@
   function handleOpenAskAI() {
     showAskAI = true;
   }
+  
+  function handleOpenAbout() {
+    showAbout = true;
+  }
 </script>
 
 <div class="app-container">
-  <Header on:openAskAI={handleOpenAskAI} />
+  <Header on:openAskAI={handleOpenAskAI} on:openAbout={handleOpenAbout} />
   <main class="min-h-screen">
     {#if currentPath === '/'}
       <HomePage />
@@ -43,8 +49,9 @@
       </div>
     {/if}
   </main>
-  <Footer />
+  <Footer on:openAbout={handleOpenAbout} />
   <AskAIModal bind:isOpen={showAskAI} />
+  <AboutModal bind:isOpen={showAbout} />
 </div>
 
 <style lang="postcss">

@@ -58,7 +58,7 @@
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     display: flex;
     align-items: center;
-    padding-top: 5rem; /* Account for fixed header */
+    padding-top: 6rem; /* Account for fixed header */
   }
 
   .invest-title {

@@ -159,6 +159,7 @@
     max-width: 1000px;
     margin: 0 auto;
     padding: 2rem;
+    padding-top: 6rem; /* Space for fixed header */
   }
 
   .vision-hero {

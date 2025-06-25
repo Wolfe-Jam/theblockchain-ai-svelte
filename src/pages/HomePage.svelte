@@ -49,12 +49,12 @@
   
   // Derived positions - LOWERED high point (prevent floating) + deeper low point
   $: oceanSwell = $masterWave * 0.6;
-  // Lower high (+4px max up) + deeper low (-5px down) = 9px range, grounded to water
-  $: boat1Y = Math.sin($oceanTime * 0.8 + 2.5) * 4.5 + Math.sin($oceanTime * 1.1 + 4.2) * 2.5 - 1;
-  $: boat2Y = Math.sin($oceanTime * 0.9 + 0.8) * 4.5 + Math.sin($oceanTime * 1.3 + 1.5) * 2.5 - 1;
-  $: boat3Y = Math.sin($oceanTime * 0.7 + 5.1) * 4.5 + Math.sin($oceanTime * 0.9 + 3.7) * 2.5 - 1;
-  $: boat4Y = Math.sin($oceanTime * 0.6 + 1.2) * 4.5 + Math.sin($oceanTime * 1.2 + 0.3) * 2.5 - 1;
-  $: boat5Y = Math.sin($oceanTime * 0.85 + 3.8) * 4.5 + Math.sin($oceanTime * 1.0 + 2.9) * 2.5 - 1;
+  // Enhanced movement but capped to stay on water - max height reduced
+  $: boat1Y = Math.sin($oceanTime * 0.8 + 2.5) * 5.0 + Math.sin($oceanTime * 1.1 + 4.2) * 2.5 + 5;
+  $: boat2Y = Math.sin($oceanTime * 0.9 + 0.8) * 5.0 + Math.sin($oceanTime * 1.3 + 1.5) * 2.5 + 5;
+  $: boat3Y = Math.sin($oceanTime * 0.7 + 5.1) * 5.0 + Math.sin($oceanTime * 0.9 + 3.7) * 2.5 + 5;
+  $: boat4Y = Math.sin($oceanTime * 0.6 + 1.2) * 5.0 + Math.sin($oceanTime * 1.2 + 0.3) * 2.5 + 5;
+  $: boat5Y = Math.sin($oceanTime * 0.85 + 3.8) * 5.0 + Math.sin($oceanTime * 1.0 + 2.9) * 2.5 + 5;
   
   // OPTIMIZED: Single master animation loop
   onMount(() => {
@@ -131,8 +131,22 @@
   }
   
   function scrollToSolution() {
-    // Scroll to reveal The Solution section using Svelte approach
-    scrollPosition.set(0.8);
+    // Scroll to reveal The Solution section 
+    const solutionTitle = document.querySelector('.solution-title');
+    if (solutionTitle) {
+      solutionTitle.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+      
+      // Complete the sequence transformation
+      setTimeout(() => {
+        arrowPosition = 'hidden';  // Discard arrow
+        
+        // Show banner for navigation and Ask AI access
+        window.dispatchEvent(new CustomEvent('showHeader'));
+      }, 1200); // Match scroll duration for smooth completion
+    }
   }
   
   function handleArrowClick() {
@@ -425,7 +439,7 @@
         <p class="text-sm mt-1"><span class="limited-spots-link" on:click={openModal}>Spots are limited.</span></p>
       </div>
       
-      <div class="flex justify-center items-center space-x-4">
+      <div class="flex justify-center items-center space-x-4" style="margin-bottom: 4rem;">
         <a href="/report" class="cta-button cta-button-transparent blue-border">Deep Dive</a>
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -596,11 +610,11 @@
     transform: scale(1.2);
   }
 
-  .boat:nth-child(1) { color: #555555; }
-  .boat:nth-child(2) { color: #444444; }
-  .boat:nth-child(3) { color: #333333; }
-  .boat:nth-child(4) { color: #444444; }
-  .boat:nth-child(5) { color: #555555; }
+  .boat:nth-child(1) { color: #777777; } /* Lighter grey pair */
+  .boat:nth-child(2) { color: #555555; } /* Darker grey pair */
+  .boat:nth-child(3) { color: #333333; } /* Center boat unchanged */
+  .boat:nth-child(4) { color: #555555; } /* Darker grey pair */
+  .boat:nth-child(5) { color: #777777; } /* Lighter grey pair */
 
   .tooltip {
     position: absolute;

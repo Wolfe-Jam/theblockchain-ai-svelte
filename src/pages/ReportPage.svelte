@@ -1,6 +1,9 @@
 <!-- src/pages/ReportPage.svelte -->
 <script>
   import { onMount } from 'svelte';
+  import { spring, tweened } from 'svelte/motion';
+  import { quintOut, elasticOut, backOut } from 'svelte/easing';
+  import { writable } from 'svelte/store';
   
   let showModal = false;
   let modalTitle = '';
@@ -11,6 +14,40 @@
   let dailyJoke = '';
   let jokeRating = null; // null, 'up', or 'down'
   
+  // 🚀 SVELTE SHOWCASE ANIMATIONS - Next Level Logo Effects
+  const logoScale = spring(0, { // Start invisible
+    stiffness: 0.2,
+    damping: 0.4
+  });
+  
+  const logoRotation = spring(0, {
+    stiffness: 0.1,
+    damping: 0.8
+  });
+  
+  const logoGlow = tweened(0, {
+    duration: 800,
+    easing: quintOut
+  });
+  
+  const logoFloat = tweened(0, {
+    duration: 2000,
+    easing: quintOut
+  });
+  
+  const logoOpacity = tweened(0, { // Control visibility
+    duration: 600,
+    easing: quintOut
+  });
+  
+  // Advanced: Particle system for logo
+  const particles = writable([]);
+  let particleTimer;
+  
+  // Logo state management
+  let logoHovered = false;
+  let logoElement;
+  let animationPhase = 'hidden'; // hidden, entrance, magic, settling, idle  
   // Joke database - mixed humor types
   const jokes = [
     "Why did the robot cross the road? He was crash testing!",
@@ -45,9 +82,136 @@
     }, 2000);
   }
   
+  // 🎆 SVELTE SHOWCASE: Advanced Logo Animations
+  function createParticle() {
+    return {
+      id: Math.random(),
+      x: Math.random() * 200 - 100, // Smaller spread
+      y: Math.random() * 200 - 100,
+      size: Math.random() * 6 + 3, // Smaller particles
+      opacity: 0.9,
+      velocityX: (Math.random() - 0.5) * 2, // Slower velocity
+      velocityY: (Math.random() - 0.5) * 2,
+      color: ['#FF914D', '#0CC0DF', '#004AAE'][Math.floor(Math.random() * 3)]
+    };
+  }
+  
+  function animateParticles() {
+    particles.update(current => {
+      const newParticles = [];
+      
+      // Add fewer, more controlled particles
+      if (logoHovered && current.length < 12) {
+        newParticles.push(createParticle());
+      }
+      
+      // Update existing particles with smoother movement
+      return [...current, ...newParticles].map(particle => ({
+        ...particle,
+        x: particle.x + particle.velocityX * 0.8, // Slower movement
+        y: particle.y + particle.velocityY * 0.8,
+        opacity: particle.opacity - 0.015, // Slower fade
+        size: particle.size * 0.995 // Slower shrink
+      })).filter(particle => particle.opacity > 0 && particle.size > 1);
+    });
+    
+    if (logoHovered || $particles.length > 0) {
+      requestAnimationFrame(animateParticles);
+    }
+  }
+  
+  function handleLogoHover() {
+    console.log('🎆 Replaying the MAGIC!');
+    playMagicalAnimation();
+  }
+  
+  function handleLogoLeave() {
+    console.log('✨ Ready for next replay');
+    // Just let the animation finish naturally - no jarring resets
+  }
+  
+  function playMagicalAnimation() {
+    logoHovered = true;
+    animationPhase = 'magic';
+    
+    // THE MAGICAL SEQUENCE - Multi-stage perfection
+    logoScale.set(1.2);
+    logoRotation.set(5);
+    logoGlow.set(1);
+    logoFloat.set(-10);
+    
+    // Start particle explosion
+    animateParticles();
+    
+    // Stage 2: Gentle oscillation
+    setTimeout(() => {
+      logoScale.set(1.15);
+      logoRotation.set(-2);
+    }, 200);
+    
+    // Stage 3: Final settle
+    setTimeout(() => {
+      logoScale.set(1.1);
+      logoRotation.set(0);
+    }, 400);
+    
+    // Stage 4: Begin gentle settling (no jolts!)
+    setTimeout(() => {
+      animationPhase = 'settling';
+      logoHovered = false; // Stop new particles
+      
+      // Gentle scale return
+      logoScale.set(1, {
+        duration: 800,
+        easing: quintOut
+      });
+      
+      // Gentle float return  
+      logoFloat.set(0, {
+        duration: 1000,
+        easing: quintOut
+      });
+    }, 1200);
+    
+    // Stage 5: Final glow tick and fade
+    setTimeout(() => {
+      // Little glow tick before finishing
+      logoGlow.set(0.3, {
+        duration: 200,
+        easing: quintOut
+      });
+      
+      setTimeout(() => {
+        logoGlow.set(0, {
+          duration: 1000,
+          easing: quintOut
+        });
+        
+        setTimeout(() => {
+          animationPhase = 'idle';
+        }, 1000);
+      }, 300);
+    }, 2200);
+  }
+  
+  function logoEntranceAnimation() {
+    console.log('🚀 ENTRANCE: Starting from blank space!');
+    
+    // Start completely hidden
+    animationPhase = 'entrance';
+    logoOpacity.set(1); // Make visible but start the magic
+    
+    setTimeout(() => {
+      playMagicalAnimation();
+    }, 1000);
+  }
+  
   onMount(() => {
     document.title = "TheBlockchain.AI: Strategic Deep Dive";
     dailyJoke = getDailyJoke();
+    
+    // 🚀 SVELTE SHOWCASE: Epic Logo Entrance
+    logoEntranceAnimation();
   });
   
   function closeModal() {
@@ -119,15 +283,59 @@
   
   <!-- Intro Section -->
   <section class="intro-section">
-    <img 
-      src="https://github.com/Wolfe-Jam/theblockchain-ai/blob/main/Public/theBlockchain-ai.png?raw=true" 
-      alt="theBlockchain.ai Logo" 
-      class="logo"
-      on:error={(e) => {
-        e.target.src = 'https://placehold.co/200x200/1E293B/FFFFFF?text=Logo+Not+Found';
-        e.target.onerror = null;
-      }}
-    >
+    <!-- 🚀 SVELTE SHOWCASE: Advanced Logo with Particle System -->
+    <div class="logo-container">
+      <!-- Particle System -->
+      <div class="particles-container">
+        {#each $particles as particle (particle.id)}
+          <div 
+            class="particle"
+            style="
+              left: calc(50% + {particle.x}px);
+              top: calc(50% + {particle.y}px);
+              width: {particle.size}px;
+              height: {particle.size}px;
+              opacity: {particle.opacity};
+              background-color: {particle.color};
+              box-shadow: 0 0 {particle.size * 2}px {particle.color};
+            "
+          ></div>
+        {/each}
+      </div>
+      
+      <!-- Main Logo with Svelte Animations -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <img 
+        bind:this={logoElement}
+        src="https://github.com/Wolfe-Jam/theblockchain-ai/blob/main/Public/theBlockchain-ai.png?raw=true" 
+        alt="theBlockchain.ai Logo" 
+        class="logo svelte-showcase-logo"
+        style="
+          opacity: {$logoOpacity};
+          transform: 
+            scale({$logoScale}) 
+            rotate({$logoRotation}deg) 
+            translateY({$logoFloat}px);
+          filter: 
+            drop-shadow(0 0 {$logoGlow * 30}px rgba(255, 145, 77, {$logoGlow * 0.8}))
+            drop-shadow(0 0 {$logoGlow * 60}px rgba(12, 192, 223, {$logoGlow * 0.4}))
+            brightness({1 + $logoGlow * 0.2});
+        "
+        on:mouseenter={handleLogoHover}
+        on:mouseleave={handleLogoLeave}
+        on:error={(e) => {
+          e.target.src = 'https://placehold.co/200x200/1E293B/FFFFFF?text=Svelte+Logo';
+          e.target.onerror = null;
+        }}
+      />
+      
+      <!-- Animated Ring Effects -->
+      {#if animationPhase === 'magic' || animationPhase === 'settling'}
+        <div class="logo-ring ring-1"></div>
+        <div class="logo-ring ring-2"></div>
+        <div class="logo-ring ring-3"></div>
+      {/if}
+    </div>
     
     <h2 class="main-headline">
       Building an <br><span class="highlight-orange">Unassailable Position</span>
@@ -171,6 +379,17 @@
     <div class="section-header">
       <h2>The Three Strategic Pillars</h2>
       <p>These three foundational pillars–<span class="highlight-blue">The Blockchain</span>, The <span class="highlight-cyan">OUTPUT</span> Marketplace, and <span class="highlight-orange">Code-In-Action (CIA)</span>: Custom, Intelligent Automation–converge to create our unassailable strategic position, represented by our logo.</p>
+      
+      <!-- Strategic Pillars Logo -->
+      <img 
+        src="https://github.com/Wolfe-Jam/theblockchain-ai/blob/main/Public/theBlockchain-ai.png?raw=true" 
+        alt="theBlockchain.ai Strategic Position" 
+        class="pillars-logo"
+        on:error={(e) => {
+          e.target.src = 'https://placehold.co/180x180/1E293B/FFFFFF?text=Logo';
+          e.target.onerror = null;
+        }}
+      >
     </div>
 
     <div class="pillars-grid">
@@ -311,10 +530,101 @@
     margin-bottom: 6rem;
   }
 
-  .logo {
+  /* 🚀 SVELTE SHOWCASE: Advanced Logo Animation System */
+  .logo-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 14rem;
+    margin: 2rem auto 2rem auto;
+    overflow: visible;
+  }
+  
+  .svelte-showcase-logo {
     height: 12rem;
     width: auto;
+    cursor: pointer;
+    z-index: 10;
+    position: relative;
+    transition: none; /* Pure Svelte animations */
+  }
+  
+  /* Particle System */
+  .particles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+  
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float 2s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(180deg); }
+  }
+  
+  /* Animated Ring Effects */
+  .logo-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid;
+    pointer-events: none;
+    animation: ring-expand 1.5s ease-out infinite;
+  }
+  
+  .ring-1 {
+    width: 200px;
+    height: 200px;
+    border-color: rgba(255, 145, 77, 0.6);
+    animation-delay: 0s;
+  }
+  
+  .ring-2 {
+    width: 250px;
+    height: 250px;
+    border-color: rgba(12, 192, 223, 0.4);
+    animation-delay: 0.3s;
+  }
+  
+  .ring-3 {
+    width: 300px;
+    height: 300px;
+    border-color: rgba(0, 74, 174, 0.3);
+    animation-delay: 0.6s;
+  }
+  
+  @keyframes ring-expand {
+    0% {
+      transform: scale(0.5);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+  
+  .pillars-logo {
+    height: 140px;
+    width: auto;
     margin: 2rem auto;
+    display: block;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+  }
+  
+  .pillars-logo:hover {
+    opacity: 1;
   }
 
   .main-headline {
@@ -327,16 +637,19 @@
 
   .highlight-orange {
     color: var(--brand-orange);
+    padding: 0 0.2em;
   }
 
   .highlight-blue {
     color: var(--brand-blue);
     font-weight: 700;
+    padding: 0 0.2em;
   }
 
   .highlight-cyan {
     color: var(--brand-cyan);
     font-weight: 700;
+    padding: 0 0.2em;
   }
 
   .intro-list {
