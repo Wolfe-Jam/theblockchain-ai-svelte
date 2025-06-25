@@ -9,6 +9,9 @@
   let showThankYou = false;
   let accordionItems = {};
   
+  // Arrow position states: 'hidden' (shows white arrow), 'above-solution' (shows orange arrow)
+  let arrowPosition = 'hidden';
+  
   // Svelte animation stores
   const titleOpacity = tweened(0.3, {
     duration: 800,
@@ -46,6 +49,9 @@
       top: targetPosition,
       behavior: 'smooth'
     });
+    
+    // Hide white arrow and show the new orange arrow above solution
+    arrowPosition = 'above-solution';
   }
   
   function scrollToSerenity() {
@@ -54,6 +60,26 @@
       top: 0,
       behavior: 'smooth'
     });
+    
+    // Reset arrow position - hide the solution arrow
+    arrowPosition = 'hidden';
+  }
+  
+  function scrollToSolution() {
+    // Scroll to reveal The Solution section
+    const solutionTitle = document.querySelector('.solution-title');
+    if (solutionTitle) {
+      solutionTitle.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }
+  
+  function handleArrowClick() {
+    if (arrowPosition === 'above-solution') {
+      scrollToSolution();
+    }
   }
   
   function scrollToBoats() {
@@ -178,11 +204,14 @@
     <p class="sub-title" style="opacity: {$subTitleOpacity}">The Economic Layer for Open-Source</p>
   </div>
   
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="scroll-down" on:click={scrollToFacts}>
-    <i class="fas fa-chevron-down"></i>
-  </div>
+  <!-- Original White Arrow - Only visible when arrow hasn't been used -->
+  {#if arrowPosition === 'hidden'}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="scroll-down" on:click={scrollToFacts}>
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  {/if}
 </div>
 
 <!-- One Pager Section -->
@@ -253,6 +282,20 @@
         </div>
       {/if}
     </div>
+
+
+
+    <!-- Arrow above solution -->
+    {#if arrowPosition === 'above-solution'}
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="arrow-above-solution"
+           in:fly="{{ y: 20, duration: 500, delay: 200 }}" 
+           out:fade="{{ duration: 200 }}"
+           on:click={handleArrowClick}>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    {/if}
 
     <h1 class="group-title solution-title">The Solution</h1>
 
@@ -559,6 +602,20 @@
     0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
     40% { transform: translateY(-20px) translateX(-50%); }
     60% { transform: translateY(-10px) translateX(-50%); }
+  }
+
+  /* Arrow Above Solution */
+  .arrow-above-solution {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--brand-orange);
+    font-size: 2rem;
+    cursor: pointer;
+    animation: bounce 2s infinite;
+    margin: 2rem 0;
+    text-align: center;
+    z-index: 10;
   }
 
   /* One Pager Section */
