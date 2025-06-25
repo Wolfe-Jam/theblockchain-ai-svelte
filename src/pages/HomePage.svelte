@@ -1,9 +1,10 @@
 <!-- HomePage.svelte - The Masterpiece -->
 <script>
   import { onMount } from 'svelte';
-  import { fly, fade, scale, blur } from 'svelte/transition';
+  import { fly, fade, scale, blur, crossfade } from 'svelte/transition';
   import { spring, tweened } from 'svelte/motion';
-  import { quintOut, backOut, elasticOut } from 'svelte/easing';
+  import { quintOut, backOut, elasticOut, expoOut } from 'svelte/easing';
+  import { derived } from 'svelte/store';
   
   let showModal = false;
   let showThankYou = false;
@@ -12,18 +13,88 @@
   // Arrow position states: 'hidden' (shows white arrow), 'above-solution' (shows orange arrow)
   let arrowPosition = 'hidden';
   
-  // Svelte animation stores
-  const titleOpacity = tweened(0.3, {
-    duration: 800,
-    easing: quintOut
+  // Svelte physics-based animations
+  const titleOpacity = spring(0.3, {
+    stiffness: 0.1,
+    damping: 0.8
   });
   
-  const subTitleOpacity = tweened(0, {
-    duration: 600,
-    easing: quintOut
+  const subTitleOpacity = spring(0, {
+    stiffness: 0.15,
+    damping: 0.9
+  });
+  
+  // Smooth scroll position with physics
+  const scrollPosition = tweened(0, {
+    duration: 1200,
+    easing: expoOut
+  });
+  
+  // Derived states for better reactivity
+  const isInProblemsSection = derived(scrollPosition, $pos => $pos > 0.2);
+  const isInSolutionSection = derived(scrollPosition, $pos => $pos > 0.6);
+  
+  // OPTIMIZED: Single master ocean rhythm (60fps smooth)
+  const oceanTime = tweened(0, {
+    duration: 20000,
+    easing: t => 0.5 * (1 + Math.sin(2 * Math.PI * t))
+  });
+  
+  // Single wave system - all boats derive from this
+  const masterWave = spring(0, {
+    stiffness: 0.025,
+    damping: 0.7
+  });
+  
+  // Arrow bounce (separate, low frequency)
+  const arrowBounce = spring(0, {
+    stiffness: 0.3,
+    damping: 0.6
+  });
+  
+  // Derived positions - LOWERED high point (prevent floating) + deeper low point
+  $: oceanSwell = $masterWave * 0.6;
+  // Lower high (+4px max up) + deeper low (-5px down) = 9px range, grounded to water
+  $: boat1Y = Math.sin($oceanTime * 0.8 + 2.5) * 4.5 + Math.sin($oceanTime * 1.1 + 4.2) * 2.5 - 1;
+  $: boat2Y = Math.sin($oceanTime * 0.9 + 0.8) * 4.5 + Math.sin($oceanTime * 1.3 + 1.5) * 2.5 - 1;
+  $: boat3Y = Math.sin($oceanTime * 0.7 + 5.1) * 4.5 + Math.sin($oceanTime * 0.9 + 3.7) * 2.5 - 1;
+  $: boat4Y = Math.sin($oceanTime * 0.6 + 1.2) * 4.5 + Math.sin($oceanTime * 1.2 + 0.3) * 2.5 - 1;
+  $: boat5Y = Math.sin($oceanTime * 0.85 + 3.8) * 4.5 + Math.sin($oceanTime * 1.0 + 2.9) * 2.5 - 1;
+  
+  // OPTIMIZED: Single master animation loop
+  onMount(() => {
+    // Start the endless ocean cycle
+    const startOceanCycle = () => {
+      oceanTime.set(1).then(() => {
+        oceanTime.set(0, { duration: 0 }).then(startOceanCycle);
+      });
+    };
+    startOceanCycle();
+    
+    // Gentle wave trigger - stays on horizon
+    const waveInterval = setInterval(() => {
+      masterWave.set($masterWave === 0 ? 3 : 0);
+    }, 6000);
+    
+    // Arrow bounce (independent)
+    const arrowInterval = setInterval(() => {
+      arrowBounce.set($arrowBounce === 0 ? -10 : 0);
+    }, 2000);
+    
+    return () => {
+      clearInterval(waveInterval);
+      clearInterval(arrowInterval);
+    };
   });
   
   let titleHovered = false;
+  let sceneContainer;
+  
+  // Crossfade for smooth arrow transitions
+  const [send, receive] = crossfade({
+    duration: 600,
+    easing: quintOut
+  });
   
   function handleTitleHover() {
     titleHovered = true;
@@ -152,41 +223,52 @@
 </script>
 
 <!-- Hero Scene Container -->
-<div class="scene-container">
+<div class="scene-container" bind:this={sceneContainer}>
   <div class="sky">
     <div class="sun-disk"></div>
     <div class="sun-glow"></div>
   </div>
+  <!-- Pure ocean gradient - no wave overlay needed -->
   <div class="ocean"></div>
   <div class="horizon-line"></div>
-  <div class="boats-container">
+  <div class="boats-container" style="transform: translateY({oceanSwell * 0.7}px)">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="boat" on:click={scrollToFacts}>
+    <div class="boat" 
+         style="transform: translateY({boat1Y}px)"
+         on:click={scrollToFacts}>
       <i class="fas fa-sailboat"></i>
       <div class="tooltip">Drifting</div>
     </div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="boat" on:click={scrollToFacts}>
+    <div class="boat" 
+         style="transform: translateY({boat2Y}px)"
+         on:click={scrollToFacts}>
       <i class="fas fa-sailboat"></i>
       <div class="tooltip cyan-tooltip">Lacking</div>
     </div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="boat" on:click={scrollToFacts}>
+    <div class="boat" 
+         style="transform: translateY({boat3Y}px)"
+         on:click={scrollToFacts}>
       <i class="fas fa-sailboat"></i>
       <div class="tooltip trust-tooltip">TRUST</div>
     </div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="boat" on:click={scrollToFacts}>
+    <div class="boat" 
+         style="transform: translateY({boat4Y}px)"
+         on:click={scrollToFacts}>
       <i class="fas fa-sailboat"></i>
       <div class="tooltip cyan-tooltip">Broken</div>
     </div>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="boat" on:click={scrollToFacts}>
+    <div class="boat" 
+         style="transform: translateY({boat5Y}px)"
+         on:click={scrollToFacts}>
       <i class="fas fa-sailboat"></i>
       <div class="tooltip">Lost</div>
     </div>
@@ -204,11 +286,15 @@
     <p class="sub-title" style="opacity: {$subTitleOpacity}">The Economic Layer for Open-Source</p>
   </div>
   
-  <!-- Original White Arrow - Only visible when arrow hasn't been used -->
+  <!-- Original White Arrow - Crossfade out when clicked -->
   {#if arrowPosition === 'hidden'}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="scroll-down" on:click={scrollToFacts}>
+    <div class="scroll-down" 
+         style="transform: translateX(-50%) translateY({$arrowBounce}px)"
+         in:receive|global="{{key: 'arrow'}}" 
+         out:send|global="{{key: 'arrow'}}"
+         on:click={scrollToFacts}>
       <i class="fas fa-chevron-down"></i>
     </div>
   {/if}
@@ -285,13 +371,14 @@
 
 
 
-    <!-- Arrow above solution -->
+    <!-- Arrow above solution - Crossfade in from white arrow -->
     {#if arrowPosition === 'above-solution'}
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="arrow-above-solution"
-           in:fly="{{ y: 20, duration: 500, delay: 200 }}" 
-           out:fade="{{ duration: 200 }}"
+           style="transform: translateX(-50%) translateY({$arrowBounce}px)"
+           in:receive|global="{{key: 'arrow'}}" 
+           out:send|global="{{key: 'arrow'}}"
            on:click={handleArrowClick}>
         <i class="fas fa-chevron-down"></i>
       </div>
@@ -453,7 +540,7 @@
     height: 100%;
     transform: translateX(-50%);
     background: radial-gradient(ellipse 80% 100% at 50% 100%, rgba(255, 145, 77, 0.7) 0%, rgba(255, 145, 77, 0) 60%);
-    z-index: 3;
+    z-index: 4;
   }
 
   .sun-disk {
@@ -466,7 +553,7 @@
     background: var(--brand-orange);
     border-radius: 50%;
     box-shadow: 0 0 60px 30px var(--brand-orange), 0 0 100px 60px rgba(255, 145, 77, 0.7);
-    z-index: 2;
+    z-index: 4;
   }
 
   .ocean {
@@ -475,7 +562,7 @@
     left: 0;
     width: 100%;
     height: 50%;
-    background: linear-gradient(to top, #000000 0%, var(--brand-blue) 100%);
+    background: linear-gradient(to top, #000814 0%, #001122 30%, var(--brand-blue) 100%);
     z-index: 2;
   }
 
@@ -486,9 +573,17 @@
     width: 100%;
     height: 6px;
     background: #ffffff;
-    box-shadow: 0 0 10px 3px #ffffff, 0 0 20px 8px rgba(255, 255, 255, 0.7);
+    box-shadow: 
+      0 0 10px 3px #ffffff, 
+      0 0 20px 8px rgba(255, 255, 255, 0.7),
+      0 0 40px 12px rgba(255, 255, 255, 0.3);
     z-index: 5;
     transform: translateY(-50%);
+    /* Subtle shimmer effect */
+    background: linear-gradient(90deg, 
+      rgba(255,255,255,0.8) 0%, 
+      rgba(255,255,255,1) 50%, 
+      rgba(255,255,255,0.8) 100%);
   }
 
   .boats-container {
@@ -498,7 +593,7 @@
     width: 100%;
     transform: translateY(-50%);
     height: 40px;
-    margin-top: -20px;
+    margin-top: -30px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -595,7 +690,7 @@
     color: white;
     font-size: 2rem;
     cursor: pointer;
-    animation: bounce 2s infinite;
+    /* Removed CSS animation - using Svelte physics instead */
   }
 
   @keyframes bounce {
@@ -604,7 +699,7 @@
     60% { transform: translateY(-10px) translateX(-50%); }
   }
 
-  /* Arrow Above Solution */
+  /* Arrow Above Solution - Using Svelte physics */
   .arrow-above-solution {
     position: relative;
     left: 50%;
@@ -612,10 +707,10 @@
     color: var(--brand-orange);
     font-size: 2rem;
     cursor: pointer;
-    animation: bounce 2s infinite;
     margin: 2rem 0;
     text-align: center;
     z-index: 10;
+    /* Removed CSS animation - crossfade handles transitions */
   }
 
   /* One Pager Section */
