@@ -11,6 +11,7 @@
   let searchInput;
   let dailyJoke = '';
   let jokeRating = null;
+  let submittedQuestion = ''; // Store the question that was submitted
   
   // Joke database - mixed humor types
   const jokes = [
@@ -47,6 +48,7 @@
     isOpen = false;
     userQuestion = '';
     modalContent = '';
+    submittedQuestion = ''; // Clear the submitted question
   }
   
   function handleBackdropClick(event) {
@@ -61,6 +63,8 @@
       return;
     }
     
+    // Store the question before clearing it
+    submittedQuestion = userQuestion.trim();
     modalContent = '';
     isLoading = true;
     
@@ -70,7 +74,7 @@
       const response = await fetch(netlifyFunctionUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userQuestion: userQuestion })
+        body: JSON.stringify({ userQuestion: submittedQuestion })
       });
       
       if (!response.ok) {
@@ -148,7 +152,9 @@
         <!-- Joke THEN Exit at bottom -->
         <div class="joke-section">
           <h3 class="joke-title">🤣 Joke of the Day</h3>
-          <div class="joke-container">
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <!-- svelte-ignore a11y-no-static-element-interactions -->
+          <div class="joke-container" on:click|stopPropagation>
             <span class="joke-text">"{dailyJoke}"</span>
             <div class="joke-prompt">
               <span class="joke-label">Make you laugh?</span>
@@ -177,7 +183,16 @@
       
       {#if modalContent}
         <div class="modal-response">
-          {@html modalContent}
+          <div class="question-title">
+            <h3>Your Question:</h3>
+            <p>"{submittedQuestion}"</p>
+          </div>
+          <div class="answer-content">
+            {@html modalContent}
+          </div>
+          <button class="new-question-btn" on:click={() => { modalContent = ''; submittedQuestion = ''; userQuestion = ''; }}>
+            Ask Another Question
+          </button>
         </div>
       {/if}
     </div>
@@ -395,5 +410,51 @@
     border-left: 4px solid var(--brand-cyan);
     margin-top: 1rem;
     line-height: 1.6;
+  }
+
+  .question-title {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(12, 192, 223, 0.3);
+  }
+
+  .question-title h3 {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+    color: var(--brand-orange);
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+  }
+
+  .question-title p {
+    font-style: italic;
+    color: #cbd5e1;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .answer-content {
+    margin-bottom: 1.5rem;
+  }
+
+  .new-question-btn {
+    background-color: var(--brand-cyan);
+    color: #0f172a;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .new-question-btn:hover {
+    background-color: #0ea5e9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(12, 192, 223, 0.3);
   }
 </style>
