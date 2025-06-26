@@ -117,6 +117,11 @@
       {#if !modalContent}
         <!-- Search Interface FIRST -->
         <div class="search-container">
+          <!-- Close button (only show after joke is cleared) -->
+          {#if jokeRating === 'hidden'}
+            <button class="close-button" on:click={closeModal}>×</button>
+          {/if}
+          
           <div class="search-box">
             <input 
               type="text"
@@ -233,6 +238,32 @@
     margin-bottom: 2rem;
     display: flex;
     justify-content: center;
+    position: relative;
+  }
+
+  .close-button {
+    position: absolute;
+    top: -1rem;
+    right: -1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #9ca3af;
+    font-size: 1.5rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+
+  .close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: scale(1.1);
   }
 
   .search-box {
