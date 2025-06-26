@@ -509,7 +509,8 @@
   :root {
     --brand-orange: #FF914D;
     --brand-cyan: #0CC0DF;
-    --brand-blue: #004AAE;
+    --brand-blue: #004AAE;      /* Blockchain Blue - logos, graphics, icons, buttons */
+    --brand-blue-text: #2563EB; /* Blue Text - optimized readability */
   }
 
   .container {
@@ -641,7 +642,7 @@
   }
 
   .highlight-blue {
-    color: var(--brand-blue);
+    color: var(--brand-blue-text); /* Use readable blue for text */
     font-weight: 700;
     padding: 0 0.2em;
   }
@@ -786,7 +787,7 @@
   }
 
   .pillar-blue h3 {
-    color: var(--brand-blue);
+    color: var(--brand-blue-text); /* Use readable blue for text */
   }
 
   .pillar-cyan h3 {

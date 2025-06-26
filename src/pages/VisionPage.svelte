@@ -152,7 +152,8 @@
   :root {
     --brand-orange: #FF914D;
     --brand-cyan: #0CC0DF;
-    --brand-blue: #004AAE;
+    --brand-blue: #004AAE;      /* Blockchain Blue - logos, graphics, icons, buttons */
+    --brand-blue-text: #2563EB; /* Blue Text - optimized readability */
   }
 
   .container {
@@ -278,7 +279,7 @@
   .card-blue h4,
   .problem-blue,
   .icon-blue {
-    color: var(--brand-blue);
+    color: var(--brand-blue-text); /* Use readable blue for text */
   }
 
   .icon-gold {
