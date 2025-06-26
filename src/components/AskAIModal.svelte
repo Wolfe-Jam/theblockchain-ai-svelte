@@ -38,9 +38,9 @@
   
   function rateJoke(rating) {
     jokeRating = rating;
-    // Close modal after rating
+    // Hide joke section after rating, but keep modal open for search
     setTimeout(() => {
-      closeModal();
+      jokeRating = 'hidden'; // Mark joke as done, but don't close modal
     }, 1500);
   }
   
@@ -99,7 +99,7 @@
   // Auto-focus and load joke when modal opens
   $: if (isOpen) {
     dailyJoke = getDailyJoke();
-    jokeRating = null;
+    jokeRating = null; // Reset joke state
     setTimeout(() => {
       if (searchInput) {
         searchInput.focus();
@@ -150,28 +150,30 @@
         </div>
         
         <!-- Joke THEN Exit at bottom -->
-        <div class="joke-section">
-          <h3 class="joke-title">🤣 Joke of the Day</h3>
-          <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <!-- svelte-ignore a11y-no-static-element-interactions -->
-          <div class="joke-container" on:click|stopPropagation>
-            <span class="joke-text">"{dailyJoke}"</span>
-            <div class="joke-prompt">
-              <span class="joke-label">Make you laugh?</span>
-              <span class="vote-label">Vote to exit:</span>
-            </div>
-            <div class="joke-rating">
-              {#if jokeRating === null}
-                <button class="rating-btn" on:click={() => rateJoke('up')}>👍</button>
-                <button class="rating-btn" on:click={() => rateJoke('down')}>👎</button>
-              {:else if jokeRating === 'up'}
-                <span class="rating-feedback">Thanks! 😄 Closing...</span>
-              {:else}
-                <span class="rating-feedback">Noted! 😅 We'll do better! Closing...</span>
-              {/if}
+        {#if jokeRating !== 'hidden'}
+          <div class="joke-section">
+            <h3 class="joke-title">🤣 Joke of the Day</h3>
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div class="joke-container" on:click|stopPropagation>
+              <span class="joke-text">"{dailyJoke}"</span>
+              <div class="joke-prompt">
+                <span class="joke-label">Make you laugh?</span>
+                <span class="vote-label">Vote to continue:</span>
+              </div>
+              <div class="joke-rating">
+                {#if jokeRating === null}
+                  <button class="rating-btn" on:click={() => rateJoke('up')}>👍</button>
+                  <button class="rating-btn" on:click={() => rateJoke('down')}>👎</button>
+                {:else if jokeRating === 'up'}
+                  <span class="rating-feedback">Thanks! 😄 Ready to search...</span>
+                {:else}
+                  <span class="rating-feedback">Noted! 😅 We'll do better! Ready to search...</span>
+                {/if}
+              </div>
             </div>
           </div>
-        </div>
+        {/if}
       {/if}
       
       {#if isLoading}
