@@ -70,7 +70,7 @@
     <div class="max-w-3xl mx-auto">
       <!-- Group: General & Core Vision -->
       <div class="faq-group group-general mb-8">
-        <h2 class="faq-group-title text-2xl font-bold mb-6 text-center" style="color: var(--brand-blue-text);">
+        <h2 class="faq-group-title text-2xl font-bold mb-6 text-center" style="color: var(--brand-blue);">
           General & Core Vision
         </h2>
         
@@ -309,7 +309,7 @@
 
       <!-- Group: For Token & Investors -->
       <div class="faq-group group-token-investors mb-8 mt-12">
-        <h2 class="faq-group-title text-2xl font-bold mb-6 text-center" style="color: var(--brand-blue-text);">
+        <h2 class="faq-group-title text-2xl font-bold mb-6 text-center" style="color: var(--brand-blue);">
           For Token & Investors
         </h2>
         

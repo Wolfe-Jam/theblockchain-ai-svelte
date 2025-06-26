@@ -58,7 +58,7 @@
     <h2 class="section-title">The Core Vision</h2>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="icon-container"><i class="fa-solid fa-file-contract" style="color: #004AAE;"></i></div>
+        <div class="icon-container"><i class="fa-solid fa-file-contract" style="color: #2563EB;"></i></div>
         <h3>Verifiable & Auditable AI</h3>
         <p>Establish the gold standard for ethical AI with an unchangeable record of any model's lifecycle.</p>
       </div>
@@ -152,8 +152,7 @@
   :root {
     --brand-orange: #FF914D;
     --brand-cyan: #0CC0DF;
-    --brand-blue: #004AAE;      /* Blockchain Blue - logos, graphics, icons, buttons */
-    --brand-blue-text: #2563EB; /* Blue Text - optimized readability */
+    --brand-blue: #2563EB;      /* Universal Blue - upgraded for readability */
   }
 
   .container {
@@ -279,7 +278,7 @@
   .card-blue h4,
   .problem-blue,
   .icon-blue {
-    color: var(--brand-blue-text); /* Use readable blue for text */
+    color: var(--brand-blue); /* Universal readable blue */
   }
 
   .icon-gold {

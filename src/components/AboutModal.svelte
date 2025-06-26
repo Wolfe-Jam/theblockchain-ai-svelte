@@ -36,7 +36,7 @@
       opacity: 0.8,
       velocityX: (Math.random() - 0.5) * 1.5,
       velocityY: (Math.random() - 0.5) * 1.5,
-      color: ['#FF914D', '#0CC0DF', '#004AAE'][Math.floor(Math.random() * 3)]
+      color: ['#FF914D', '#0CC0DF', '#2563EB'][Math.floor(Math.random() * 3)]
     };
   }
   

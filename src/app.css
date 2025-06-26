@@ -10,8 +10,8 @@
 :root {
   --brand-orange: #FF914D;
   --brand-cyan: #0CC0DF;
-  --brand-blue: #004AAE;      /* Blockchain Blue - logos, graphics, icons, buttons */
-  --brand-blue-text: #2563EB; /* Blue Text - optimized readability */
+  --brand-blue: #2563EB;      /* Universal Blue - upgraded for readability (logo exempt) */
+  --brand-blue-text: #2563EB; /* Alias for consistency */
   
   /* Neutral & Background Colors */
   --color-text-light: #F8FAFC;

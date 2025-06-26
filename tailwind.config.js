@@ -6,8 +6,8 @@ module.exports = {
     extend: {
       colors: {
         // Define your brand colors directly in Tailwind config for easy use
-        'brand-blue': '#004AAE',      // Blockchain Blue - logos, graphics, icons, buttons
-        'brand-blue-text': '#2563EB', // Blue Text - optimized readability for all text
+        'brand-blue': '#2563EB',      // Universal Blue - upgraded for readability (logo exempt)
+        'brand-blue-text': '#2563EB', // Alias for consistency
         'brand-cyan': '#0CC0DF',
         'brand-orange': '#FF914D',
       }
