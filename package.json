@@ -1,12 +1,16 @@
 {
   "name": "my-theblockchain-ai-app",
   "private": true,
-  "version": "1.1.1",
+  "version": "1.1.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "version": "node scripts/update-version.js",
+    "brand:check": "node scripts/validate-brand-colors.js",
+    "brand:check:fix": "node scripts/validate-brand-colors.js --fix",
+    "prebuild": "npm run brand:check"
   },
   "dependencies": {
     "@google/generative-ai": "^0.11.0",

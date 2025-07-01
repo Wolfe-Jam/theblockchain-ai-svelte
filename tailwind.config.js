@@ -5,11 +5,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Define your brand colors directly in Tailwind config for easy use
-        'brand-blue': '#2563EB',      // Universal Blue - upgraded for readability (logo exempt)
-        'brand-blue-text': '#2563EB', // Alias for consistency
-        'brand-cyan': '#0CC0DF',
-        'brand-orange': '#FF914D',
+        // Official Brand Colors - Use these for all graphics and brand elements
+        'brand-blue': '#004AAE',      // Blockchain Blue - for trust/blockchain elements
+        'brand-cyan': '#0CC0DF',      // Digital Turquoise - for users/CIA elements  
+        'brand-orange': '#FF914D',    // Creative Orange - for developers/OUTPUT elements
+        
+        // Text Colors (Tailwind variants for readability)
+        'brand-blue-text': '#2563EB',  // Blue-600 for readable text
+        'brand-cyan-text': '#06B6D4',  // Cyan-500 for readable text
+        'brand-orange-text': '#EA580C', // Orange-600 for readable text
       }
     },
   },

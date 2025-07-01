@@ -4,6 +4,7 @@
   import { spring, tweened } from 'svelte/motion';
   import { quintOut } from 'svelte/easing';
   import { writable } from 'svelte/store';
+  import { version, getCopyrightYear } from '../lib/version.js';
   
   export let isOpen = false;
   
@@ -171,7 +172,7 @@
         
         <div class="version-info">
           <span class="version-label">Version</span>
-          <span class="version-number">1.1.0</span>
+          <span class="version-number">{version}</span>
         </div>
         
         <div class="about-description">
@@ -199,7 +200,7 @@
         </div>
         
         <div class="about-footer">
-          <p>&copy; 2025 theBlockchain.ai</p>
+          <p>&copy; {getCopyrightYear()} theBlockchain.ai v{version}</p>
           <p>Building the Future of Trusted AI</p>
         </div>
       </div>

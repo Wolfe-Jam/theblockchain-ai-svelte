@@ -1,6 +1,7 @@
 <!-- src/components/Footer.svelte -->
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { version } from '../lib/version.js';
   
   const dispatch = createEventDispatcher();
   
@@ -14,7 +15,7 @@
     <div class="footer-left">
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <span class="about-link" on:click={openAbout}>About: Version 1.1</span>
+      <span class="about-link" on:click={openAbout}>About: Version {version}</span>
     </div>
     <div class="footer-center">
       <p class="main-text">&copy; 2025 theBlockchain.ai - Building the Future of Trusted AI</p>

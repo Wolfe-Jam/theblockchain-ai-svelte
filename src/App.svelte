@@ -13,6 +13,7 @@
   import ToolsPage from './pages/ToolsPage.svelte';
   import ConvergentEconomyPage from './pages/deep-dive/ConvergentEconomyPage.svelte';
   import GlossaryPage from './pages/GlossaryPage.svelte';
+  import InteractiveGuidesPage from './pages/InteractiveGuidesPage.svelte';
   
   // Basic routing logic (will be expanded later with a proper router)
   let currentPath = window.location.pathname;
@@ -29,6 +30,7 @@
   }
   
   function handleOpenAbout() {
+    console.log('handleOpenAbout called in App, setting showAbout to true'); // Debug log
     showAbout = true;
   }
 </script>
@@ -42,6 +44,8 @@
       <VisionPage />
     {:else if currentPath === '/briefings'}
       <BriefingsPage />
+    {:else if currentPath === '/interactive-guides'}
+      <InteractiveGuidesPage />
     {:else if currentPath === '/deep-dive/the-convergent-economy'}
       <ConvergentEconomyPage />
     {:else if currentPath === '/tools'}

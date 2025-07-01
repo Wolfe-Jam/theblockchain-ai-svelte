@@ -8,10 +8,15 @@
 
 /* Brand Colors (CSS Custom Properties) */
 :root {
-  --brand-orange: #FF914D;
-  --brand-cyan: #0CC0DF;
-  --brand-blue: #2563EB;      /* Universal Blue - upgraded for readability (logo exempt) */
-  --brand-blue-text: #2563EB; /* Alias for consistency */
+  /* Official Brand Colors - Use for graphics, logos, and brand elements */
+  --brand-orange: #FF914D;    /* Creative Orange - Developers/OUTPUT */
+  --brand-cyan: #0CC0DF;      /* Digital Turquoise - Users/CIA */
+  --brand-blue: #004AAE;      /* Blockchain Blue - Trust/BAI */
+  
+  /* Text-Readable Variants - Use for typography */
+  --brand-orange-text: #EA580C;  /* Orange-600 for readable text */
+  --brand-cyan-text: #06B6D4;    /* Cyan-500 for readable text */
+  --brand-blue-text: #2563EB;    /* Blue-600 for readable text */
   
   /* Neutral & Background Colors */
   --color-text-light: #F8FAFC;
@@ -75,4 +80,59 @@ a:hover {
   background-color: color-mix(in srgb, var(--brand-cyan) 80%, black);
   color: var(--color-text-light);
   text-decoration: none;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background-color: transparent;
+  color: var(--brand-cyan-text);
+  border: 1px solid var(--brand-cyan);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background-color: color-mix(in srgb, var(--brand-cyan) 10%, transparent);
+  color: var(--brand-cyan);
+  text-decoration: none;
+}
+
+/* Accent Button */
+.btn-accent {
+  background-color: var(--brand-orange);
+  color: var(--color-text-light);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn-accent:hover {
+  background-color: color-mix(in srgb, var(--brand-orange) 80%, black);
+  color: var(--color-text-light);
+  text-decoration: none;
+}
+
+/* Text Classes for Brand Colors */
+.text-brand-blue {
+  color: var(--brand-blue-text);
+}
+
+.text-brand-cyan {
+  color: var(--brand-cyan-text);
+}
+
+.text-brand-orange {
+  color: var(--brand-orange-text);
 }
