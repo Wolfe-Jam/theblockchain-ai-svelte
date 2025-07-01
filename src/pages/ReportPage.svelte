@@ -92,7 +92,7 @@
       opacity: 0.9,
       velocityX: (Math.random() - 0.5) * 2, // Slower velocity
       velocityY: (Math.random() - 0.5) * 2,
-      color: ['#FF914D', '#0CC0DF', '#2563EB'][Math.floor(Math.random() * 3)]
+      color: ['#FF914D', '#0CC0DF', '#004AAE'][Math.floor(Math.random() * 3)]
     };
   }
   
@@ -510,7 +510,7 @@
   :root {
     --brand-orange: #FF914D;
     --brand-cyan: #0CC0DF;
-    --brand-blue: #2563EB;      /* Universal Blue - upgraded for readability */
+    --brand-blue: #004AAE;      /* Blockchain Blue - exact brand color */
   }
 
   .container {

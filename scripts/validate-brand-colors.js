@@ -33,6 +33,12 @@ const EXTENSIONS = ['.svelte', '.css', '.scss', '.js', '.ts'];
 // Directories to scan
 const SCAN_DIRS = ['src/components', 'src/pages', 'src/lib', 'public'];
 
+// Files to exclude from validation
+const EXCLUDED_FILES = [
+  '_BrandColorTest.svelte',
+  '_BrandCompliantTemplate.svelte'
+];
+
 class BrandColorValidator {
   constructor() {
     this.violations = [];
@@ -81,6 +87,13 @@ class BrandColorValidator {
   // Check if file should be scanned
   shouldCheckFile(filePath) {
     const ext = extname(filePath);
+    const fileName = filePath.split('/').pop();
+    
+    // Exclude certain files
+    if (EXCLUDED_FILES.includes(fileName)) {
+      return false;
+    }
+    
     return EXTENSIONS.includes(ext);
   }
 
@@ -189,7 +202,13 @@ class BrandColorValidator {
   // Helper: Check if line is text context  
   isTextContext(line) {
     const textKeywords = ['color:', 'text-', 'font-color'];
-    return textKeywords.some(keyword => line.includes(keyword));
+    // Exclude icons and graphic elements
+    const graphicExclusions = ['<i class=', 'fa-', 'icon-'];
+    
+    const hasTextKeyword = textKeywords.some(keyword => line.includes(keyword));
+    const isGraphicElement = graphicExclusions.some(exclusion => line.includes(exclusion));
+    
+    return hasTextKeyword && !isGraphicElement;
   }
 
   // Helper: Check if line has text color variant

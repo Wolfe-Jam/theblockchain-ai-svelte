@@ -119,13 +119,13 @@
 
   /* Highlight Spans */
   :global(.highlight-problem) {
-    color: #0CC0DF;
-    text-shadow: 0 0 8px rgba(12, 192, 223, 0.5);
+    color: #06B6D4;  /* Cyan-500 for readable text */
+    text-shadow: 0 0 8px rgba(6, 182, 212, 0.5);
   }
 
   :global(.highlight-trust) {
-    color: #FF914D;
-    text-shadow: 0 0 8px rgba(255, 145, 77, 0.5);
+    color: #EA580C;  /* Orange-600 for readable text */
+    text-shadow: 0 0 8px rgba(234, 88, 12, 0.5);
   }
 
   :global(.highlight-solution-cyan) {

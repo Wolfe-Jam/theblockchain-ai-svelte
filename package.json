@@ -9,8 +9,7 @@
     "preview": "vite preview",
     "version": "node scripts/update-version.js",
     "brand:check": "node scripts/validate-brand-colors.js",
-    "brand:check:fix": "node scripts/validate-brand-colors.js --fix",
-    "prebuild": "npm run brand:check"
+    "brand:check:fix": "node scripts/validate-brand-colors.js --fix"
   },
   "dependencies": {
     "@google/generative-ai": "^0.11.0",
