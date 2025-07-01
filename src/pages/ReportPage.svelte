@@ -338,7 +338,8 @@
     </div>
     
     <h2 class="main-headline">
-      Building an <br><span class="highlight-orange">Unassailable Position</span>
+      Building an <br><span class="highlight-orange">Unassailable Position</span><br>
+      <span class="highlight-cyan">with the 3 PILLARS</span>
     </h2>
     
     <ul class="intro-list">
@@ -377,7 +378,7 @@
   <!-- Three Pillars Section -->
   <section class="pillars-section">
     <div class="section-header">
-      <h2>The Three Strategic Pillars</h2>
+      <h2>The 3 Strategic Pillars</h2>
       <p>These three foundational pillars–<span class="highlight-blue">The Blockchain</span>, The <span class="highlight-cyan">OUTPUT</span> Marketplace, and <span class="highlight-orange">Code-In-Action (CIA)</span>: Custom, Intelligent Automation–converge to create our unassailable strategic position, represented by our logo.</p>
       
       <!-- Strategic Pillars Logo -->

@@ -179,6 +179,11 @@
           
           <div class="features-grid">
             <div class="feature-row">
+              <span class="feature-text">AI Automation</span>
+              <span class="feature-separator">|</span>
+              <span class="feature-text">Developer Monetization</span>
+            </div>
+            <div class="feature-row">
               <img 
                 src="https://raw.githubusercontent.com/Wolfe-Jam/theblockchain-ai/main/Public/theBlockchain-ai-crop-sml.svg" 
                 alt="theBlockchain.ai" 
@@ -190,16 +195,12 @@
               >
               <span class="feature-text">Verifiable Trust</span>
             </div>
-            <div class="feature-row">
-              <span class="feature-text">AI Automation</span>
-              <span class="feature-separator">|</span>
-              <span class="feature-text">Developer Monetization</span>
-            </div>
           </div>
         </div>
         
         <div class="about-footer">
           <p>&copy; 2025 theBlockchain.ai</p>
+          <p>Building the Future of Trusted AI</p>
         </div>
       </div>
     </div>
@@ -354,7 +355,7 @@
   .features-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1.25rem;
     align-items: center;
   }
 

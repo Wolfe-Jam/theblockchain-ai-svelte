@@ -9,6 +9,10 @@
   import ReportPage from './pages/ReportPage.svelte';
   import InvestPage from './pages/InvestPage.svelte';
   import FAQsPage from './pages/FAQsPage.svelte';
+  import BriefingsPage from './pages/BriefingsPage.svelte';
+  import ToolsPage from './pages/ToolsPage.svelte';
+  import ConvergentEconomyPage from './pages/deep-dive/ConvergentEconomyPage.svelte';
+  import GlossaryPage from './pages/GlossaryPage.svelte';
   
   // Basic routing logic (will be expanded later with a proper router)
   let currentPath = window.location.pathname;
@@ -36,6 +40,14 @@
       <HomePage />
     {:else if currentPath === '/vision'}
       <VisionPage />
+    {:else if currentPath === '/briefings'}
+      <BriefingsPage />
+    {:else if currentPath === '/deep-dive/the-convergent-economy'}
+      <ConvergentEconomyPage />
+    {:else if currentPath === '/tools'}
+      <ToolsPage />
+    {:else if currentPath === '/glossary'}
+      <GlossaryPage />
     {:else if currentPath === '/report'}
       <ReportPage />
     {:else if currentPath === '/invest'}

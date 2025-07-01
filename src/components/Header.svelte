@@ -10,6 +10,32 @@
   let sequenceTriggered = false; // Track if home page sequence completed
   let mobileMenuOpen = false; // Track mobile menu state
   let isDesktop = true; // Will be set properly in onMount
+  let visionDropdownOpen = false; // Track vision dropdown state
+  let visionHoverTimeout; // Track hover timeout
+  let resourceDropdownOpen = false; // Track resource dropdown state
+  let resourceHoverTimeout; // Track hover timeout
+  
+  function showVisionDropdown() {
+    clearTimeout(visionHoverTimeout);
+    visionDropdownOpen = true;
+  }
+  
+  function hideVisionDropdown() {
+    visionHoverTimeout = setTimeout(() => {
+      visionDropdownOpen = false;
+    }, 150); // Small delay to allow mouse movement
+  }
+  
+  function showResourceDropdown() {
+    clearTimeout(resourceHoverTimeout);
+    resourceDropdownOpen = true;
+  }
+  
+  function hideResourceDropdown() {
+    resourceHoverTimeout = setTimeout(() => {
+      resourceDropdownOpen = false;
+    }, 150); // Small delay to allow mouse movement
+  }
   
   // Reactive: Ensure header stays visible on mobile or when mobile menu is open
   $: if (!isDesktop || mobileMenuOpen) {
@@ -32,6 +58,7 @@
   
   function toggleMobileMenu() {
     mobileMenuOpen = !mobileMenuOpen;
+    visionDropdownOpen = false; // Close vision dropdown when opening mobile menu
     // Force header to stay visible when mobile menu is open
     if (mobileMenuOpen) {
       showHeader = true;
@@ -40,10 +67,19 @@
   
   function closeMobileMenu() {
     mobileMenuOpen = false;
+    visionDropdownOpen = false; // Close vision dropdown too
     // On mobile, keep header visible even after closing menu
     if (!isDesktop) {
       showHeader = true;
     }
+  }
+  
+  function toggleVisionDropdown() {
+    visionDropdownOpen = !visionDropdownOpen;
+  }
+  
+  function closeVisionDropdown() {
+    visionDropdownOpen = false;
   }
   
   onMount(() => {
@@ -60,24 +96,28 @@
     }
     
     const handleMouseMove = (e) => {
-      // CRITICAL: Only apply auto-hide logic on desktop AND when mobile menu is closed
+      // CRITICAL: Only apply auto-hide logic on HOME PAGE and when mobile menu is closed
       if (!isDesktop || mobileMenuOpen) return;
       
-      // Show header when mouse is in top 100px of screen OR on content pages OR sequence completed on home
-      const contentPages = ['/report', '/vision', '/invest'];
+      // NEVER hide header when any dropdown is open
+      if (visionDropdownOpen || resourceDropdownOpen) return;
+      
+      // Show header when mouse is in top 100px OR on content pages (always visible) OR sequence completed on home
+      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs'];
       showHeader = e.clientY <= 100 || contentPages.includes(currentPath) || (currentPath === '/' && sequenceTriggered);
     };
     
     const handleKeyDown = (e) => {
-      // Toggle header on spacebar (except on content pages where it should stay visible)
-      const contentPages = ['/report', '/vision', '/invest'];
+      // Toggle header on spacebar (ONLY works on home page - content pages always show header)
+      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs'];
       if (e.key === ' ' && !contentPages.includes(currentPath) && isDesktop) {
         e.preventDefault();
         showHeader = !showHeader;
       }
-      // Close mobile menu on Escape
+      // Close mobile menu and dropdowns on Escape
       if (e.key === 'Escape') {
         mobileMenuOpen = false;
+        visionDropdownOpen = false;
       }
     };
     
@@ -85,13 +125,21 @@
       // Close mobile menu on resize (when switching to desktop)
       if (window.innerWidth >= 768) {
         mobileMenuOpen = false;
+        visionDropdownOpen = false;
       }
       // Re-detect device type on resize
       isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     };
     
-    // Always show header on content pages OR on mobile devices
-    const contentPages = ['/report', '/vision', '/invest'];
+    const handleClickOutside = (e) => {
+      // Close vision dropdown when clicking outside
+      if (visionDropdownOpen && !e.target.closest('.dropdown')) {
+        visionDropdownOpen = false;
+      }
+    };
+    
+    // Force header to always show on content pages, hide only on home page
+    const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs'];
     if (contentPages.includes(currentPath) || !isDesktop) {
       showHeader = true;
     }
@@ -100,11 +148,12 @@
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('resize', handleResize);
+    window.addEventListener('click', handleClickOutside);
     
-    // Listen for path changes
+    // Listen for path changes - force header visible on content pages
     window.addEventListener('popstate', () => {
       currentPath = window.location.pathname;
-      const contentPages = ['/report', '/vision', '/invest'];
+      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs'];
       if (contentPages.includes(currentPath) || !isDesktop) {
         showHeader = true;
       } else if (currentPath !== '/') {
@@ -112,11 +161,11 @@
       }
     });
     
-    // Listen for show header event from home page sequence
+    // Listen for show header event from home page animation sequence
     window.addEventListener('showHeader', () => {
       if (currentPath === '/' || !isDesktop) {
         showHeader = true;
-        sequenceTriggered = true; // Keep header available after sequence
+        sequenceTriggered = true; // Keep header available after home page sequence
       }
     });
     
@@ -124,6 +173,7 @@
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('click', handleClickOutside);
     };
   });
 </script>
@@ -140,8 +190,49 @@
         <!-- Desktop Navigation -->
         <div class="nav-links desktop-nav">
             <a href="/" on:click={closeMobileMenu}>Home</a>
-            <a href="/vision" on:click={closeMobileMenu}>Vision</a>
-            <a href="/report" on:click={closeMobileMenu}>Deep Dive</a>
+            
+            <!-- Vision Dropdown -->
+            <div class="dropdown" class:open={visionDropdownOpen}
+                 on:mouseenter={showVisionDropdown}
+                 on:mouseleave={hideVisionDropdown}>
+              <a href="/report" class="dropdown-trigger">
+                Vision 
+                <svg class="dropdown-arrow" class:rotated={visionDropdownOpen} width="12" height="12" viewBox="0 0 12 12">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+              </a>
+              
+              {#if visionDropdownOpen}
+                <div class="dropdown-menu">
+                  <a href="/report" on:click={closeVisionDropdown}>The 3 Pillars</a>
+                  <a href="/briefings" on:click={closeVisionDropdown}>Briefings</a>
+                  <a href="/deep-dive/the-convergent-economy" on:click={closeVisionDropdown}>Deep Dives</a>
+                </div>
+              {/if}
+            </div>
+            
+            <a href="/tools" on:click={closeMobileMenu}>Tools</a>
+            
+            <!-- Resource Dropdown -->
+            <div class="dropdown" class:open={resourceDropdownOpen}
+                 on:mouseenter={showResourceDropdown}
+                 on:mouseleave={hideResourceDropdown}>
+              <a href="#" class="dropdown-trigger">
+                Resource 
+                <svg class="dropdown-arrow" class:rotated={resourceDropdownOpen} width="12" height="12" viewBox="0 0 12 12">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+              </a>
+              
+              {#if resourceDropdownOpen}
+                <div class="dropdown-menu">
+                  <a href="#" on:click={openAbout}>About</a>
+                  <a href="/glossary" on:click={closeResourceDropdown}>Glossary</a>
+                  <a href="/faqs" on:click={closeResourceDropdown}>FAQs</a>
+                </div>
+              {/if}
+            </div>
+            
             <a href="/invest" on:click={closeMobileMenu}>Invest</a>
             <button type="button" class="ask-ai-link" on:click={openAskAI}>Ask AI 🤖</button>
         </div>
@@ -167,8 +258,24 @@
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div class="mobile-menu" on:click|stopPropagation>
                 <a href="/" on:click={closeMobileMenu}>Home</a>
-                <a href="/vision" on:click={closeMobileMenu}>Vision</a>
-                <a href="/report" on:click={closeMobileMenu}>Deep Dive</a>
+                
+                <!-- Vision Section -->
+                <div class="mobile-section">
+                  <div class="mobile-section-title">Vision</div>
+                  <a href="/briefings" on:click={closeMobileMenu}>Briefings</a>
+                  <a href="/deep-dive/the-convergent-economy" on:click={closeMobileMenu}>Deep Dives</a>
+                </div>
+                
+                <a href="/tools" on:click={closeMobileMenu}>Tools</a>
+                
+                <!-- Resource Section -->
+                <div class="mobile-section">
+                  <div class="mobile-section-title">Resource</div>
+                  <a href="#" on:click={openAbout}>About</a>
+                  <a href="/glossary" on:click={closeMobileMenu}>Glossary</a>
+                  <a href="/faqs" on:click={closeMobileMenu}>FAQs</a>
+                </div>
+                
                 <a href="/invest" on:click={closeMobileMenu}>Invest</a>
                 <button type="button" class="ask-ai-mobile" on:click={openAskAI}>Ask AI 🤖</button>
             </div>
@@ -257,6 +364,84 @@
   .nav-links a:hover,
   .ask-ai-link:hover {
     color: white;
+  }
+
+  /* Vision Dropdown Styles */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-trigger {
+    color: #cbd5e1;
+    font-weight: 500;
+    margin-left: 2rem;
+    transition: color 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .dropdown-trigger:hover {
+    color: white;
+  }
+
+  .dropdown-icon {
+    display: inline-block;
+    margin-left: 0.25rem;
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+
+  .dropdown-arrow {
+    transition: transform 0.2s ease;
+  }
+
+  .dropdown-arrow.rotated {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.95);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    min-width: 160px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    z-index: 60;
+    margin-top: 0.5rem;
+    animation: dropdownSlide 0.2s ease;
+  }
+
+  .dropdown-menu a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+
+  .dropdown-menu a:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  @keyframes dropdownSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Mobile Menu Button */
@@ -353,6 +538,27 @@
   .mobile-menu a:hover,
   .ask-ai-mobile:hover {
     color: white;
+  }
+
+  /* Mobile Vision Section */
+  .mobile-section {
+    margin: 0.5rem 0;
+  }
+
+  .mobile-section-title {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0.5rem;
+  }
+
+  .mobile-section a {
+    padding-left: 1rem;
+    font-size: 0.9rem;
   }
 
   /* Animations */
