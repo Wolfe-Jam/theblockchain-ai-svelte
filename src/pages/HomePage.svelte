@@ -91,16 +91,45 @@
     easing: quintOut
   });
   
+  let titleHoverTimer = null;
+  let titleHoverStartTime = null;
+  
   function handleTitleHover() {
     titleHovered = true;
+    titleHoverStartTime = Date.now();
     titleOpacity.set(1);
     subTitleOpacity.set(0.9);
+    
+    // Clear any existing timer
+    if (titleHoverTimer) {
+      clearTimeout(titleHoverTimer);
+      titleHoverTimer = null;
+    }
   }
   
   function handleTitleLeave() {
-    titleHovered = false;
-    titleOpacity.set(0.3);
-    subTitleOpacity.set(0);
+    if (!titleHoverStartTime) return;
+    
+    const elapsedTime = Date.now() - titleHoverStartTime;
+    const minimumHoverTime = 1000; // 1 second minimum
+    
+    if (elapsedTime >= minimumHoverTime) {
+      // Enough time has passed, turn off immediately
+      titleHovered = false;
+      titleOpacity.set(0.3);
+      subTitleOpacity.set(0);
+      titleHoverStartTime = null;
+    } else {
+      // Not enough time, set timer to turn off after minimum time
+      const remainingTime = minimumHoverTime - elapsedTime;
+      titleHoverTimer = setTimeout(() => {
+        titleHovered = false;
+        titleOpacity.set(0.3);
+        subTitleOpacity.set(0);
+        titleHoverStartTime = null;
+        titleHoverTimer = null;
+      }, remainingTime);
+    }
   }
   
   function scrollToFacts() {
@@ -281,8 +310,16 @@
     on:mouseenter={handleTitleHover}
     on:mouseleave={handleTitleLeave}
   >
-    <h1 class="main-title" style="opacity: {$titleOpacity}">theBlockchain.ai</h1>
-    <p class="sub-title" style="opacity: {$subTitleOpacity}">The Economic Layer for Open-Source</p>
+    <!-- Combined text block using subtitle's working behavior -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="title-text-block"
+         on:mouseenter={handleTitleHover}
+         on:mouseleave={handleTitleLeave}
+         on:click={scrollToBoats}>
+      <h1 class="main-title" style="opacity: {$titleOpacity}">theBlockchain.ai</h1>
+      <p class="sub-title" style="opacity: {$subTitleOpacity}">The Economic Layer for Open-Source</p>
+    </div>
   </div>
   
   <!-- Original White Arrow - Crossfade out when clicked -->
@@ -501,13 +538,6 @@
   </div>
 {/if}
 
-<!-- Serenity Boat - Back to Top -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="serenity-boat" on:click={scrollToSerenity} title="Back to Serenity">
-  <i class="fas fa-sailboat"></i>
-</div>
-
 <style>
   /* Scene Container Styles */
   .scene-container {
@@ -596,7 +626,7 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    z-index: 6;
+    z-index: 15; /* Higher than title-container (z-index: 10) */
   }
 
     .boat {
@@ -612,7 +642,11 @@
 
   .boat:nth-child(1) { color: #777777; } /* Lighter grey pair */
   .boat:nth-child(2) { color: #555555; } /* Darker grey pair */
-  .boat:nth-child(3) { color: #333333; } /* Center boat unchanged */
+  .boat:nth-child(3) { 
+    color: #333333; /* Center boat unchanged */
+    z-index: 20; /* Much higher than title container (z-index: 10) */
+    position: relative; /* Ensure z-index works */
+  }
   .boat:nth-child(4) { color: #555555; } /* Darker grey pair */
   .boat:nth-child(5) { color: #777777; } /* Lighter grey pair */
 
@@ -660,6 +694,7 @@
     z-index: 10;
     text-align: center;
     cursor: pointer;
+    padding: 2rem 3rem; /* Expand hover area for more stable interaction */
   }
 
   .main-title {
@@ -1034,36 +1069,7 @@
     text-align: center;
   }
 
-  /* Serenity Boat - Back to Top */
-  .serenity-boat {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 3rem;
-    height: 3rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0.5;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
 
-  .serenity-boat:hover {
-    opacity: 0.8;
-    transform: scale(1.1);
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-
-  .serenity-boat i {
-    color: white;
-    font-size: 1.2rem;
-  }
 
   /* Responsive */
   @media (max-width: 768px) {

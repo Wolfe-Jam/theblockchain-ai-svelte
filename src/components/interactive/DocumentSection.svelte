@@ -82,8 +82,6 @@
     margin-bottom: 3rem;
     line-height: 1.6;
     max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
   }
   
   .section-body {

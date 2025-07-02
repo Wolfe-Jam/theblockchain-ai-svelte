@@ -9,6 +9,7 @@
   import AIBlockchainFlywheel from '../../components/interactive/AIBlockchainFlywheel.svelte';
   import ERC1155Visualization from '../../components/interactive/ERC1155Visualization.svelte';
   import StrategicOutlook from '../../components/interactive/StrategicOutlook.svelte';
+  import SceneOverlay from '../../components/SceneOverlay.svelte';
   
   // Document sections for navigation
   const sections = [
@@ -22,6 +23,13 @@
   ];
   
   let currentSection = '';
+  
+  // Scene overlay control
+  let isOverlayVisible = false;
+  
+  function showOverlay() {
+    isOverlayVisible = true;
+  }
   
   onMount(() => {
     // Initialize smooth scrolling
@@ -53,6 +61,13 @@
     <!-- <OceanOfOpenSource /> - Temporarily hidden as requested -->
     <div class="placeholder-container">
       <img src="/theBlockchain-ai-landscape.png" alt="theBlockchain.ai Landscape" class="placeholder-image" />
+      
+      <!-- Scene overlay trigger boat icon -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="scene-boat-trigger" on:click={showOverlay}>
+        <i class="fas fa-sailboat"></i>
+      </div>
     </div>
   </section>
 
@@ -78,7 +93,7 @@
           <p>AI, software, and blockchain markets projected to command massive value by early 2030s</p>
         </div>
         <div class="insight-card">
-          <h3>40% CAGR for Blockchain AI</h3>
+          <h3>40.0% CAGR for Blockchain AI</h3>
           <p>The convergent market shows exponential growth, outpacing individual sectors</p>
         </div>
         <div class="insight-card">
@@ -107,24 +122,24 @@
       <h3>The Artificial Intelligence Market</h3>
       <p>
         The global AI market is undergoing explosive growth, transforming virtually every 
-        industry. Precedence Research calculates the AI market at <strong>$757.58 billion 
-        in 2025</strong>, projecting it will soar to <strong>$3.68 trillion by 2034</strong>, 
-        reflecting a robust CAGR of 19.20%.
+        industry. Precedence Research estimates the AI market at <strong>$757.6 billion 
+        in 2025</strong>, projecting it will soar to <strong>$3.7 trillion by 2034</strong>, 
+        reflecting a robust CAGR of 19.2%.
       </p>
       
       <h3>The Software Development Engine</h3>
       <p>
         The software development market is a mature cornerstone of the global economy. 
         Valued at <strong>$570 billion in 2025</strong>, it's forecast to reach 
-        <strong>$1.04 trillion by 2030</strong> at a steady CAGR of 12.90%. The custom 
-        software segment shows particularly rapid growth at 22.71% CAGR.
+        <strong>$1.0 trillion by 2030</strong> at a steady CAGR of 12.9%. The custom 
+        software segment shows particularly rapid growth at 22.7% CAGR.
       </p>
       
       <h3>The Blockchain Infrastructure Market</h3>
       <p>
         While the smallest in absolute terms, blockchain shows exponential growth rates. 
-        The market will grow from <strong>$31.18 billion in 2025</strong> to 
-        <strong>$393.42 billion by 2032</strong>, exhibiting a powerful CAGR of 43.6%.
+        The market will grow from <strong>$31.2 billion in 2025</strong> to 
+        <strong>$393.4 billion by 2032</strong>, exhibiting a powerful CAGR of 43.6%.
       </p>
     </div>
   </DocumentSection>
@@ -148,8 +163,8 @@
       <h3>Quantifying the Blockchain AI Market</h3>
       <p>
         The specific "Blockchain AI" market shows hyper-growth, expanding from 
-        <strong>$1.12 billion in 2025</strong> to <strong>$5.38 billion by 2030</strong> 
-        at a CAGR of 37.18%. This growth rate exceeds standalone AI markets, suggesting 
+        <strong>$1.1 billion in 2025</strong> to <strong>$5.4 billion by 2030</strong> 
+        at a CAGR of 37.2%. This growth rate exceeds standalone AI markets, suggesting 
         a significant "value-add" premium for trustworthy, verifiable AI.
       </p>
       
@@ -257,7 +272,7 @@
     <div class="tokenization-stats">
       <div class="stat-card">
         <h3>$16.1 Trillion</h3>
-        <p>Projected value of tokenized assets by 2030 (10% of global GDP)</p>
+        <p>Projected value of tokenized assets by 2030 (10.0% of global GDP)</p>
       </div>
       <div class="stat-card">
         <h3>26.8% CAGR</h3>
@@ -434,13 +449,16 @@ const aiAgentToken = {
         <a href="/tools" class="btn-primary">
           Try Smart Contract Generator
         </a>
-        <a href="/deep-dive" class="btn-secondary">
+        <a href="/deep-dive/the-convergent-economy" class="btn-secondary">
           Explore More Deep Dives
         </a>
       </div>
     </div>
   </section>
 </div>
+
+<!-- Scene Overlay Component -->
+<SceneOverlay bind:visible={isOverlayVisible} />
 
 <style>
   .convergent-economy-page {
@@ -510,6 +528,8 @@ const aiAgentToken = {
   
   .hero-subtitle {
     font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
   }
 
   .placeholder-container {
@@ -565,7 +585,7 @@ const aiAgentToken = {
   
   .insight-card p {
     margin: 0;
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.85);
   }
   
   /* Section Styling */
@@ -625,7 +645,7 @@ const aiAgentToken = {
   
   .synergy-box li {
     padding: 0.5rem 0;
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.85);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
   
@@ -665,7 +685,7 @@ const aiAgentToken = {
   }
   
   .principle-card p {
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.6;
   }
   
@@ -721,7 +741,7 @@ const aiAgentToken = {
   
   .stat-card p {
     margin: 0;
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.85);
   }
   
   /* Model Grid */
@@ -746,8 +766,7 @@ const aiAgentToken = {
   }
   
   .model-card p {
-    margin: 0;
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.6;
   }
   
@@ -854,7 +873,7 @@ const aiAgentToken = {
   
   .risk-card p {
     margin: 0;
-    color: var(--color-text-muted);
+    color: rgba(255, 255, 255, 0.85);
     line-height: 1.6;
   }
   
@@ -949,44 +968,131 @@ const aiAgentToken = {
     transform: translateY(-2px);
   }
   
+  /* Scene Boat Trigger - positioned over the landscape image */
+  .placeholder-container {
+    position: relative;
+  }
+  
+  .scene-boat-trigger {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 10;
+  }
+  
+  .scene-boat-trigger:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .scene-boat-trigger i {
+    color: white;
+    font-size: 1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  
   /* Responsive Design */
   @media (max-width: 768px) {
     .hero-title {
       font-size: 2.5rem;
+      line-height: 1.2;
+      padding: 0 1rem;
     }
     
     .hero-subtitle {
       font-size: 1.125rem;
+      padding: 0 1rem;
+      line-height: 1.5;
     }
     
     .key-insights {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 0 1rem;
     }
     
     .trust-principles {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
     }
     
     .model-grid {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
     }
     
     .synergy-grid {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
     }
     
     .risk-grid {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
     }
     
     .cta-buttons {
       flex-direction: column;
       align-items: center;
+      gap: 1rem;
     }
     
     .btn-primary, .btn-secondary {
       width: 100%;
       max-width: 300px;
+      min-height: 48px; /* Touch-friendly height */
+      font-size: 1rem;
+    }
+    
+    .placeholder-container {
+      margin: 1rem;
+      padding: 1rem;
+    }
+  }
+  
+  /* Extra small screens */
+  @media (max-width: 480px) {
+    .hero-title {
+      font-size: 2rem;
+      padding: 0 0.5rem;
+    }
+    
+    .hero-subtitle {
+      font-size: 1rem;
+      padding: 0 0.5rem;
+    }
+    
+    .key-insights {
+      padding: 0 0.5rem;
+      gap: 1rem;
+    }
+    
+    .insight-card, .principle-card, .model-card, .synergy-box, .risk-card {
+      padding: 1rem;
+    }
+    
+    .placeholder-container {
+      margin: 0.5rem;
+      padding: 0.5rem;
+    }
+    
+    .btn-primary, .btn-secondary {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
     }
   }
 </style>

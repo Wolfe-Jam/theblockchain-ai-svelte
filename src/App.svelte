@@ -4,6 +4,7 @@
   import Footer from './components/Footer.svelte';
   import AskAIModal from './components/AskAIModal.svelte';
   import AboutModal from './components/AboutModal.svelte';
+  import SerenityBoat from './components/SerenityBoat.svelte';
   import HomePage from './pages/HomePage.svelte';
   import VisionPage from './pages/VisionPage.svelte';
   import ReportPage from './pages/ReportPage.svelte';
@@ -68,6 +69,9 @@
   <Footer on:openAbout={handleOpenAbout} />
   <AskAIModal bind:isOpen={showAskAI} />
   <AboutModal bind:isOpen={showAbout} />
+  {#if currentPath !== '/deep-dive/the-convergent-economy'}
+    <SerenityBoat />
+  {/if}
 </div>
 
 <style lang="postcss">
