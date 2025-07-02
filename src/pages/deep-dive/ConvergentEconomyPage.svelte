@@ -50,7 +50,10 @@
         and the Unifying Role of Tokenization
       </p>
     </div>
-    <OceanOfOpenSource />
+    <!-- <OceanOfOpenSource /> - Temporarily hidden as requested -->
+    <div class="placeholder-container">
+      <img src="/theBlockchain-ai-landscape.png" alt="theBlockchain.ai Landscape" class="placeholder-image" />
+    </div>
   </section>
 
   <!-- Executive Summary -->
@@ -182,6 +185,8 @@
       blockchain offers a new paradigm for establishing trust—not as a replacement for 
       AI or software, but as the foundational layer for a more secure digital economy.
     </p>
+    
+
     
     <div class="trust-principles">
       <div class="principle-card">
@@ -454,7 +459,7 @@ const aiAgentToken = {
   /* Hero Section */
   .hero-section {
     position: relative;
-    min-height: 100vh;
+    min-height: 100dvh; /* Use dynamic viewport height for mobile compatibility */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -505,10 +510,24 @@ const aiAgentToken = {
   
   .hero-subtitle {
     font-size: 1.25rem;
-    color: var(--color-text-muted);
-    max-width: 600px;
-    margin: 0 auto 2rem auto;
-    line-height: 1.6;
+  }
+
+  .placeholder-container {
+    width: 100%;
+    max-width: 1200px; /* Match the intended animation size */
+    margin: 2rem auto 0;
+    padding: 1rem;
+    background: rgba(0, 26, 61, 0.5);
+    border: 1px solid rgba(12, 192, 223, 0.2);
+    border-radius: 8px;
+  }
+
+  .placeholder-image {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    display: block;
+    opacity: 0.85;
   }
   
   /* Executive Summary */

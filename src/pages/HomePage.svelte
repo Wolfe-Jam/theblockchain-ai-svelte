@@ -513,7 +513,7 @@
   .scene-container {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100dvh; /* Use dynamic viewport height for better mobile compatibility */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -599,7 +599,7 @@
     z-index: 6;
   }
 
-  .boat {
+    .boat {
     font-size: 1.75rem;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -654,9 +654,9 @@
 
   .title-container {
     position: absolute;
-    top: 5.25rem;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     z-index: 10;
     text-align: center;
     cursor: pointer;
@@ -1072,7 +1072,7 @@
     }
     
     .scene-container {
-      height: 80vh;
+      height: 80dvh; /* Use dynamic viewport height */
     }
     
     .accordion-header h2 {

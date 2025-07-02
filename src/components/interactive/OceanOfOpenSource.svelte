@@ -151,12 +151,14 @@
 <style>
   .ocean-container {
     position: relative;
-    width: 100%;
-    height: 500px;
-    min-height: 400px;
-    overflow: hidden;
+    width: 1200px; /* Fixed width for stable review */
+    max-width: 100%; /* Prevent overflow on smaller screens */
+    height: 600px;   /* Fixed height for stable review */
+    margin: 2rem auto 0; /* Center the container */
+    /* overflow: hidden; */
     background: linear-gradient(to bottom, transparent, #001a3d 20%, #000d1a);
-    margin-top: 2rem;
+    border: 1px solid rgba(12, 192, 223, 0.3); /* Add border to show container bounds */
+    border-radius: 8px;
   }
   
   .ocean-svg {
