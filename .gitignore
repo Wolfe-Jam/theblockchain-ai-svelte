@@ -92,9 +92,17 @@ build-*.sh
 .DS_Store
 node_modules/.DS_Store
 
-# LaTeX source variants
+# LaTeX source variants and utilities
 convergent-economy-simple.tex
 convergent-economy-simplified.tex
+INSTALL-LATEX-TERMINAL.txt
+POST-INSTALL-GUIDE.txt
+compile-options.sh
+diagnose-latex.py
+fix-latex-lists.py
+install-latex-info.sh
+setup-latex.sh
+latex-preview-sample.tex
 
 # Marketing & Strategy (Private)
 *.md
