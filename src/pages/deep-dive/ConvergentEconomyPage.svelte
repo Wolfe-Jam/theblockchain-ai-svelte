@@ -27,8 +27,8 @@
   // Scene overlay control
   let isOverlayVisible = false;
   
-  function showOverlay() {
-    isOverlayVisible = true;
+  function toggleOverlay() {
+    isOverlayVisible = !isOverlayVisible;
   }
   
   onMount(() => {
@@ -46,29 +46,48 @@
   <ScrollProgress showPercentage={true} />
   <NavigationSidebar {sections} bind:currentSection />
   
-  <!-- Hero Section with Ocean of Open-Source -->
+  <!-- Hero Section -->
   <section class="hero-section">
-    <div class="hero-content">
-      <h1 class="hero-title">
-        <span class="hero-label">DEEP Dive</span>
-        <span class="hero-main">The Convergent Economy</span>
-      </h1>
-      <p class="hero-subtitle">
-        Market Analysis of AI, Software, and Blockchain<br/>
-        and the Unifying Role of Tokenization
-      </p>
-    </div>
-    <!-- <OceanOfOpenSource /> - Temporarily hidden as requested -->
-    <div class="placeholder-container">
-      <img src="/theBlockchain-ai-landscape.webp" alt="theBlockchain.ai Landscape" class="placeholder-image" />
+    <!-- DEEP DIVE Label at the very top -->
+    <div class="deep-dive-label">DEEP DIVE</div>
+    
+    <!-- Landscape Image with Overlay -->
+    <div class="landscape-container">
+      <img 
+        src="/theBlockchain-ai-landscape.webp" 
+        alt="The Convergent Economy: AI, Software, and Blockchain Intersection" 
+        class="landscape-image" 
+      />
       
-      <!-- Scene overlay trigger boat icon -->
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="scene-boat-trigger" on:click={showOverlay}>
-        <i class="fas fa-sailboat"></i>
+      <!-- Scene overlay and trigger boat icon -->
+      <div class="scene-boat-wrapper">
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div 
+          class="scene-boat-trigger" 
+          class:active={isOverlayVisible}
+          on:click={toggleOverlay}
+          role="button"
+          tabindex="0"
+          on:keydown={e => e.key === 'Enter' && toggleOverlay()}
+        >
+          <i class="fas fa-sailboat"></i>
+        </div>
+        <SceneOverlay bind:visible={isOverlayVisible} />
       </div>
     </div>
+    
+    <!-- Title -->
+    <h1 class="page-title">The Convergent Economy</h1>
+    
+    <!-- Subtitle -->
+    <p class="page-subtitle">
+      Market Analysis of AI, Software, and Blockchain<br/>
+      and the Unifying Role of Tokenization
+    </p>
+    
+    <!-- Divider -->
+    <div class="divider"></div>
   </section>
 
   <!-- Executive Summary -->
@@ -457,9 +476,6 @@ const aiAgentToken = {
   </section>
 </div>
 
-<!-- Scene Overlay Component -->
-<SceneOverlay bind:visible={isOverlayVisible} />
-
 <style>
   .convergent-economy-page {
     min-height: 100vh;
@@ -477,53 +493,75 @@ const aiAgentToken = {
   /* Hero Section */
   .hero-section {
     position: relative;
-    min-height: 100dvh; /* Use dynamic viewport height for mobile compatibility */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background: linear-gradient(to bottom, #001a3d, var(--color-background-dark));
-    overflow: hidden;
-    padding: 2rem 0;
-  }
-  
-  .hero-content {
     text-align: center;
-    padding: 4rem 2rem 2rem 2rem;
-    z-index: 10;
-    position: relative;
-    margin-bottom: 2rem;
+    padding: 2rem 1rem;
+    background: linear-gradient(to bottom, #001a3d, var(--color-background-dark));
+    margin-top: 60px;
   }
   
-  .hero-label {
-    display: block;
+  .deep-dive-label {
     font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--brand-cyan);
-    text-transform: uppercase;
+    font-weight: 700;
     letter-spacing: 0.2em;
-    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    color: var(--brand-cyan);
+    margin: 0 0 1.5rem 0;
+    padding: 0.5rem 0;
+    position: relative;
+    display: inline-block;
   }
   
-  .hero-title {
-    font-size: 3.5rem;
+  .deep-dive-label::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--brand-cyan);
+    opacity: 0.6;
+  }
+  
+  .deep-dive-label::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--brand-cyan);
+    opacity: 0.6;
+  }
+  
+  .page-title {
+    font-size: 3rem;
     font-weight: 800;
-    margin: 0 0 2rem 0;
-    line-height: 1.3;
-    padding-bottom: 0.5rem;
-  }
-  
-  @media (min-width: 768px) {
-    .hero-title {
-      font-size: 4.5rem;
-    }
-  }
-  
-  .hero-main {
-    display: block;
-    background: linear-gradient(135deg, var(--brand-cyan), var(--brand-blue));
+    margin: 2rem 0 1rem;
+    line-height: 1.1;
+    background: linear-gradient(90deg, #00c0df, #6e45e2);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .page-subtitle {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 700px;
+    margin: 0 auto 3rem;
+    line-height: 1.6;
+  }
+  
+  .divider {
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, #00c0df, #6e45e2);
+    margin: 2rem auto 4rem;
+    border-radius: 2px;
   }
   
   .hero-subtitle {
@@ -531,23 +569,27 @@ const aiAgentToken = {
     color: rgba(255, 255, 255, 0.9);
     line-height: 1.6;
   }
+  
 
-  .placeholder-container {
+  .landscape-container {
+    position: relative;
     width: 100%;
-    max-width: 1200px; /* Match the intended animation size */
-    margin: 2rem auto 0;
-    padding: 1rem;
-    background: rgba(0, 26, 61, 0.5);
-    border: 1px solid rgba(12, 192, 223, 0.2);
-    border-radius: 8px;
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    border-radius: 1rem;
+    overflow: visible;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   }
-
-  .placeholder-image {
+  
+  .landscape-image {
     width: 100%;
     height: auto;
-    border-radius: 4px;
     display: block;
-    opacity: 0.85;
+    transition: transform 0.3s ease;
+  }
+  
+  .landscape-image:hover {
+    transform: scale(1.02);
   }
   
   /* Executive Summary */
@@ -973,29 +1015,35 @@ const aiAgentToken = {
     position: relative;
   }
   
-  .scene-boat-trigger {
+  .scene-boat-wrapper {
     position: absolute;
     bottom: 1rem;
     right: 1rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    background-color: rgba(255, 255, 255, 0.2);
+    z-index: 50;
+    height: 0; /* Take no space in document flow */
+  }
+  
+  .scene-boat-trigger {
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    opacity: 0.7;
     transition: all 0.3s ease;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    outline: none;
     z-index: 10;
   }
   
-  .scene-boat-trigger:hover {
-    opacity: 1;
+  .scene-boat-trigger:hover,
+  .scene-boat-trigger:focus {
+    background: rgba(0, 0, 0, 0.9);
     transform: scale(1.1);
-    background-color: rgba(255, 255, 255, 0.3);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
   

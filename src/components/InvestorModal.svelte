@@ -93,6 +93,10 @@
                   <input type="checkbox" name="interest" value="due-diligence">
                   <span>Request Due Diligence Materials</span>
                 </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="interest" value="pdf-report">
+                  <span>Include Professional PDF Report</span>
+                </label>
               </div>
             </div>
             
