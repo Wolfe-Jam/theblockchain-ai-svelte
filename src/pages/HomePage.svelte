@@ -316,7 +316,7 @@
     <div class="title-text-block"
          on:mouseenter={handleTitleHover}
          on:mouseleave={handleTitleLeave}
-         on:click={scrollToBoats}>
+         on:click={scrollToFacts}>
       <h1 class="main-title" style="opacity: {$titleOpacity}">theBlockchain.ai</h1>
       <p class="sub-title" style="opacity: {$subTitleOpacity}">The Economic Layer for Open-Source</p>
     </div>
