@@ -75,6 +75,26 @@ yarn-error.log*
 *.swp
 *.swo
 *~
+*.save
+
+# LaTeX zip files
+*.tex.zip
+
+# Documentation files (except main README)
+*.md
+!README.md
+
+# Build scripts and logs
+build-*.sh
+*.log
+
+# System files
+.DS_Store
+node_modules/.DS_Store
+
+# LaTeX source variants
+convergent-economy-simple.tex
+convergent-economy-simplified.tex
 
 # Marketing & Strategy (Private)
 *.md
