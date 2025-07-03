@@ -60,7 +60,7 @@
     </div>
     <!-- <OceanOfOpenSource /> - Temporarily hidden as requested -->
     <div class="placeholder-container">
-      <img src="/theBlockchain-ai-landscape.png" alt="theBlockchain.ai Landscape" class="placeholder-image" />
+      <img src="/theBlockchain-ai-landscape.webp" alt="theBlockchain.ai Landscape" class="placeholder-image" />
       
       <!-- Scene overlay trigger boat icon -->
       <!-- svelte-ignore a11y-click-events-have-key-events -->
