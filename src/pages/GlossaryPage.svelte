@@ -390,7 +390,7 @@
     {#each glossaryTerms as category}
       <section class="mb-16">
         {#if category.category === "The 3 Strategic Pillars"}
-          <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--brand-blue);">
+          <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--brand-blue-text);">
             {category.category}
           </h2>
         {:else if category.category === "theBlockchain.ai Framework"}
@@ -402,7 +402,7 @@
             {category.category}
           </h2>
         {:else if category.category === "Our Strategic Advantage"}
-          <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--brand-blue);">
+          <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--brand-blue-text);">
             {category.category}
           </h2>
         {:else}
@@ -460,7 +460,7 @@
                 <div class="bg-slate-800 rounded-xl p-8 border-l-4" 
                      style="border-left-color: var(--brand-blue);"
                      id="bai-definition">
-                  <h3 class="text-2xl font-semibold mb-4" style="color: var(--brand-blue);">
+                  <h3 class="text-2xl font-semibold mb-4" style="color: var(--brand-blue-text);">
                     {item.term}
                   </h3>
                   
@@ -518,7 +518,7 @@
               <!-- Strategic Advantage with blue theme -->
               <div class="bg-slate-800 rounded-xl p-8 border-l-4" 
                    style="border-left-color: var(--brand-blue);">
-                <h3 class="text-2xl font-semibold mb-4" style="color: var(--brand-blue);">
+                <h3 class="text-2xl font-semibold mb-4" style="color: var(--brand-blue-text);">
                   {item.term}
                 </h3>
                 

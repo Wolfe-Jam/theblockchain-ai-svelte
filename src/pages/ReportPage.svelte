@@ -642,7 +642,7 @@
   }
 
   .highlight-blue {
-    color: var(--brand-blue); /* Universal readable blue */
+    color: var(--brand-blue-text); /* Universal readable blue */
     font-weight: 700;
     padding: 0 0.2em;
   }
@@ -681,7 +681,7 @@
   }
 
   .icon-blue {
-    color: var(--brand-blue);
+    color: var(--brand-blue-text);
   }
 
   .icon-cyan {
@@ -787,7 +787,7 @@
   }
 
   .pillar-blue h3 {
-    color: var(--brand-blue); /* Universal readable blue */
+    color: var(--brand-blue-text); /* Universal readable blue */
   }
 
   .pillar-cyan h3 {

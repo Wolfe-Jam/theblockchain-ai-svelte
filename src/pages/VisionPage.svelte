@@ -278,7 +278,7 @@
   .card-blue h4,
   .problem-blue,
   .icon-blue {
-    color: var(--brand-blue); /* Universal readable blue */
+    color: var(--brand-blue-text); /* Universal readable blue */
   }
 
   .icon-gold {
@@ -307,7 +307,7 @@
   }
 
   .card-blue .usp {
-    color: var(--brand-blue);
+    color: var(--brand-blue-text);
     border-left-color: var(--brand-blue);
   }
 

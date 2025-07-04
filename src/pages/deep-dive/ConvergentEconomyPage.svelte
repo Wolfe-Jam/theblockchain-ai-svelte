@@ -675,7 +675,7 @@ const aiAgentToken = {
   
   /* Blockchain Market - Blue title, Cyan highlights */
   .blockchain-market-title {
-    color: var(--brand-blue) !important;
+    color: var(--brand-blue-text) !important;
   }
   
   .blockchain-market-text strong {
