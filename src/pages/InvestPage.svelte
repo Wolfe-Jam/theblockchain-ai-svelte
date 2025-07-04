@@ -222,13 +222,13 @@
     <!-- BANG! Headline -->
     <div class="hero-content">
       <div class="market-headline">
-        <p class="market-subtitle">Market Convergence Is Here</p>
         <div class="market-progression">
           <div class="market-year">{currentYear}</div>
           <h1 class="market-title">
             <span class="market-value">${currentMarketValue.toFixed(2)}</span>
             <span class="market-label">TRILLION</span>
           </h1>
+          <p class="market-subtitle">Market Convergence Is Here</p>
           <div class="market-breakdown">
             <div class="breakdown-item">
               <span class="breakdown-label">AI</span>
@@ -469,11 +469,12 @@
   }
   
   .market-subtitle {
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-size: clamp(1.8rem, 5vw, 3rem);
     color: var(--brand-cyan);
     font-weight: 700;
-    margin-bottom: 2rem;
+    margin: 1.5rem 0 2rem;
     font-family: 'Roboto Mono', monospace;
+    letter-spacing: 0.05em;
   }
   
   .market-progression {
