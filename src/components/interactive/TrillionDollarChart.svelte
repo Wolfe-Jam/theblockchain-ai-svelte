@@ -84,36 +84,50 @@
 
 <ScrollObserver threshold={0.5} on:enter={animateChart}>
   <div class="chart-container">
-    <div class="chart-header">
-      <h3 class="chart-title">Market Size Projections</h3>
-      <div class="year-selector">
-        <button 
-          class="year-button" 
-          class:active={activeYear === '2025'}
-          on:click={() => switchYear('2025')}
-        >
-          2025
-        </button>
-        <button 
-          class="year-button" 
-          class:active={activeYear === '2034'}
-          on:click={() => switchYear('2034')}
-        >
-          2034
-        </button>
-      </div>
+    <!-- Centralized Title -->
+    <div class="chart-title-center">
+      <h3>Market Size Projections</h3>
     </div>
     
     <!-- Logo Growth Animation -->
     <div class="logo-container">
       <div class="logo-wrapper" class:zoomed={activeYear === '2034'}>
         <img 
-          src="/theBlockchain-ai-full-logo.svg" 
-          alt="theBlockchain.ai Logo" 
+          src="/theBlockchain-ai-logo.svg" 
+          alt="theBlockchain.ai Shield" 
           class="growth-logo"
         />
       </div>
-      <div class="year-indicator">{activeYear}</div>
+      
+      {#if activeYear === '2025'}
+        <div class="arrow-pointer-below">
+          <div class="vertical-arrow-up">↑</div>
+          <div class="combined-markets-text">Combined Markets Now</div>
+        </div>
+      {:else}
+        <div class="stage-indicator-2034">
+          <div class="progress-line">OUTPUT → CODE-IN-ACTION</div>
+          <div class="main-effect">The TOKENIZING effect</div>
+        </div>
+      {/if}
+    </div>
+    
+    <!-- Year Selector Moved Below -->
+    <div class="year-selector-below">
+      <button 
+        class="year-button" 
+        class:active={activeYear === '2025'}
+        on:click={() => switchYear('2025')}
+      >
+        2025
+      </button>
+      <button 
+        class="year-button" 
+        class:active={activeYear === '2034'}
+        on:click={() => switchYear('2034')}
+      >
+        2034
+      </button>
     </div>
     
     <div class="chart-wrapper">
@@ -171,26 +185,28 @@
   .chart-container {
     background: rgba(30, 41, 59, 0.5);
     border-radius: 1rem;
-    padding: 2rem;
-    margin: 2rem 0;
+    padding: 1rem; /* Reduced padding */
+    margin: 1rem 0 0.5rem 0; /* Reduced bottom margin from 1rem to 0.5rem */
+    text-align: center; /* Center everything */
   }
   
-  .chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+  .chart-title-center {
+    margin-bottom: 1.5rem;
+    margin-top: 2rem; /* Add top margin to push title down */
   }
   
-  .chart-title {
+  .chart-title-center h3 {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--color-text-light);
+    margin: 0;
   }
   
-  .year-selector {
+  .year-selector-below {
     display: flex;
-    gap: 0.5rem;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1.5rem 0 0rem 0; /* Removed bottom margin completely */
   }
   
   .year-button {
@@ -365,15 +381,15 @@
   
   .logo-wrapper {
     position: relative;
-    transform: scale(0.2);
+    transform: scale(0.12); /* Even smaller - was 0.2 */
     transform-origin: center center;
     transition: all 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform;
   }
   
   .logo-wrapper.zoomed {
-    transform: scale(8) translateY(-10px);
-    transform-origin: center center; /* Focus on the center shield */
+    transform: scale(2.2) translateY(-3px); /* Move up 3px */
+    transform-origin: center 40%; /* Focus slightly above center */
   }
   
   .growth-logo {
@@ -382,19 +398,94 @@
     filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1));
   }
   
-  .year-indicator {
+  .arrow-pointer-below {
+    position: absolute;
+    bottom: 20px; /* Lowered from 60px to 20px */
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 10;
+  }
+  
+  .vertical-arrow-up {
+    font-size: 3rem; /* Much bigger arrow */
+    color: #FF914D; /* Brand orange */
+    animation: pointUp 2s ease-in-out infinite;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+  }
+  
+  .combined-markets-text {
+    color: #004AAE;
+    font-weight: 700;
+    font-size: 1.2rem; /* Bigger text */
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.6rem 1.5rem; /* Bigger pill */
+    border-radius: 2rem;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(0, 74, 174, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.05em;
+    white-space: nowrap; /* Force single line */
+  }
+  
+  @keyframes pointUp {
+    0%, 100% { 
+      transform: translateY(0) scale(1);
+      opacity: 0.7;
+    }
+    50% { 
+      transform: translateY(-8px) scale(1.1);
+      opacity: 1;
+    }
+  }
+  
+  .stage-indicator {
     position: absolute;
     bottom: 15px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #004AAE; /* Brand blue for contrast on white */
-    background: rgba(255, 255, 255, 0.9);
-    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.4rem 1.2rem;
     border-radius: 2rem;
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(0, 74, 174, 0.2);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.05em;
+  }
+  
+  .stage-indicator-2034 {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.8rem 1.5rem;
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(0, 74, 174, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+  }
+  
+  .progress-line {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.03em;
+  }
+  
+  .main-effect {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #004AAE;
+    letter-spacing: 0.02em;
   }
   
   @media (max-width: 768px) {
@@ -405,11 +496,12 @@
     }
     
     .logo-wrapper {
-      transform: scale(0.15);
+      transform: scale(0.08); /* Even smaller for mobile - was 0.15 */
     }
     
     .logo-wrapper.zoomed {
-      transform: scale(6) translateY(-8px);
+      transform: scale(1.8) translateY(-3px); /* Move up 3px for mobile too */
+      transform-origin: center 40%;
     }
     
     .growth-logo {
