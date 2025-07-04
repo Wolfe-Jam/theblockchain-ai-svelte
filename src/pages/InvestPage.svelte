@@ -465,7 +465,7 @@
   
   .market-headline {
     margin-bottom: 5rem;
-    margin-top: 8rem;
+    margin-top: 5rem;
   }
   
   .market-subtitle {
