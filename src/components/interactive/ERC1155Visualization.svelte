@@ -35,6 +35,7 @@
   ];
   
   let selectedType = null;
+  let showErcDefinition = false;
   let hasAnimated = false;
   
   // Animation stores - declare individually
@@ -65,6 +66,12 @@
   
   function selectType(type) {
     selectedType = selectedType === type ? null : type;
+    showErcDefinition = false; // Close ERC definition when selecting token
+  }
+  
+  function toggleErcDefinition() {
+    showErcDefinition = !showErcDefinition;
+    selectedType = null; // Close token details when showing ERC definition
   }
 </script>
 
@@ -92,7 +99,7 @@
         </defs>
         
         <!-- Central contract -->
-        <g transform="translate(300, 200)">
+        <g transform="translate(300, 180)" class="erc-contract" on:click={toggleErcDefinition} role="button" tabindex="0">
           <rect
             x="-80"
             y="-40"
@@ -118,13 +125,14 @@
         <!-- Token types -->
         {#each tokenTypes as token, index}
           {@const angle = (index * 120 - 90) * Math.PI / 180}
-          {@const x = 300 + Math.cos(angle) * 150}
-          {@const y = 200 + Math.sin(angle) * 150}
+          {@const distance = index === 0 ? 140 : 185} <!-- Top spoke closer, bottom two even further -->
+          {@const x = 300 + Math.cos(angle) * distance}
+          {@const y = 180 + Math.sin(angle) * distance}
           
           <!-- Connection line -->
           <line
             x1="300"
-            y1="200"
+            y1="180"
             x2={x}
             y2={y}
             stroke="var(--brand-cyan)"
@@ -143,7 +151,7 @@
             class="token-group"
           >
             <circle
-              r="50"
+              r="55"
               fill={token.color}
               opacity="0.2"
               stroke={token.color}
@@ -165,7 +173,17 @@
       
       <!-- Token details -->
       <div class="token-details">
-        {#if selectedType}
+        {#if showErcDefinition}
+          <div class="detail-card" style="border-color: var(--brand-cyan)">
+            <h4>ERC-1155 Multi-Token Standard</h4>
+            <p class="detail-example">One Contract, Multiple Token Types</p>
+            <p class="detail-description">
+              ERC-1155 allows a single smart contract to manage multiple token types simultaneously - 
+              fungible, non-fungible, and semi-fungible tokens. This reduces gas costs, simplifies 
+              management, and enables complex tokenomics within one unified framework.
+            </p>
+          </div>
+        {:else if selectedType}
           {@const selected = tokenTypes.find(t => t.type === selectedType)}
           <div class="detail-card" style="border-color: {selected.color}">
             <h4>{selected.label}</h4>
@@ -185,7 +203,7 @@
           </div>
         {:else}
           <div class="detail-prompt">
-            Click on any token type to learn more
+            Click on any token type or the ERC-1155 contract to learn more
           </div>
         {/if}
       </div>
@@ -212,6 +230,16 @@
     width: 100%;
     max-width: 600px;
     height: auto;
+    overflow: visible; /* Fix cutoff selection squares */
+  }
+  
+  .erc-contract {
+    cursor: pointer;
+    transition: filter 0.2s ease;
+  }
+  
+  .erc-contract:hover {
+    filter: brightness(1.2);
   }
   
   .contract-label {
@@ -219,15 +247,21 @@
     font-size: 1.25rem;
     font-weight: 700;
     font-family: 'Roboto Mono', monospace;
+    pointer-events: none; /* Prevent text from blocking clicks */
   }
   
   .token-group {
     cursor: pointer;
-    transition: transform 0.3s ease;
+    pointer-events: all; /* Ensure SVG elements can receive clicks */
   }
   
-  .token-group:hover {
-    transform: scale(1.1);
+  .token-group circle {
+    transition: opacity 0.2s ease, stroke-width 0.2s ease;
+  }
+  
+  .token-group:hover circle {
+    opacity: 0.4 !important; /* More contrast for governance */
+    stroke-width: 3;
   }
   
   .token-group circle.selected {
