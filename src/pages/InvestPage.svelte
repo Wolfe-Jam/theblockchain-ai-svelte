@@ -6,12 +6,174 @@
   
   let showModal = false;
   let showReportDownload = false;
+  let marketForecastChart;
+  let cagrChart;
+  let convergenceChart;
+  let marketValue = 6.15; // Starting value for counter animation
+  let spotsLeft = 1337;
   
   onMount(() => {
     // Ensure professional focus
     document.title = "Investment Opportunity | theBlockchain.ai";
-    // Removed auto-open modal - let users choose their action
+    
+    // Import Chart.js dynamically
+    import('https://cdn.jsdelivr.net/npm/chart.js').then((Chart) => {
+      initializeCharts(Chart.default);
+    });
+    
+    // Animate market value counter
+    animateMarketValue();
+    
+    // Spots counter animation
+    const spotsInterval = setInterval(() => {
+      spotsLeft -= Math.floor(Math.random() * 3) + 1;
+      if (spotsLeft < 500) spotsLeft = 1337; // reset
+    }, 3000);
+    
+    return () => clearInterval(spotsInterval);
   });
+  
+  function animateMarketValue() {
+    const interval = setInterval(() => {
+      marketValue += Math.random() * 0.05 + 0.01; // Gradual increase
+      if (marketValue > 7.0) marketValue = 6.15; // Reset cycle
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }
+  
+  function initializeCharts(Chart) {
+    const brandColors = {
+      orange: '#FF914D',
+      cyan: '#0CC0DF', 
+      blue: '#004AAE',
+      orangeText: '#EA580C'
+    };
+    
+    const chartColors = [brandColors.orange, brandColors.cyan, brandColors.blue, '#ef5675', '#bc5090'];
+    
+    const defaultOptions = {
+      maintainAspectRatio: false,
+      responsive: true,
+      plugins: {
+        legend: { 
+          labels: { color: '#f8fafc', font: { size: 11 } },
+          position: 'bottom'
+        },
+        tooltip: {
+          backgroundColor: '#0f172a',
+          titleColor: '#f8fafc',
+          bodyColor: '#cbd5e1',
+          borderColor: 'rgba(51, 65, 85, 0.8)',
+          borderWidth: 1
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(51, 65, 85, 0.3)' },
+          ticks: { color: '#f8fafc', font: { size: 10 } }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: '#f8fafc', font: { size: 10 } }
+        }
+      }
+    };
+    
+    // Market Forecast Chart
+    const marketCtx = document.getElementById('marketForecastChart');
+    if (marketCtx) {
+      marketForecastChart = new Chart(marketCtx, {
+        type: 'bar',
+        data: {
+          labels: ['AI by 2034', 'Blockchain by 2030', 'Software by 2030'],
+          datasets: [{
+            label: 'Market Size (USD Trillions)',
+            data: [3.68, 1.43, 1.04],
+            backgroundColor: chartColors.slice(0, 3),
+            borderRadius: 8
+          }]
+        },
+        options: {
+          ...defaultOptions,
+          indexAxis: 'y',
+          plugins: {
+            ...defaultOptions.plugins,
+            legend: { display: false }
+          }
+        }
+      });
+    }
+    
+    // CAGR Comparison Chart  
+    const cagrCtx = document.getElementById('cagrChart');
+    if (cagrCtx) {
+      cagrChart = new Chart(cagrCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Blockchain\n(High)', 'Blockchain\n(Low)', 'Blockchain\nAI', 'Software\nDev', 'AI'],
+          datasets: [{
+            label: 'CAGR %',
+            data: [90.1, 43.6, 37.18, 22.71, 19.2],
+            backgroundColor: chartColors,
+            borderRadius: 8
+          }]
+        },
+        options: {
+          ...defaultOptions,
+          plugins: {
+            ...defaultOptions.plugins,
+            legend: { display: false }
+          }
+        }
+      });
+    }
+    
+    // Convergence Timeline Chart
+    const convergenceCtx = document.getElementById('convergenceChart');
+    if (convergenceCtx) {
+      convergenceChart = new Chart(convergenceCtx, {
+        type: 'line',
+        data: {
+          labels: ['2024', '2026', '2028', '2030', '2032', '2034'],
+          datasets: [
+            {
+              label: 'AI Market',
+              data: [1.8, 2.2, 2.7, 3.0, 3.3, 3.68],
+              borderColor: brandColors.cyan,
+              backgroundColor: brandColors.cyan + '20',
+              fill: true,
+              tension: 0.4
+            },
+            {
+              label: 'Blockchain Market', 
+              data: [0.07, 0.3, 0.6, 1.43, 2.1, 2.8],
+              borderColor: brandColors.orange,
+              backgroundColor: brandColors.orange + '20', 
+              fill: true,
+              tension: 0.4
+            },
+            {
+              label: 'Software Market',
+              data: [0.65, 0.75, 0.85, 1.04, 1.2, 1.35],
+              borderColor: brandColors.blue,
+              backgroundColor: brandColors.blue + '20',
+              fill: true, 
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          ...defaultOptions,
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          }
+        }
+      });
+    }
+  }
   
   function openInvestorModal() {
     showModal = true;
@@ -20,10 +182,101 @@
   function openReportDownload() {
     showReportDownload = true;
   }
+  
+  function scrollToOpportunities() {
+    document.getElementById('investment-opportunities').scrollIntoView({ 
+      behavior: 'smooth' 
+    });
+  }
 </script>
 
-<!-- Investment Landing -->
-<div class="invest-landing">
+<svelte:head>
+  <title>Investment Opportunity | theBlockchain.ai</title>
+  <meta name="description" content="Position yourself in the $6+ trillion convergence of AI, Blockchain, and Software markets. Professional investment opportunities available." />
+</svelte:head>
+
+<!-- Market-Shock Hero Section -->
+<div class="market-hero">
+  <div class="container">
+    <!-- BANG! Headline -->
+    <div class="hero-content">
+      <div class="market-headline">
+        <h1 class="market-title">
+          <span class="market-value">${marketValue.toFixed(2)}+</span>
+          <span class="market-label">TRILLION</span>
+        </h1>
+        <p class="market-subtitle">Market Convergence Is Here</p>
+        <p class="market-description">
+          AI, Blockchain, and Software markets are converging into the largest economic opportunity of our generation. Position yourself at the intersection.
+        </p>
+      </div>
+      
+      <!-- Interactive Chart Trinity -->
+      <div class="chart-trinity">
+        <!-- Market Size Chart -->
+        <div class="chart-card">
+          <h3 class="chart-title">Market Size by 2030-2034</h3>
+          <div class="chart-container">
+            <canvas id="marketForecastChart"></canvas>
+          </div>
+          <p class="chart-insight">Combined $6.15T+ opportunity</p>
+        </div>
+        
+        <!-- CAGR Chart -->
+        <div class="chart-card">
+          <h3 class="chart-title">Growth Rate Comparison</h3>
+          <div class="chart-container">
+            <canvas id="cagrChart"></canvas>
+          </div>
+          <p class="chart-insight">Blockchain leads at 90%+ CAGR</p>
+        </div>
+        
+        <!-- Convergence Timeline -->
+        <div class="chart-card">
+          <h3 class="chart-title">Convergence Timeline</h3>
+          <div class="chart-container">
+            <canvas id="convergenceChart"></canvas>
+          </div>
+          <p class="chart-insight">Exponential growth phase: 2024-2030</p>
+        </div>
+      </div>
+      
+      <!-- Transition to Investment -->
+      <div class="hero-transition">
+        <div class="convergence-statement">
+          <h2 class="transition-title">Your Position in This Historic Market Shift</h2>
+          <p class="transition-text">
+            We're building the infrastructure that captures value from this convergence. 
+            Early positioning in our platform means exposure to all three market segments simultaneously.
+          </p>
+        </div>
+        
+        <div class="urgency-indicators">
+          <div class="indicator">
+            <div class="indicator-icon animate-pulse">📈</div>
+            <span>Market acceleration phase</span>
+          </div>
+          <div class="indicator">
+            <div class="indicator-icon animate-pulse">⏰</div>
+            <span>{spotsLeft} investment opportunities remaining</span>
+          </div>
+          <div class="indicator">
+            <div class="indicator-icon animate-pulse">🎯</div>
+            <span>Early-stage positioning window</span>
+          </div>
+        </div>
+        
+        <button class="hero-cta" on:click={scrollToOpportunities}>
+          <span>Explore Investment Opportunities</span>
+          <i class="fas fa-arrow-down"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Investment Opportunities Section -->
+<div id="investment-opportunities" class="invest-landing">
   <div class="container">
     <h1 class="invest-title">Investment Opportunity</h1>
     <p class="invest-subtitle">All code on blockchain. Every transaction. All Smart Contracts. Zero fraud, devs get paid. Trusted AI from theBlockchain.ai - the Authority in Open-Source matters on the BC.</p>
@@ -140,6 +393,265 @@
     --brand-sun: #FD7E14;
     --brand-trust: #28A745;
     --blockchain-blue: #004AAE;
+    --brand-orange: #FF914D;
+    --brand-cyan: #0CC0DF;
+    --brand-orange-text: #EA580C;
+  }
+  
+  /* Market Hero Section */
+  .market-hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+    padding: 4rem 0 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .market-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(255, 145, 77, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  
+  .hero-content {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .market-headline {
+    margin-bottom: 4rem;
+  }
+  
+  .market-title {
+    font-size: clamp(3rem, 8vw, 8rem);
+    font-weight: 900;
+    line-height: 0.9;
+    margin-bottom: 1rem;
+    font-family: 'Roboto Mono', monospace;
+  }
+  
+  .market-value {
+    background: linear-gradient(135deg, var(--brand-orange), var(--brand-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+  
+  .market-label {
+    color: #f8fafc;
+    font-size: 0.4em;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    display: block;
+    margin-top: 0.5rem;
+  }
+  
+  .market-subtitle {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--brand-cyan);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-family: 'Roboto Mono', monospace;
+  }
+  
+  .market-description {
+    font-size: 1.25rem;
+    color: #e2e8f0;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  
+  /* Chart Trinity */
+  .chart-trinity {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin: 4rem 0;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .chart-card {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .chart-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--brand-orange), var(--brand-cyan), var(--brand-orange));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .chart-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--brand-cyan);
+    box-shadow: 0 20px 40px rgba(12, 192, 223, 0.1);
+  }
+  
+  .chart-card:hover::before {
+    opacity: 1;
+  }
+  
+  .chart-title {
+    color: var(--brand-cyan);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .chart-container {
+    height: 250px;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  
+  .chart-insight {
+    color: var(--brand-orange-text);
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  /* Hero Transition */
+  .hero-transition {
+    margin-top: 4rem;
+  }
+  
+  .convergence-statement {
+    max-width: 900px;
+    margin: 0 auto 3rem;
+  }
+  
+  .transition-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: #f8fafc;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+  
+  .transition-text {
+    font-size: 1.2rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+  
+  .urgency-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin: 3rem 0;
+    flex-wrap: wrap;
+  }
+  
+  .indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #f8fafc;
+    font-weight: 600;
+  }
+  
+  .indicator-icon {
+    font-size: 1.5rem;
+  }
+  
+  .hero-cta {
+    background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-text));
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 1.25rem 3rem;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    transform: translateY(0);
+    box-shadow: 0 10px 30px rgba(255, 145, 77, 0.3);
+  }
+  
+  .hero-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 145, 77, 0.4);
+    background: linear-gradient(135deg, var(--brand-cyan), var(--brand-orange));
+  }
+  
+  .hero-cta i {
+    transition: transform 0.3s ease;
+  }
+  
+  .hero-cta:hover i {
+    transform: translateY(3px);
+  }
+  
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 20px rgba(255, 145, 77, 0.3);
+    }
+    to {
+      text-shadow: 0 0 30px rgba(255, 145, 77, 0.6), 0 0 40px rgba(12, 192, 223, 0.3);
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s infinite;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .market-hero {
+      padding: 3rem 0 4rem;
+    }
+    
+    .chart-trinity {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .chart-container {
+      height: 200px;
+    }
+    
+    .urgency-indicators {
+      gap: 1.5rem;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .hero-cta {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+    }
   }
   
   .container {
@@ -150,7 +662,7 @@
   
   .invest-landing {
     background: linear-gradient(135deg, var(--brand-ocean) 0%, #0f172a 50%, var(--brand-sky) 100%);
-    padding: 6rem 0 4rem;
+    padding: 4rem 0;
     text-align: center;
     position: relative;
   }
