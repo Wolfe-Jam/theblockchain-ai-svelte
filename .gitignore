@@ -14,8 +14,6 @@ node_modules/
 
 # System files
 .DS_Store
-*.DS_Store
-._*
 Thumbs.db
 
 # IDE
@@ -31,13 +29,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# LaTeX build artifacts
+# LaTeX build artifacts (temporary files only)
 *.aux
 *.bbl
 *.blg
 *.fdb_latexmk
 *.fls
-*.log
 *.out
 *.synctex.gz
 *.toc
@@ -57,53 +54,15 @@ yarn-error.log*
 *.lot
 *.xdy
 *.lol
-*.lol-
-
-# LaTeX output files
-*.pdf
-!convergent-economy-latex.pdf
-!convergent-economy-report.pdf
-
-# LaTeX source backups
-*.bak
-*.sav
-*.sav.*
 
 # Temporary files
 *.tmp
 *.temp
-*.swp
-*.swo
-*~
-*.save
+*.bak
+*.sav
 
-# LaTeX zip files
+# LaTeX zip files (backup archives)
 *.tex.zip
 
-# Documentation files (except main README)
-*.md
-!README.md
-
-# Build scripts and logs
-build-*.sh
-*.log
-
-# System files
-.DS_Store
-node_modules/.DS_Store
-
-# LaTeX source variants and utilities
-convergent-economy-simple.tex
-convergent-economy-simplified.tex
-INSTALL-LATEX-TERMINAL.txt
-POST-INSTALL-GUIDE.txt
-compile-options.sh
-diagnose-latex.py
-fix-latex-lists.py
-install-latex-info.sh
-setup-latex.sh
-latex-preview-sample.tex
-
-# Marketing & Strategy (Private)
-*.md
-!README.md
+# Keep all documentation and organized structure
+# (Previous .gitignore was too restrictive)
