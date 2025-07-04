@@ -138,24 +138,24 @@
     <TrillionDollarChart showCallouts={true} />
     
     <div class="market-analysis">
-      <h3>The Artificial Intelligence Market</h3>
-      <p>
+      <h3 class="ai-market-title">The Artificial Intelligence Market</h3>
+      <p class="ai-market-text">
         The global AI market is undergoing explosive growth, transforming virtually every 
         industry. Precedence Research estimates the AI market at <strong>$757.6 billion 
         in 2025</strong>, projecting it will soar to <strong>$3.7 trillion by 2034</strong>, 
         reflecting a robust CAGR of 19.2%.
       </p>
       
-      <h3>The Software Development Engine</h3>
-      <p>
+      <h3 class="software-market-title">The Software Development Engine</h3>
+      <p class="software-market-text">
         The software development market is a mature cornerstone of the global economy. 
         Valued at <strong>$570 billion in 2025</strong>, it's forecast to reach 
         <strong>$1.0 trillion by 2030</strong> at a steady CAGR of 12.9%. The custom 
         software segment shows particularly rapid growth at 22.7% CAGR.
       </p>
       
-      <h3>The Blockchain Infrastructure Market</h3>
-      <p>
+      <h3 class="blockchain-market-title">The Blockchain Infrastructure Market</h3>
+      <p class="blockchain-market-text">
         While the smallest in absolute terms, blockchain shows exponential growth rates. 
         The market will grow from <strong>$31.2 billion in 2025</strong> to 
         <strong>$393.4 billion by 2032</strong>, exhibiting a powerful CAGR of 43.6%.
@@ -653,6 +653,33 @@ const aiAgentToken = {
   .market-analysis strong {
     color: var(--brand-orange);
     font-weight: 700;
+  }
+  
+  /* AI Market - Orange title, Cyan highlights */
+  .ai-market-title {
+    color: var(--brand-orange) !important;
+  }
+  
+  .ai-market-text strong {
+    color: var(--brand-cyan) !important;
+  }
+  
+  /* Software Market - Cyan title, Orange highlights (default - already correct) */
+  .software-market-title {
+    color: var(--brand-cyan);
+  }
+  
+  .software-market-text strong {
+    color: var(--brand-orange);
+  }
+  
+  /* Blockchain Market - Blue title, Cyan highlights */
+  .blockchain-market-title {
+    color: var(--brand-blue) !important;
+  }
+  
+  .blockchain-market-text strong {
+    color: var(--brand-cyan) !important;
   }
   
   /* Convergence Analysis */
