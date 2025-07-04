@@ -166,7 +166,7 @@
                 animation-delay: {index * 200}ms;
               "
             >
-              <h4 style="color: {market.color}">{market.name}</h4>
+              <h4 style="color: {market.name === 'Blockchain Technology' ? 'var(--brand-blue-text)' : market.color}">{market.name}</h4>
               <p class="callout-text">
                 Growing from ${market.value2025}B to ${market.value2034}B
               </p>
