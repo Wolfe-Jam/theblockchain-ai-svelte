@@ -79,12 +79,14 @@
             </div>
           </div>
           
-          <button class="download-cta" on:click={openReportDownload}>
-            <i class="fas fa-download"></i>
-            Download Professional Report
-          </button>
-          
-          <p class="download-note">Free access with professional details</p>
+          <div class="cta-section">
+            <button class="download-cta" on:click={openReportDownload}>
+              <i class="fas fa-download"></i>
+              Download Professional Report
+            </button>
+            
+            <p class="download-note">Free access with professional details</p>
+          </div>
         </div>
       </div>
       
@@ -111,12 +113,14 @@
             </ul>
           </div>
           
-          <button class="investor-cta" on:click={openInvestorModal}>
-            <i class="fas fa-handshake"></i>
-            Express Investment Interest
-          </button>
-          
-          <p class="disclaimer">Available to accredited investors and institutional partners</p>
+          <div class="cta-section">
+            <button class="investor-cta" on:click={openInvestorModal}>
+              <i class="fas fa-handshake"></i>
+              Express Investment Interest
+            </button>
+            
+            <p class="disclaimer">Available to accredited investors and institutional partners</p>
+          </div>
         </div>
       </div>
     </div>
@@ -200,6 +204,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 0;
+    align-items: stretch; /* Equal height cards */
   }
   
   .column {
@@ -258,6 +263,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    justify-content: space-between; /* Push button to bottom */
   }
   
   .report-info h3 {
@@ -277,6 +283,7 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    margin-bottom: 2rem; /* Consistent spacing */
   }
   
   /* Report features now styled in .report-details */
@@ -353,6 +360,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    justify-content: space-between; /* Push button to bottom */
   }
   
   .investor-warning {
@@ -405,6 +413,16 @@
     font-weight: bold;
     position: absolute;
     left: 0;
+  }
+
+  /* CTA Section Alignment */
+  .cta-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: auto; /* Push to bottom */
+    min-height: 100px; /* Ensure consistent height */
+    justify-content: center; /* Center button vertically in this space */
   }
   
   .investor-cta {

@@ -136,7 +136,6 @@
         <div class="modal-header">
           <button class="close-btn" on:click={closeModal} aria-label="Close modal">&times;</button>
           <div class="report-preview">
-            <div class="report-icon">📊</div>
             <h2 id="report-title">The Convergent Economy</h2>
             <p class="report-subtitle">Professional Market Analysis Report</p>
           </div>
@@ -144,28 +143,13 @@
         
         <div class="modal-body">
           <div class="value-proposition">
-            <h3>Access the Complete 26-Page Analysis</h3>
-            <div class="report-highlights">
-              <div class="highlight-item">
-                <span class="highlight-icon">💰</span>
-                <span>$5+ Trillion Market Opportunity</span>
-              </div>
-              <div class="highlight-item">
-                <span class="highlight-icon">📈</span>
-                <span>Comprehensive AI, Software & Blockchain Data</span>
-              </div>
-              <div class="highlight-item">
-                <span class="highlight-icon">🎯</span>
-                <span>Professional Investment Analysis</span>
-              </div>
-              <div class="highlight-item">
-                <span class="highlight-icon">📚</span>
-                <span>50+ Industry References & Sources</span>
-              </div>
-            </div>
+            <h3>Download Professional Report</h3>
+            <p class="value-exchange">You're receiving our comprehensive $5+ Trillion Market Analysis Report at no cost to you. So, we'd like to know who shares our excitement about the convergent economy.</p>
+            <p class="genuine-request">Please provide complete, genuine details below.</p>
           </div>
           
           <form on:submit|preventDefault={handleSubmit} class="download-form">
+            <!-- Row 1: Names -->
             <div class="form-row">
               <div class="form-group">
                 <label for="firstName">First Name *</label>
@@ -189,6 +173,7 @@
               </div>
             </div>
             
+            <!-- Row 2: Email -->
             <div class="form-group">
               <label for="email">Professional Email *</label>
               <input 
@@ -200,46 +185,65 @@
               />
             </div>
             
-            <div class="form-group">
-              <label for="organization">Organization *</label>
-              <input 
-                type="text" 
-                id="organization" 
-                bind:value={formData.organization}
-                required
-                placeholder="Company Name"
-              />
-            </div>
-            
+            <!-- Row 3: Organization & Position -->
             <div class="form-row">
               <div class="form-group">
-                <label for="jobTitle">Job Title</label>
+                <label for="organization">Organization *</label>
                 <input 
                   type="text" 
-                  id="jobTitle" 
-                  bind:value={formData.jobTitle}
-                  placeholder="CEO, CTO, Analyst, etc."
+                  id="organization" 
+                  bind:value={formData.organization}
+                  required
+                  placeholder="Company Name"
                 />
               </div>
               <div class="form-group">
-                <label for="industry">Industry</label>
-                <select id="industry" bind:value={formData.industry}>
+                <label for="jobTitle">Position *</label>
+                <select id="jobTitle" bind:value={formData.jobTitle} required>
+                  <option value="">Select Position</option>
+                  <option value="ceo">CEO</option>
+                  <option value="cto">CTO</option>
+                  <option value="cfo">CFO</option>
+                  <option value="president">President</option>
+                  <option value="vp">Vice President</option>
+                  <option value="director">Director</option>
+                  <option value="manager">Manager</option>
+                  <option value="senior-engineer">Senior Engineer</option>
+                  <option value="engineer">Engineer</option>
+                  <option value="architect">Architect</option>
+                  <option value="analyst">Analyst</option>
+                  <option value="consultant">Consultant</option>
+                  <option value="researcher">Researcher</option>
+                  <option value="founder">Founder</option>
+                  <option value="investor">Investor</option>
+                  <option value="advisor">Advisor</option>
+                  <option value="student">Student</option>
+                  <option value="professor">Professor</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Row 4: Industry & Interest - REQUIRED -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="industry">Industry *</label>
+                <select id="industry" bind:value={formData.industry} required>
                   <option value="">Select Industry</option>
                   {#each industries as industry}
                     <option value={industry}>{industry}</option>
                   {/each}
                 </select>
               </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="useCase">Primary Interest</label>
-              <select id="useCase" bind:value={formData.useCase}>
-                <option value="">Select Primary Interest</option>
-                {#each useCases as useCase}
-                  <option value={useCase}>{useCase}</option>
-                {/each}
-              </select>
+              <div class="form-group">
+                <label for="useCase">Primary Interest *</label>
+                <select id="useCase" bind:value={formData.useCase} required>
+                  <option value="">Select Interest</option>
+                  {#each useCases as useCase}
+                    <option value={useCase}>{useCase}</option>
+                  {/each}
+                </select>
+              </div>
             </div>
             
             <button 
@@ -251,13 +255,9 @@
                 <span class="spinner"></span>
                 Processing...
               {:else}
-                Download Professional Report
+                Download Report
               {/if}
             </button>
-            
-            <p class="privacy-note">
-              Your information will be used solely for professional communication regarding theBlockchain.ai research and opportunities.
-            </p>
           </form>
         </div>
       {:else}
@@ -290,10 +290,10 @@
   .modal-content {
     background: white;
     border-radius: 1rem;
-    max-width: 600px;
+    max-width: 550px;
     width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-height: 85vh;
+    overflow: hidden;
     position: relative;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   }
@@ -301,7 +301,7 @@
   .modal-header {
     background: linear-gradient(135deg, #007BFF 0%, #17A2B8 100%);
     color: white;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
     border-radius: 1rem 1rem 0 0;
     text-align: center;
     position: relative;
@@ -334,31 +334,51 @@
   }
   
   .report-preview h2 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
   }
   
   .report-subtitle {
-    font-size: 1.125rem;
+    font-size: 1rem;
     opacity: 0.9;
     margin: 0;
   }
   
   .modal-body {
-    padding: 2rem;
+    padding: 1.5rem;
   }
   
   .value-proposition {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     text-align: center;
   }
   
   .value-proposition h3 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #1f2937;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .value-exchange {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    border-left: 3px solid #007BFF;
+  }
+  
+  .genuine-request {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-style: italic;
   }
   
   .report-highlights {
@@ -393,23 +413,24 @@
   }
   
   .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   
   .form-group label {
     display: block;
     font-weight: 600;
     color: #374151;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
   }
   
   .form-group input,
   .form-group select {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.625rem;
     border: 2px solid #e5e7eb;
     border-radius: 0.5rem;
-    font-size: 1rem;
+    font-size: 0.875rem;
     transition: border-color 0.2s;
   }
   
@@ -424,7 +445,7 @@
     width: 100%;
     background: linear-gradient(135deg, #FD7E14 0%, #e55a00 100%);
     color: white;
-    padding: 1rem 2rem;
+    padding: 0.875rem 2rem;
     border: none;
     border-radius: 0.75rem;
     font-size: 1.125rem;
