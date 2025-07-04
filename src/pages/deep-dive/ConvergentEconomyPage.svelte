@@ -848,7 +848,7 @@ const aiAgentToken = {
   }
   
   .automated-royalties-card h4 {
-    color: var(--brand-blue);
+    color: var(--brand-blue-text);
   }
   
   .token-governance-card {
