@@ -124,7 +124,7 @@
   }
 
   :global(.highlight-trust) {
-    color: #EA580C;  /* Orange-600 for readable text */
+    color: var(--brand-orange-text);  /* Readable orange text */
     text-shadow: 0 0 8px rgba(234, 88, 12, 0.5);
   }
 

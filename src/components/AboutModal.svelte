@@ -339,7 +339,7 @@
     font-family: 'Roboto Mono', monospace;
     font-size: 1.125rem;
     font-weight: 700;
-    color: #EA580C;  /* Orange-600 for readable text */
+    color: var(--brand-orange-text);  /* Readable orange text */
   }
 
   .about-description {

@@ -409,14 +409,14 @@
   
   .vertical-arrow-up {
     font-size: 3rem; /* Much bigger arrow */
-    color: #FF914D; /* Brand orange */
+    color: var(--brand-orange-text); /* Readable orange text */
     animation: pointUp 2s ease-in-out infinite;
     font-weight: 900;
     margin-bottom: 0.5rem;
   }
   
   .combined-markets-text {
-    color: #004AAE;
+    color: var(--brand-blue-text);
     font-weight: 700;
     font-size: 1.2rem; /* Bigger text */
     background: rgba(255, 255, 255, 0.95);
