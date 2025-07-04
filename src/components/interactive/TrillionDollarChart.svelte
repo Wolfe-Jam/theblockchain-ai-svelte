@@ -104,6 +104,18 @@
       </div>
     </div>
     
+    <!-- Logo Growth Animation -->
+    <div class="logo-container">
+      <div class="logo-wrapper" class:zoomed={activeYear === '2034'}>
+        <img 
+          src="/theBlockchain-ai-full-logo.svg" 
+          alt="theBlockchain.ai Logo" 
+          class="growth-logo"
+        />
+      </div>
+      <div class="year-indicator">{activeYear}</div>
+    </div>
+    
     <div class="chart-wrapper">
       <div class="chart-bars">
         {#each marketsData as market, index}
@@ -330,6 +342,78 @@
     
     .bar-icon {
       font-size: 1.5rem;
+    }
+  }
+  
+  /* Logo Growth Animation */
+  .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+    width: 400px;
+    height: 400px; /* Square container */
+    overflow: hidden;
+    position: relative;
+    background: white; /* White background */
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 2rem auto; /* Center the square */
+  }
+  
+  .logo-wrapper {
+    position: relative;
+    transform: scale(0.2);
+    transform-origin: center center;
+    transition: all 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+  
+  .logo-wrapper.zoomed {
+    transform: scale(8) translateY(-10px);
+    transform-origin: center center; /* Focus on the center shield */
+  }
+  
+  .growth-logo {
+    width: 200px;
+    height: auto;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1));
+  }
+  
+  .year-indicator {
+    position: absolute;
+    bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #004AAE; /* Brand blue for contrast on white */
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .logo-container {
+      width: 300px;
+      height: 300px;
+      margin: 1rem auto;
+    }
+    
+    .logo-wrapper {
+      transform: scale(0.15);
+    }
+    
+    .logo-wrapper.zoomed {
+      transform: scale(6) translateY(-8px);
+    }
+    
+    .growth-logo {
+      width: 150px;
     }
   }
 </style>
