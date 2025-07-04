@@ -608,7 +608,7 @@
   
   /* Special styling for Founder's Proof links */
   .founders-proof-link, .founders-proof-mobile {
-    background: linear-gradient(45deg, var(--brand-orange), var(--brand-cyan));
+    background: linear-gradient(45deg, var(--brand-cyan), var(--brand-orange-text));
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     font-weight: 700;
