@@ -136,7 +136,8 @@
           <button 
             on:click={connectWallet}
             disabled={isConnecting}
-            class="inline-flex items-center bg-gradient-to-r from-brand-orange to-brand-orange hover:from-brand-orange hover:to-brand-cyan text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50"
+            class="inline-flex items-center text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50"
+            style="background: linear-gradient(to right, #EA580C, #0CC0DF);"
           >
             {#if isConnecting}
               <div class="loader mr-3"></div>
@@ -159,7 +160,8 @@
             <button 
               on:click={mintFoundersProof}
               disabled={isMinting}
-              class="inline-flex items-center bg-gradient-to-r from-brand-cyan to-brand-cyan hover:from-brand-cyan hover:to-brand-orange text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50"
+              class="inline-flex items-center text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50"
+              style="background: linear-gradient(to right, #0CC0DF, #004AAE);"
             >
               {#if isMinting}
                 <div class="loader mr-3"></div>
@@ -315,7 +317,8 @@
         <button 
           on:click={connectWallet}
           disabled={isConnecting}
-          class="inline-flex items-center bg-gradient-to-r from-brand-orange to-brand-cyan hover:from-brand-cyan hover:to-brand-orange text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
+          class="inline-flex items-center text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
+          style="background: linear-gradient(to right, #EA580C, #004AAE);"
         >
           {#if isConnecting}
             <div class="loader mr-3"></div>
