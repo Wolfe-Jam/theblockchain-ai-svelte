@@ -305,7 +305,7 @@
       <h3>New Business Models Unlocked</h3>
       
       <div class="model-grid">
-        <div class="model-card">
+        <div class="model-card ai-agents-card">
           <h4>🤖 Tokenizing AI Agents</h4>
           <p>
             Ownership and revenue streams of autonomous AI agents encapsulated in 
@@ -313,7 +313,7 @@
           </p>
         </div>
         
-        <div class="model-card">
+        <div class="model-card software-ip-card">
           <h4>💻 Software IP Markets</h4>
           <p>
             Individual modules and algorithms become tradable assets. Developers 
@@ -321,7 +321,7 @@
           </p>
         </div>
         
-        <div class="model-card">
+        <div class="model-card automated-royalties-card">
           <h4>⚙️ Automated Royalties</h4>
           <p>
             Smart contracts track usage and distribute payments in real-time, 
@@ -329,7 +329,7 @@
           </p>
         </div>
         
-        <div class="model-card">
+        <div class="model-card token-governance-card">
           <h4>🏛️ Token Governance</h4>
           <p>
             Communities participate directly in project evolution through voting 
@@ -832,6 +832,31 @@ const aiAgentToken = {
     margin: 0 0 1rem 0;
     color: var(--brand-orange);
     font-size: 1.25rem;
+  }
+  
+  /* Specific card color overrides */
+  .ai-agents-card {
+    border-top: 3px solid var(--brand-cyan);
+  }
+  
+  .ai-agents-card h4 {
+    color: var(--brand-cyan);
+  }
+  
+  .automated-royalties-card {
+    border-top: 3px solid var(--brand-blue);
+  }
+  
+  .automated-royalties-card h4 {
+    color: var(--brand-blue);
+  }
+  
+  .token-governance-card {
+    border-top: 3px solid #EEAD1A;
+  }
+  
+  .token-governance-card h4 {
+    color: #EEAD1A;
   }
   
   .model-card p {
