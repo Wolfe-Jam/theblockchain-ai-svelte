@@ -9,7 +9,23 @@
   let marketForecastChart;
   let cagrChart;
   let convergenceChart;
-  let marketValue = 6.15; // Starting value for counter animation
+  
+  // Realistic market progression data
+  let currentYear = 2025;
+  let marketData = {
+    2025: { total: 2.52, ai: 1.80, blockchain: 0.12, software: 0.60 },
+    2026: { total: 3.25, ai: 2.20, blockchain: 0.30, software: 0.75 },
+    2027: { total: 4.12, ai: 2.65, blockchain: 0.52, software: 0.95 },
+    2028: { total: 4.85, ai: 2.85, blockchain: 0.75, software: 1.25 },
+    2029: { total: 5.68, ai: 3.15, blockchain: 1.08, software: 1.45 },
+    2030: { total: 6.15, ai: 3.25, blockchain: 1.43, software: 1.47 },
+    2031: { total: 7.23, ai: 3.45, blockchain: 1.98, software: 1.80 },
+    2032: { total: 8.41, ai: 3.55, blockchain: 2.86, software: 2.00 },
+    2033: { total: 9.87, ai: 3.62, blockchain: 4.15, software: 2.10 },
+    2034: { total: 11.43, ai: 3.68, blockchain: 5.85, software: 1.90 }
+  };
+  
+  let currentMarketValue = marketData[currentYear].total;
   let spotsLeft = 1337;
   
   onMount(() => {
@@ -21,8 +37,8 @@
       initializeCharts(Chart.default);
     });
     
-    // Animate market value counter
-    animateMarketValue();
+    // Realistic market progression animation
+    animateMarketProgression();
     
     // Spots counter animation
     const spotsInterval = setInterval(() => {
@@ -33,11 +49,16 @@
     return () => clearInterval(spotsInterval);
   });
   
-  function animateMarketValue() {
+  function animateMarketProgression() {
+    const years = Object.keys(marketData).map(Number);
+    let currentIndex = 0;
+    
     const interval = setInterval(() => {
-      marketValue += Math.random() * 0.05 + 0.01; // Gradual increase
-      if (marketValue > 7.0) marketValue = 6.15; // Reset cycle
-    }, 2000);
+      currentYear = years[currentIndex];
+      currentMarketValue = marketData[currentYear].total;
+      
+      currentIndex = (currentIndex + 1) % years.length;
+    }, 4000); // Change every 4 seconds for realistic viewing
     
     return () => clearInterval(interval);
   }
@@ -201,11 +222,30 @@
     <!-- BANG! Headline -->
     <div class="hero-content">
       <div class="market-headline">
-        <h1 class="market-title">
-          <span class="market-value">${marketValue.toFixed(2)}+</span>
-          <span class="market-label">TRILLION</span>
-        </h1>
         <p class="market-subtitle">Market Convergence Is Here</p>
+        <div class="market-progression">
+          <div class="market-year">{currentYear}</div>
+          <h1 class="market-title">
+            <span class="market-value">${currentMarketValue.toFixed(2)}</span>
+            <span class="market-label">TRILLION</span>
+          </h1>
+          <div class="market-breakdown">
+            <div class="breakdown-item">
+              <span class="breakdown-label">AI</span>
+              <span class="breakdown-value">${marketData[currentYear].ai.toFixed(2)}T</span>
+            </div>
+            <div class="breakdown-separator">+</div>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Blockchain</span>
+              <span class="breakdown-value">${marketData[currentYear].blockchain.toFixed(2)}T</span>
+            </div>
+            <div class="breakdown-separator">+</div>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Software</span>
+              <span class="breakdown-value">${marketData[currentYear].software.toFixed(2)}T</span>
+            </div>
+          </div>
+        </div>
         <p class="market-description">
           AI, Blockchain, and Software markets are converging into the largest economic opportunity of our generation. Position yourself at the intersection.
         </p>
@@ -424,14 +464,35 @@
   }
   
   .market-headline {
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
+  }
+  
+  .market-subtitle {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--brand-cyan);
+    font-weight: 700;
+    margin-bottom: 2rem;
+    font-family: 'Roboto Mono', monospace;
+  }
+  
+  .market-progression {
+    margin: 3rem 0;
+  }
+  
+  .market-year {
+    font-size: 2rem;
+    color: var(--brand-orange-text);
+    font-weight: 700;
+    font-family: 'Roboto Mono', monospace;
+    margin-bottom: 1rem;
+    opacity: 0.9;
   }
   
   .market-title {
     font-size: clamp(3rem, 8vw, 8rem);
     font-weight: 900;
     line-height: 0.9;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     font-family: 'Roboto Mono', monospace;
   }
   
@@ -453,19 +514,49 @@
     margin-top: 0.5rem;
   }
   
-  .market-subtitle {
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
-    color: var(--brand-cyan);
+  .market-breakdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+  }
+  
+  .breakdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .breakdown-label {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .breakdown-value {
+    font-size: 1.8rem;
     font-weight: 700;
-    margin-bottom: 1.5rem;
     font-family: 'Roboto Mono', monospace;
+    color: var(--brand-cyan);
+  }
+  
+  .breakdown-separator {
+    font-size: 2rem;
+    color: var(--brand-orange);
+    font-weight: 700;
+    margin: 0 0.5rem;
   }
   
   .market-description {
     font-size: 1.25rem;
     color: #e2e8f0;
     max-width: 800px;
-    margin: 0 auto;
+    margin: 2rem auto 0;
     line-height: 1.6;
   }
   
@@ -631,6 +722,32 @@
   @media (max-width: 768px) {
     .market-hero {
       padding: 3rem 0 4rem;
+    }
+    
+    .market-headline {
+      margin-bottom: 4rem;
+    }
+    
+    .market-year {
+      font-size: 1.5rem;
+    }
+    
+    .market-breakdown {
+      gap: 1rem;
+      flex-direction: column;
+    }
+    
+    .breakdown-item {
+      flex-direction: row;
+      gap: 1rem;
+    }
+    
+    .breakdown-separator {
+      display: none;
+    }
+    
+    .breakdown-value {
+      font-size: 1.4rem;
     }
     
     .chart-trinity {
