@@ -7,14 +7,19 @@
 --brand-blue: #004AAE     /* Blockchain Blue - Trust/BAI */
 --brand-cyan: #0CC0DF     /* Digital Turquoise - Users/CIA */
 --brand-orange: #FF914D   /* Creative Orange - Developers/OUTPUT */
+--brand-gold: #EEAD1A     /* Premium Gold - Premium Features/Benefits */
 ```
 
-### Text (Readable Variants)
+### Text Colors (Both Orange Colors Used for Text)
 ```css
 --brand-blue-text: #2563EB    /* Blue-600 - For readable blue text */
 --brand-cyan-text: #06B6D4    /* Cyan-500 - For readable cyan text */
---brand-orange-text: #EA580C  /* Orange-600 - For readable orange text */
+--brand-orange-text: #EA580C  /* Orange-600 - Primary orange text (most common) */
+--brand-orange: #FF914D       /* Creative Orange - Secondary orange text & graphics */
+--brand-gold-text: #D4A017    /* Gold-text - For readable gold text */
 ```
+
+**Note**: Both orange colors (#EA580C and #FF914D) are used for text, with the lighter #EA580C being the primary choice for readability.
 
 ## 🚀 Quick Patterns
 
@@ -25,9 +30,14 @@
 <div class="bg-brand-cyan border-brand-cyan">CIA Pillar</div>
 <div class="bg-brand-orange border-brand-orange">OUTPUT Pillar</div>
 
-<!-- Text -->
+<!-- Text (Primary Orange Text) -->
 <h1 class="text-brand-blue-text">Blue Heading</h1>
 <h2 class="text-brand-cyan-text">Cyan Heading</h2>
+<p class="text-brand-orange-text">Orange Body Text (Primary)</p>
+
+<!-- Text (Secondary Orange Text) -->
+<h3 style="color: var(--brand-orange)">Orange Heading (Secondary)</h3>
+```
 <p class="text-brand-orange-text">Orange Body Text</p>
 ```
 
@@ -38,10 +48,13 @@
 .pillar-cia { background: var(--brand-cyan); }
 .pillar-output { background: var(--brand-orange); }
 
-/* Text */
+/* Text (Primary Orange - Most Common) */
 .text-blue { color: var(--brand-blue-text); }
 .text-cyan { color: var(--brand-cyan-text); }
 .text-orange { color: var(--brand-orange-text); }
+
+/* Text (Secondary Orange - For Emphasis) */
+.text-orange-bold { color: var(--brand-orange); }
 ```
 
 ### Svelte Animations
@@ -69,8 +82,9 @@
 ```
 
 ## ✅ Do's
-- Use exact hex codes for graphics/logos
-- Use text variants for typography (including blue text #2563EB)
+- Use exact hex codes for graphics/logos  
+- Use #EA580C for primary orange text (most readable and commonly used)
+- Use #FF914D for secondary orange text (emphasis, headings, highlights)
 - Follow CSS custom properties pattern
 - Reference `_BrandCompliantTemplate.svelte`
 
@@ -79,6 +93,24 @@
 - Don't use `#004AAE` for small text (use #2563EB instead)
 - Don't hardcode approximation colors
 - Don't mix brand and non-brand colors
+
+## 🧡 Orange Text Usage Guide
+
+### Primary Orange Text (#EA580C) - Most Common
+```html
+<!-- ✅ Use for body text, labels, standard orange text -->
+<p class="text-brand-orange-text">Standard orange text</p>
+<label class="text-brand-orange-text">Form labels</label>
+<span class="text-brand-orange-text">UI elements</span>
+```
+
+### Secondary Orange Text (#FF914D) - For Emphasis  
+```html
+<!-- ✅ Use for headings, emphasis, highlights -->
+<h3 style="color: var(--brand-orange)">Bold orange headings</h3>
+<span style="color: var(--brand-orange)">Emphasized text</span>
+<button style="color: var(--brand-orange)">Highlighted buttons</button>
+```
 
 ## 🔧 Commands
 ```bash

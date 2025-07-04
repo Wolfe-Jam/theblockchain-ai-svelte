@@ -219,6 +219,8 @@
               {/if}
             </div>
             
+            <a href="/founders-proof" on:click={closeMobileMenu} class="founders-proof-link">Founder's Proof</a>
+            
             <a href="/tools" on:click={closeMobileMenu}>Tools</a>
             
             <!-- Resource Dropdown -->
@@ -276,6 +278,8 @@
                   <a href="/interactive-guides" on:click={closeMobileMenu}>Interactive Guides</a>
                   <a href="/deep-dive/the-convergent-economy" on:click={closeMobileMenu}>Deep Dives</a>
                 </div>
+                
+                <a href="/founders-proof" on:click={closeMobileMenu} class="founders-proof-mobile">Founder's Proof</a>
                 
                 <a href="/tools" on:click={closeMobileMenu}>Tools</a>
                 
@@ -600,6 +604,29 @@
   .mobile-section a {
     padding-left: 1rem;
     font-size: 0.9rem;
+  }
+  
+  /* Special styling for Founder's Proof links */
+  .founders-proof-link, .founders-proof-mobile {
+    background: linear-gradient(45deg, var(--brand-orange), var(--brand-cyan));
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: white !important;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .founders-proof-link:hover, .founders-proof-mobile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 145, 77, 0.4);
+  }
+  
+  .founders-proof-link::before, .founders-proof-mobile::before {
+    content: '🏆';
+    margin-right: 0.5rem;
   }
 
   /* Animations */

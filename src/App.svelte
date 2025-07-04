@@ -13,6 +13,7 @@
   import BriefingsPage from './pages/BriefingsPage.svelte';
   import ToolsPage from './pages/ToolsPage.svelte';
   import ConvergentEconomyPage from './pages/deep-dive/ConvergentEconomyPage.svelte';
+  import FoundersProofPage from './pages/FoundersProofPage.svelte';
   import GlossaryPage from './pages/GlossaryPage.svelte';
   import InteractiveGuidesPage from './pages/InteractiveGuidesPage.svelte';
   
@@ -49,6 +50,8 @@
       <InteractiveGuidesPage />
     {:else if currentPath === '/deep-dive/the-convergent-economy'}
       <ConvergentEconomyPage />
+    {:else if currentPath === '/founders-proof'}
+      <FoundersProofPage />
     {:else if currentPath === '/tools'}
       <ToolsPage />
     {:else if currentPath === '/glossary'}
