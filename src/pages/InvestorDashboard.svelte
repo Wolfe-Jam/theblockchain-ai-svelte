@@ -462,10 +462,461 @@
     </main>
   </div>
 {/if}
+
+<style lang="postcss">
+  /* Investor Dashboard Styles */
+  .loading-container,
+  .error-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0F172A;
+    padding: 2rem;
+  }
+
+  .loading-spinner {
+    text-align: center;
+    color: #F8FAFC;
+  }
+
+  .loading-spinner i {
+    font-size: 3rem;
+    color: #0CC0DF;
+    margin-bottom: 1rem;
+  }
+
+  .error-card {
+    background: #1E293B;
+    border: 1px solid #EF4444;
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+    max-width: 400px;
+    color: #F8FAFC;
+  }
+
+  .error-card i {
+    font-size: 3rem;
+    color: #EF4444;
+    margin-bottom: 1rem;
+  }
+
+  .retry-btn {
+    background: #004AAE;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+  }
+
+  .retry-btn:hover {
+    background: #0CC0DF;
+    transform: translateY(-1px);
+  }
+
+  /* Dashboard Layout */
+  .dashboard-container {
+    min-height: 100vh;
+    background: #0F172A;
+    color: #F8FAFC;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    border-bottom: 1px solid #334155;
+    background: #1E293B;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+  }
+
+  .dashboard-title i {
+    color: #0CC0DF;
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #94A3B8;
+    transition: background-color 0.3s ease;
+  }
+
+  .status-dot.live {
+    background: #10B981;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .status-text {
+    font-size: 0.875rem;
+    color: #CBD5E1;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .action-btn {
+    background: #004AAE;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .action-btn:hover {
+    background: #0CC0DF;
+    transform: translateY(-1px);
+  }
+
+  .view-selector {
+    display: flex;
+    background: #0F172A;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    border: 1px solid #334155;
+  }
+
+  .view-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    color: #CBD5E1;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .view-btn.active {
+    background: #004AAE;
+    color: white;
+  }
+
+  .view-btn:hover:not(.active) {
+    background: #334155;
+    color: #F8FAFC;
+  }
+
+  /* Main Dashboard */
+  .dashboard-main {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Portfolio Overview */
+  .portfolio-overview {
+    margin-bottom: 3rem;
+  }
+
+  .overview-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #FF914D, #0CC0DF);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(12, 192, 223, 0.1);
+    border-color: #0CC0DF;
+  }
+
+  .metric-card:hover::before {
+    opacity: 1;
+  }
+
+  .metric-card.primary {
+    background: linear-gradient(135deg, #1E293B 0%, rgba(12, 192, 223, 0.05) 100%);
+    border-color: #0CC0DF;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .card-header h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #CBD5E1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+  }
+
+  .card-header i {
+    color: #0CC0DF;
+    font-size: 1.25rem;
+  }
+
+  .card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 0.5rem;
+    font-family: 'Roboto Mono', monospace;
+  }
+
+  .card-value.gain {
+    color: #10B981;
+  }
+
+  .card-value.rank {
+    color: #FF914D;
+  }
+
+  .card-value.risk {
+    color: #F59E0B;
+  }
+
+  .card-change {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .card-change.positive {
+    color: #10B981;
+  }
+
+  .card-change.negative {
+    color: #EF4444;
+  }
+
+  .card-subtitle {
+    font-size: 0.875rem;
+    color: #94A3B8;
+  }
+
+  /* Performance Section */
+  .performance-section {
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin: 0;
+  }
+
+  .timeframe-selector {
+    display: flex;
+    background: #0F172A;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    border: 1px solid #334155;
+  }
+
+  .timeframe-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    color: #CBD5E1;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+  }
+
+  .timeframe-btn.active {
+    background: #FF914D;
+    color: white;
+  }
+
+  .timeframe-btn:hover:not(.active) {
+    background: #334155;
+    color: #F8FAFC;
+  }
+
+  .performance-display {
+    text-align: center;
+  }
+
+  .performance-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #10B981;
+    font-family: 'Roboto Mono', monospace;
+    margin-bottom: 0.5rem;
+  }
+
+  .performance-period {
+    font-size: 1rem;
+    color: #CBD5E1;
+    font-weight: 500;
+  }
+
+  /* Market Data Section */
+  .market-data-section {
+    margin-bottom: 3rem;
+  }
+
+  .market-data-section h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 2rem;
+  }
+
+  .market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .market-card {
+    background: #1E293B;
+    border: 1px solid #334155;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .market-card:hover {
+    transform: translateY(-2px);
+    border-color: #FF914D;
+    box-shadow: 0 10px 30px rgba(255, 145, 77, 0.1);
+  }
+
+  .market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .market-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0CC0DF;
+    margin: 0;
+    letter-spacing: 0.05em;
+  }
+
+  .market-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    font-family: 'Roboto Mono', monospace;
+  }
+
+  .market-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #F8FAFC;
   }
 
   .stat-value.positive {
-    color: #10B981;
   }
 
   .stat-value.negative {
