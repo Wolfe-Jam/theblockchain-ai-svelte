@@ -128,7 +128,7 @@
       if (!isDesktop || mobileMenuOpen) return;
       
       // NEVER hide header when any dropdown is open
-      if (visionDropdownOpen || resourceDropdownOpen) return;
+      if (visionDropdownOpen || resourceDropdownOpen || investDropdownOpen) return;
       
       // Show header when mouse is in top 100px OR on content pages (always visible) OR sequence completed on home
       const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides'];
