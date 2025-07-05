@@ -156,10 +156,8 @@
     showReportDownload = true;
   }
   
-  function scrollToOpportunities() {
-    document.getElementById('investment-opportunities').scrollIntoView({ 
-      behavior: 'smooth' 
-    });
+  function navigateToOpportunities() {
+    window.location.href = '/invest/opportunities';
   }
   
   function toggleMarketChart() {
@@ -330,120 +328,15 @@
         </div>
         
         <div class="hero-cta-group">
-          <button class="hero-cta" on:click={scrollToOpportunities}>
+          <button class="hero-cta" on:click={navigateToOpportunities}>
             <span>Explore Investment Opportunities</span>
-            <i class="fas fa-arrow-down"></i>
+            <i class="fas fa-arrow-right"></i>
           </button>
           
           <a href="/invest/dashboard" class="hero-cta secondary">
             <span>View Live Dashboard</span>
             <i class="fas fa-external-link-alt"></i>
           </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Investment Opportunities Section -->
-<div id="investment-opportunities" class="invest-landing">
-  <div class="container">
-    <h1 class="invest-title">Investment Opportunity</h1>
-    <p class="invest-subtitle">All code on blockchain. Every transaction. All Smart Contracts. Zero fraud, devs get paid. Trusted AI from theBlockchain.ai - the Authority in Open-Source matters on the BC.</p>
-
-    <div class="investment-highlights">
-      <div class="highlight-item">
-        <div class="highlight-icon sun-bg">
-          <i class="fas fa-chart-line"></i>
-        </div>
-        <h3>Massive Market</h3>
-        <p>Multi-trillion dollar convergent economy at the intersection of AI, blockchain, and software development</p>
-      </div>
-      
-      <div class="highlight-item">
-        <div class="highlight-icon trust-bg">
-          <img src="/zero-fraud-icon.svg" alt="Zero Fraud" class="trust-logo">
-        </div>
-        <h3>Zero Fraud</h3>
-        <p>First-ever blockchain-based development platform ensuring complete transparency and trust</p>
-      </div>
-      
-      <div class="highlight-item">
-        <div class="highlight-icon ocean-bg">
-          <i class="fas fa-rocket"></i>
-        </div>
-        <h3>Unique Platform</h3>
-        <p>Revolutionary three-pillar strategy: OUTPUT Marketplace, Code-In-Action, and theBlockchain infrastructure</p>
-      </div>
-    </div>
-
-    <!-- Two Column Layout -->
-    <div class="two-column-layout">
-      <!-- Column A: PDF Download -->
-      <div class="column column-a">
-        <div class="column-header">
-          <h2>Professional PDF Report</h2>
-          <p class="column-subtitle">For Investors, Developers, Researchers & General Interest. Students welcome!</p>
-        </div>
-        
-        <div class="pdf-section">
-          <div class="report-info">
-            <h3>"The Convergent Economy" Market Research</h3>
-            <p class="report-description">Comprehensive 26-page analysis of the convergent AI, Software, and Blockchain economy with professional insights and market data.</p>
-            
-            <div class="report-details">
-              <h3>Professional Report Features:</h3>
-              <ul>
-                <li>Market Analysis & Projections</li>
-                <li>Technology Convergence Insights</li>
-                <li>Tokenization Framework</li>
-                <li>Educational & Research Use</li>
-              </ul>
-            </div>
-          </div>
-          
-          <div class="cta-section">
-            <button class="download-cta" on:click={openReportDownload}>
-              <i class="fas fa-download"></i>
-              Download Professional Report
-            </button>
-            
-            <p class="download-note">Free access with professional details</p>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Column B: Serious Investors -->
-      <div class="column column-b">
-        <div class="column-header">
-          <h2>Investment Opportunities</h2>
-          <p class="column-subtitle">For Companies & Individual Investors</p>
-        </div>
-        
-        <div class="investor-section">
-          <div class="investor-warning">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span>Capital Investment Inquiries Only</span>
-          </div>
-          
-          <div class="investor-details">
-            <h3>Investment Opportunity Details:</h3>
-            <ul>
-              <li>Minimum investment thresholds apply</li>
-              <li>Due diligence materials provided to qualified investors</li>
-              <li>Professional PDF report included with all investment inquiries</li>
-              <li>Direct access to founding team and technical leadership</li>
-            </ul>
-          </div>
-          
-          <div class="cta-section">
-            <button class="investor-cta" on:click={openInvestorModal}>
-              <i class="fas fa-handshake"></i>
-              Express Investment Interest
-            </button>
-            
-            <p class="disclaimer">Available to accredited investors and institutional partners</p>
-          </div>
         </div>
       </div>
     </div>
@@ -846,7 +739,7 @@
   }
   
   .hero-cta {
-    background: linear-gradient(135deg, var(--brand-orange), var(--brand-cyan));
+    background: linear-gradient(135deg, var(--brand-blue), var(--brand-blue-text));
     color: white;
     border: none;
     padding: 1.25rem 2.5rem;
@@ -859,21 +752,21 @@
     align-items: center;
     gap: 0.75rem;
     text-decoration: none;
-    box-shadow: 0 4px 15px rgba(255, 145, 77, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 74, 174, 0.3);
   }
   
   .hero-cta:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 145, 77, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 74, 174, 0.4);
   }
   
   .hero-cta.secondary {
-    background: linear-gradient(135deg, var(--brand-blue), var(--brand-cyan));
-    box-shadow: 0 4px 15px rgba(12, 192, 223, 0.3);
+    background: linear-gradient(135deg, var(--brand-orange-text), var(--brand-orange));
+    box-shadow: 0 4px 15px rgba(255, 145, 77, 0.3);
   }
   
   .hero-cta.secondary:hover {
-    box-shadow: 0 8px 25px rgba(12, 192, 223, 0.4);
+    box-shadow: 0 8px 25px rgba(255, 145, 77, 0.4);
   }
   
   @keyframes glow {
@@ -958,19 +851,6 @@
     .hero-cta {
       padding: 1rem 2rem;
       font-size: 1.1rem;
-    }
-    
-    .two-column-layout {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-    
-    .invest-title {
-      font-size: 2.5rem;
-    }
-    
-    .investment-highlights {
-      gap: 1.5rem;
     }
   }
   
