@@ -37,7 +37,10 @@
     
     // Import Chart.js dynamically
     import('https://cdn.jsdelivr.net/npm/chart.js').then((Chart) => {
+      console.log('Chart.js loaded successfully');
       initializeCharts(Chart.default);
+    }).catch(error => {
+      console.error('Failed to load Chart.js:', error);
     });
     
     // Realistic market progression animation with smooth counter
@@ -110,8 +113,7 @@
     animatedMarketValue = currentMarketValue;
     showResetPrompt = false;
     animationPaused = false;
-    // Restart the animation
-    animateMarketProgression();
+    // Don't restart here - let the existing intervals continue
   }
   
   function manualReset() {
@@ -119,6 +121,8 @@
   }
   
   function initializeCharts(Chart) {
+    console.log('Initializing charts...');
+    
     const brandColors = {
       orange: '#FF914D',
       cyan: '#0CC0DF', 
@@ -159,6 +163,7 @@
     
     // Market Forecast Chart
     const marketCtx = document.getElementById('marketForecastChart');
+    console.log('Market chart canvas:', marketCtx);
     if (marketCtx) {
       marketForecastChart = new Chart(marketCtx, {
         type: 'bar',
@@ -180,10 +185,12 @@
           }
         }
       });
+      console.log('Market chart created');
     }
     
     // CAGR Comparison Chart  
     const cagrCtx = document.getElementById('cagrChart');
+    console.log('CAGR chart canvas:', cagrCtx);
     if (cagrCtx) {
       cagrChart = new Chart(cagrCtx, {
         type: 'bar',
@@ -204,10 +211,12 @@
           }
         }
       });
+      console.log('CAGR chart created');
     }
     
     // Convergence Timeline Chart
     const convergenceCtx = document.getElementById('convergenceChart');
+    console.log('Convergence chart canvas:', convergenceCtx);
     if (convergenceCtx) {
       convergenceChart = new Chart(convergenceCtx, {
         type: 'line',
@@ -248,7 +257,10 @@
           }
         }
       });
+      console.log('Convergence chart created');
     }
+    
+    console.log('All charts initialized');
   }
   
   function openInvestorModal() {
