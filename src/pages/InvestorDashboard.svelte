@@ -528,6 +528,7 @@
     background: #0F172A;
     color: #F8FAFC;
     font-family: 'Inter', sans-serif;
+    padding-top: 5rem; /* Add padding to accommodate header */
   }
 
   .dashboard-header {
@@ -537,9 +538,11 @@
     padding: 2rem;
     border-bottom: 1px solid #334155;
     background: #1E293B;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 10;
+    left: 0;
+    right: 0;
+    z-index: 50;
     backdrop-filter: blur(10px);
   }
 
@@ -1182,6 +1185,10 @@
 
   /* Responsive Design */
   @media (max-width: 768px) {
+    .dashboard-container {
+      padding-top: 8rem; /* More padding on mobile for larger header */
+    }
+    
     .dashboard-header {
       flex-direction: column;
       gap: 1rem;
