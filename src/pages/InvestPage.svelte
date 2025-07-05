@@ -28,6 +28,8 @@
   let currentMarketValue = marketData[currentYear].total;
   let animatedMarketValue = currentMarketValue;
   let spotsLeft = 1337;
+  let showResetPrompt = false;
+  let animationPaused = false;
   
   onMount(() => {
     // Ensure professional focus
@@ -54,35 +56,64 @@
     const years = Object.keys(marketData).map(Number);
     let currentIndex = 0;
     let targetValue = marketData[years[currentIndex]].total;
+    let smoothCounterInterval;
+    let yearProgressionInterval;
     
-    // Smooth counter animation - always going up
-    const smoothCounter = setInterval(() => {
-      const difference = targetValue - animatedMarketValue;
-      
-      if (Math.abs(difference) > 0.01) {
-        // Smooth increment toward target
-        const increment = difference * 0.02; // 2% of remaining distance
-        animatedMarketValue += Math.max(increment, 0.001); // Minimum increment
-      }
-    }, 50); // 20fps smooth animation
+    function startSmoothCounter() {
+      // Smooth counter animation - always going up
+      smoothCounterInterval = setInterval(() => {
+        if (animationPaused) return;
+        
+        const difference = targetValue - animatedMarketValue;
+        
+        if (Math.abs(difference) > 0.01) {
+          // Smooth increment toward target
+          const increment = difference * 0.02; // 2% of remaining distance
+          animatedMarketValue += Math.max(increment, 0.001); // Minimum increment
+        }
+      }, 50); // 20fps smooth animation
+    }
     
-    // Year milestone updates
-    const yearProgression = setInterval(() => {
-      currentIndex = (currentIndex + 1) % years.length;
-      currentYear = years[currentIndex];
-      currentMarketValue = marketData[currentYear].total;
-      targetValue = currentMarketValue;
-      
-      // Reset animation when cycling back to 2025
-      if (currentIndex === 0) {
-        animatedMarketValue = marketData[currentYear].total;
-      }
-    }, 4000); // Year changes every 4 seconds
+    function startYearProgression() {
+      // Year milestone updates
+      yearProgressionInterval = setInterval(() => {
+        if (animationPaused) return;
+        
+        currentIndex = (currentIndex + 1) % years.length;
+        
+        // Check if we're cycling back to 2025
+        if (currentIndex === 0) {
+          animationPaused = true;
+          showResetPrompt = true;
+          return;
+        }
+        
+        currentYear = years[currentIndex];
+        currentMarketValue = marketData[currentYear].total;
+        targetValue = currentMarketValue;
+      }, 4000); // Year changes every 4 seconds
+    }
+    
+    // Start both animations
+    startSmoothCounter();
+    startYearProgression();
     
     return () => {
-      clearInterval(smoothCounter);
-      clearInterval(yearProgression);
+      clearInterval(smoothCounterInterval);
+      clearInterval(yearProgressionInterval);
     };
+  }
+  
+  function resetAnimation() {
+    currentYear = 2025;
+    currentMarketValue = marketData[currentYear].total;
+    animatedMarketValue = currentMarketValue;
+    showResetPrompt = false;
+    animationPaused = false;
+  }
+  
+  function manualReset() {
+    resetAnimation();
   }
   
   function initializeCharts(Chart) {
@@ -250,6 +281,24 @@
             <span class="market-value">${animatedMarketValue.toFixed(2)}</span>
             <span class="market-label">TRILLION</span>
           </h1>
+          
+          <!-- Reset Prompt -->
+          {#if showResetPrompt}
+            <div class="reset-prompt">
+              <p class="reset-question">See the full growth projection again?</p>
+              <div class="reset-buttons">
+                <button class="reset-btn primary" on:click={resetAnimation}>
+                  <i class="fas fa-play"></i>
+                  Start Counter
+                </button>
+                <button class="manual-reset-btn" on:click={manualReset} title="Manual Reset">
+                  <i class="fas fa-redo"></i>
+                  ↪️
+                </button>
+              </div>
+            </div>
+          {/if}
+          
           <p class="market-subtitle">Market Convergence Is Here</p>
           <div class="market-breakdown">
             <div class="breakdown-item">
@@ -325,6 +374,12 @@
           <div class="indicator">
             <div class="indicator-icon animate-pulse">🎯</div>
             <span>Early-stage positioning window</span>
+          </div>
+          <div class="indicator">
+            <button class="timeline-reset-btn" on:click={manualReset} title="Reset Timeline">
+              <i class="fas fa-redo"></i>
+              <span>Reset Timeline ↪️</span>
+            </button>
           </div>
         </div>
         
@@ -584,6 +639,76 @@
     line-height: 1.6;
   }
   
+  /* Reset Prompt Styling */
+  .reset-prompt {
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid var(--brand-cyan);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    backdrop-filter: blur(10px);
+    animation: slideIn 0.5s ease;
+  }
+  
+  .reset-question {
+    color: var(--brand-cyan);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .reset-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .reset-btn {
+    background: linear-gradient(135deg, var(--brand-cyan), var(--brand-orange));
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(12, 192, 223, 0.3);
+  }
+  
+  .manual-reset-btn, .timeline-reset-btn {
+    background: rgba(51, 65, 85, 0.7);
+    color: var(--brand-orange);
+    border: 1px solid var(--brand-orange);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .timeline-reset-btn {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(5px);
+  }
+  
+  .manual-reset-btn:hover, .timeline-reset-btn:hover {
+    background: var(--brand-orange);
+    color: white;
+    transform: translateY(-1px);
+  }
+  
   /* Chart Trinity */
   .chart-trinity {
     display: grid;
@@ -730,6 +855,17 @@
     }
     to {
       text-shadow: 0 0 30px rgba(255, 145, 77, 0.6), 0 0 40px rgba(12, 192, 223, 0.3);
+    }
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
   
