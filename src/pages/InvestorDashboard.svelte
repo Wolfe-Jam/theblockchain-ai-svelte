@@ -528,7 +528,7 @@
     background: #0F172A;
     color: #F8FAFC;
     font-family: 'Inter', sans-serif;
-    padding-top: 5rem; /* Add padding to accommodate header */
+    margin-top: 5rem; /* Add margin to push content below main site header */
   }
 
   .dashboard-header {
@@ -538,11 +538,9 @@
     padding: 2rem;
     border-bottom: 1px solid #334155;
     background: #1E293B;
-    position: fixed;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
+    z-index: 10;
     backdrop-filter: blur(10px);
   }
 
@@ -1186,7 +1184,7 @@
   /* Responsive Design */
   @media (max-width: 768px) {
     .dashboard-container {
-      padding-top: 8rem; /* More padding on mobile for larger header */
+      margin-top: 7rem; /* More margin on mobile for responsive header */
     }
     
     .dashboard-header {
