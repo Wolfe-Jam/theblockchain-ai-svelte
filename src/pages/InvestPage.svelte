@@ -285,17 +285,11 @@
           <!-- Reset Prompt -->
           {#if showResetPrompt}
             <div class="reset-prompt">
-              <p class="reset-question">See the full growth projection again?</p>
-              <div class="reset-buttons">
-                <button class="reset-btn primary" on:click={resetAnimation}>
-                  <i class="fas fa-play"></i>
-                  Start Counter
-                </button>
-                <button class="manual-reset-btn" on:click={manualReset} title="Manual Reset">
-                  <i class="fas fa-redo"></i>
-                  ↪️
-                </button>
-              </div>
+              <p class="reset-question">Are you IN yet?</p>
+              <button class="reset-btn primary" on:click={resetAnimation}>
+                <i class="fas fa-redo"></i>
+                Start Over
+              </button>
             </div>
           {/if}
           
@@ -376,9 +370,9 @@
             <span>Early-stage positioning window</span>
           </div>
           <div class="indicator">
-            <button class="timeline-reset-btn" on:click={manualReset} title="Reset Timeline">
+            <button class="timeline-reset-btn" on:click={manualReset} title="Start Over">
               <i class="fas fa-redo"></i>
-              <span>Reset Timeline ↪️</span>
+              <span>Start Over</span>
             </button>
           </div>
         </div>
@@ -639,53 +633,48 @@
     line-height: 1.6;
   }
   
-  /* Reset Prompt Styling */
+  /* Reset Prompt Styling - Simple & Sleek */
   .reset-prompt {
-    background: rgba(15, 23, 42, 0.9);
-    border: 2px solid var(--brand-cyan);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    backdrop-filter: blur(10px);
-    animation: slideIn 0.5s ease;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--brand-cyan);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    backdrop-filter: blur(5px);
+    animation: slideIn 0.3s ease;
+    display: inline-block;
   }
   
   .reset-question {
     color: var(--brand-cyan);
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin: 0 0 0.75rem 0;
     text-align: center;
-  }
-  
-  .reset-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    align-items: center;
   }
   
   .reset-btn {
     background: linear-gradient(135deg, var(--brand-cyan), var(--brand-orange));
     color: white;
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1rem;
     border-radius: 0.5rem;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    font-size: 0.9rem;
   }
   
   .reset-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(12, 192, 223, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(12, 192, 223, 0.3);
   }
   
-  .manual-reset-btn, .timeline-reset-btn {
-    background: rgba(51, 65, 85, 0.7);
+  .timeline-reset-btn {
+    background: rgba(15, 23, 42, 0.8);
     color: var(--brand-orange);
     border: 1px solid var(--brand-orange);
     padding: 0.5rem 1rem;
@@ -696,14 +685,10 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
-  }
-  
-  .timeline-reset-btn {
-    background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(5px);
   }
   
-  .manual-reset-btn:hover, .timeline-reset-btn:hover {
+  .timeline-reset-btn:hover {
     background: var(--brand-orange);
     color: white;
     transform: translateY(-1px);
