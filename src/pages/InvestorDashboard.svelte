@@ -917,6 +917,7 @@
   }
 
   .stat-value.positive {
+    color: #10B981;
   }
 
   .stat-value.negative {
