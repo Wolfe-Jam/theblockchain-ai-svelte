@@ -12,6 +12,8 @@
   
   // Realistic market progression data
   let currentYear = 2025;
+  let marketOutlook = 'highly-likely'; // Toggle state
+  
   let marketData = {
     2025: { total: 2.52, ai: 1.80, blockchain: 0.12, software: 0.60 },
     2026: { total: 3.25, ai: 2.20, blockchain: 0.30, software: 0.75 },
@@ -48,23 +50,38 @@
   const cagrBlockchainLow = tweened(0, { duration: 1100, easing: cubicOut });
   const cagrBlockchainAI = tweened(0, { duration: 1200, easing: cubicOut });
   const cagrSoftware = tweened(0, { duration: 900, easing: cubicOut });
-  const cagrAI = tweened(0, { duration: 800, easing: cubicOut });
-  
-  // Market size data (2030-2034 projections)
-  const marketSizeData = [
+
+  // Toggle function
+  function toggleMarketOutlook(outlook, event) {
+    event.stopPropagation();
+    marketOutlook = outlook;
+  }
+
+  // Reactive data for Box 1: Market Size
+  $: marketSizeData = marketOutlook === 'conservative' ? [
+    { label: 'AI by 2034', value: 2.1, color: 'var(--brand-cyan)' },
+    { label: 'Blockchain by 2034', value: 3.2, color: 'var(--brand-orange-text)' },
+    { label: 'Software by 2034', value: 1.1, color: 'var(--brand-blue)' }
+  ] : [
     { label: 'AI by 2034', value: 3.68, color: 'var(--brand-cyan)' },
-    { label: 'Blockchain by 2030', value: 1.43, color: 'var(--brand-orange)' },
-    { label: 'Software by 2030', value: 1.04, color: 'var(--brand-blue)' }
+    { label: 'Blockchain by 2034', value: 5.85, color: 'var(--brand-orange-text)' },
+    { label: 'Software by 2034', value: 1.90, color: 'var(--brand-blue)' }
+  ];
+
+  // Reactive data for Box 2: Growth Rate
+  $: cagrData = marketOutlook === 'conservative' ? [
+    { label: 'Blockchain (High)', value: 45.2, color: 'var(--brand-orange-text)' },
+    { label: 'Blockchain (Low)', value: 22.1, color: 'var(--brand-orange)' },
+    { label: 'AI', value: 18.5, color: 'var(--brand-cyan)' },
+    { label: 'Software', value: 11.4, color: 'var(--brand-blue)' }
+  ] : [
+    { label: 'Blockchain (High)', value: 90.1, color: 'var(--brand-orange-text)' },
+    { label: 'Blockchain (Low)', value: 43.6, color: 'var(--brand-orange)' },
+    { label: 'AI', value: 37.18, color: 'var(--brand-cyan)' },
+    { label: 'Software', value: 22.71, color: 'var(--brand-blue)' }
   ];
   
-  // CAGR data
-  const cagrData = [
-    { label: 'Blockchain (High)', value: 90.1, color: 'var(--brand-orange)' },
-    { label: 'Blockchain (Low)', value: 43.6, color: 'var(--brand-orange-text)' },
-    { label: 'Blockchain AI', value: 37.18, color: 'var(--brand-cyan)' },
-    { label: 'Software Dev', value: 22.71, color: 'var(--brand-blue)' },
-    { label: 'AI', value: 19.2, color: 'var(--brand-cyan)' }
-  ];
+  const cagrAI = tweened(0, { duration: 800, easing: cubicOut });
   
   onMount(() => {
     // Ensure professional focus
@@ -267,126 +284,140 @@
         </p>
       </div>
       
-      <!-- Charts Wide Container -->
-      <div class="charts-wide-container">
-        <div class="chart-trinity" class:has-hovered={hoveredChart !== null} class:has-clicked={clickedChart !== null}>
-        <!-- Market Size Chart -->
-        <div class="chart-card" 
-             class:hovered={hoveredChart === 'market'} 
-             class:expanded={clickedChart === 'market'} 
-             class:minimized={clickedChart !== null && clickedChart !== 'market'}
-             on:mouseenter={() => handleChartHover('market')}
-             on:mouseleave={handleChartLeave}
-             on:click={() => handleChartClick('market')}>
-          <h3 class="chart-title">Market Size by 2030-2034</h3>
-          <div class="svelte-chart-container">
-            <div class="horizontal-chart-wrapper">
+      <!-- New 2-Box Layout with Toggle -->
+      <div class="charts-container">
+        <!-- Top Row: Box 1 & Box 2 Side by Side -->
+        <div class="top-row">
+          <!-- Box 1: Market Size with Toggle -->
+          <div class="chart-box market-size-box">
+            <!-- Toggle Header -->
+            <div class="toggle-header">
+              <h3 class="chart-title">Market Size by 2034</h3>
+              <div class="toggle-buttons">
+                <button 
+                  class="toggle-btn"
+                  class:active={marketOutlook === 'conservative'}
+                  on:click={(e) => toggleMarketOutlook('conservative', e)}
+                >
+                  Conservative
+                </button>
+                <button 
+                  class="toggle-btn"
+                  class:active={marketOutlook === 'highly-likely'}
+                  on:click={(e) => toggleMarketOutlook('highly-likely', e)}
+                >
+                  Highly Likely
+                </button>
+              </div>
+            </div>
+            
+            <!-- Market Size Bars -->
+            <div class="horizontal-bars-container">
               {#each marketSizeData as item, i}
                 <div class="chart-bar-horizontal">
                   <div class="bar-label">{item.label}</div>
                   <div class="bar-track">
                     <div 
                       class="bar-fill"
-                      style="background: {item.color}; width: {i === 0 ? $aiMarketHeight : i === 1 ? $blockchainMarketHeight : $softwareMarketHeight}%"
+                      style="background: {item.color}; width: {(item.value / Math.max(...marketSizeData.map(d => d.value))) * 100}%"
                     ></div>
                   </div>
                   <div class="bar-value">${item.value}T</div>
                 </div>
               {/each}
-            </div>
-          </div>
-          <p class="chart-insight">Combined $6.15T+ opportunity</p>
-        </div>
-        
-        <!-- CAGR Chart -->
-        <div class="chart-card" 
-             class:hovered={hoveredChart === 'cagr'} 
-             class:expanded={clickedChart === 'cagr'} 
-             class:minimized={clickedChart !== null && clickedChart !== 'cagr'}
-             on:mouseenter={() => handleChartHover('cagr')}
-             on:mouseleave={handleChartLeave}
-             on:click={() => handleChartClick('cagr')}>
-          <h3 class="chart-title">Growth Rate Comparison</h3>
-          <div class="svelte-chart-container">
-            {#each cagrData as item, i}
-              <div class="chart-bar-vertical">
-                <div class="bar-track-vertical">
+              
+              <!-- TOTAL Gradient Bar -->
+              <div class="separator-line"></div>
+              <div class="chart-bar-horizontal total-bar">
+                <div class="bar-label total-label">TOTAL</div>
+                <div class="bar-track">
                   <div 
-                    class="bar-fill-vertical"
-                    style="background: {item.color}; height: {i === 0 ? $cagrBlockchainHigh : i === 1 ? $cagrBlockchainLow : i === 2 ? $cagrBlockchainAI : i === 3 ? $cagrSoftware : $cagrAI}%"
+                    class="bar-fill total-gradient"
+                    class:conservative-gradient={marketOutlook === 'conservative'}
+                    class:highly-likely-gradient={marketOutlook === 'highly-likely'}
+                    style="width: 100%"
                   ></div>
                 </div>
-                <div class="bar-label-vertical">{item.label}</div>
-                <div class="bar-value-vertical">{item.value}%</div>
+                <div class="bar-value total-value">
+                  ${marketSizeData.reduce((sum, item) => sum + item.value, 0).toFixed(2)}T
+                </div>
               </div>
-            {/each}
+            </div>
           </div>
-          <p class="chart-insight">Blockchain leads at 90%+ CAGR</p>
+          
+          <!-- Box 2: Growth Rate Comparison -->
+          <div class="chart-box growth-rate-box">
+            <h3 class="chart-title">Growth Rate Comparison</h3>
+            
+            <!-- Growth Rate Bars -->
+            <div class="horizontal-bars-container">
+              {#each cagrData as item, i}
+                <div class="chart-bar-horizontal">
+                  <div class="bar-label">{item.label}</div>
+                  <div class="bar-track">
+                    <div 
+                      class="bar-fill"
+                      style="background: {item.color}; width: {(item.value / Math.max(...cagrData.map(d => d.value))) * 100}%"
+                    ></div>
+                  </div>
+                  <div class="bar-value">{item.value}%</div>
+                </div>
+              {/each}
+              
+              <!-- AVG GROWTH Gradient Bar -->
+              <div class="separator-line"></div>
+              <div class="chart-bar-horizontal total-bar">
+                <div class="bar-label total-label">AVG GROWTH</div>
+                <div class="bar-track">
+                  <div 
+                    class="bar-fill total-gradient"
+                    class:conservative-gradient={marketOutlook === 'conservative'}
+                    class:highly-likely-gradient={marketOutlook === 'highly-likely'}
+                    style="width: 100%"
+                  ></div>
+                </div>
+                <div class="bar-value total-value">
+                  {(cagrData.reduce((sum, item) => sum + item.value, 0) / cagrData.length).toFixed(1)}%
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         
-        <!-- Convergence Timeline -->
-        <div class="chart-card timeline-square" 
-             class:hovered={hoveredChart === 'timeline'} 
-             class:expanded={clickedChart === 'timeline'} 
-             class:minimized={clickedChart !== null && clickedChart !== 'timeline'}
-             on:mouseenter={() => handleChartHover('timeline')}
-             on:mouseleave={handleChartLeave}
-             on:click={() => handleChartClick('timeline')}>
-          <h3 class="chart-title">🚀 Market Explosion Timeline</h3>
-          <div class="svelte-chart-container timeline-chart">
+        <!-- Bottom Row: Box 3 Timeline Full Width -->
+        <div class="bottom-row">
+          <div class="chart-box timeline-box">
+            <h3 class="chart-title">🚀 Market Explosion Timeline</h3>
             <div class="timeline-content">
               <div class="countdown-container">
                 <div class="countdown-item">
-                  <div class="countdown-number">6</div>
+                  <div class="countdown-number">9</div>
                   <div class="countdown-label">Years</div>
                 </div>
                 <div class="countdown-separator">→</div>
                 <div class="countdown-item">
-                  <div class="countdown-number">11.4</div>
+                  <div class="countdown-number">{marketOutlook === 'conservative' ? '6.4' : '11.43'}</div>
                   <div class="countdown-label">Trillion</div>
                 </div>
               </div>
               
-              {#if clickedChart === 'timeline'}
-                <div class="bullet-emphasis" transition:fade={{ duration: 800 }}>
-                  <div class="bullet-item">
-                    <span class="bullet-icon">💥</span>
-                    <span class="bullet-text">2024-2030: Critical Positioning Window</span>
-                  </div>
-                  <div class="bullet-item">
-                    <span class="bullet-icon">⚡</span>
-                    <span class="bullet-text">Blockchain Growing 4x Faster Than AI</span>
-                  </div>
-                  <div class="bullet-item">
-                    <span class="bullet-icon">🎯</span>
-                    <span class="bullet-text">Early Entry = Maximum Advantage</span>
-                  </div>
-                  <div class="bullet-item">
-                    <span class="bullet-icon">🔥</span>
-                    <span class="bullet-text">Platform Convergence Accelerating</span>
-                  </div>
+              <div class="explosion-stats">
+                <div class="stat-item">
+                  <span class="stat-icon">⚡</span>
+                  <span class="stat-text">Critical Window: 2024-2034</span>
                 </div>
-              {:else}
-                <div class="explosion-stats">
-                  <div class="stat-item">
-                    <span class="stat-icon">⚡</span>
-                    <span class="stat-text">Critical Window: 2024-2030</span>
-                  </div>
-                  <div class="stat-item">
-                    <span class="stat-icon">🔥</span>
-                    <span class="stat-text">Blockchain: 4x Faster Growth</span>
-                  </div>
-                  <div class="stat-item">
-                    <span class="stat-icon">💎</span>
-                    <span class="stat-text">Early Entry Advantage</span>
-                  </div>
+                <div class="stat-item">
+                  <span class="stat-icon">🔥</span>
+                  <span class="stat-text">Blockchain: {marketOutlook === 'conservative' ? '45%' : '90%'} CAGR</span>
                 </div>
-              {/if}
+                <div class="stat-item">
+                  <span class="stat-icon">💎</span>
+                  <span class="stat-text">Early Entry Advantage</span>
+                </div>
+              </div>
             </div>
           </div>
-          <p class="chart-insight">🎯 Prime positioning window closing fast</p>
         </div>
-      </div>
       </div>
       
       <!-- Hero Transition -->
@@ -620,146 +651,140 @@
     line-height: 1.6;
   }
   
-  /* Charts Wide Container */
-  .charts-wide-container {
+  /* New 2-Box Layout Styles */
+  .charts-container {
     width: 100%;
-    padding: 0 3rem;
-    margin: 4rem 0 6rem; /* Increased bottom margin to prevent collision */
-    position: relative;
-    z-index: 5; /* Lower than expanded charts but higher than text */
-  }
-  
-  /* Chart Trinity - Dynamic Layout */
-  .chart-trinity {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr 1fr;
-    gap: 2rem;
+    padding: 0 2rem;
+    margin: 4rem 0 6rem;
     max-width: 1400px;
-    margin: 0 auto;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: auto;
+    margin-right: auto;
   }
   
-  /* When Box 3 (Timeline) is hovered, create space for square */
-  .chart-trinity.has-hovered:has(.timeline-square.expanded) {
-    grid-template-columns: 0.4fr 0.3fr 1.3fr;
-    grid-template-rows: auto auto;
+  .top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
   }
   
-  /* When Box 1 or 2 is hovered, use standard compression */
-  .chart-trinity.has-hovered:not(:has(.timeline-square.expanded)) {
-    grid-template-columns: 0.2fr 0.2fr 0.2fr;
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr;
   }
   
-  /* Individual chart card transitions - Base - SLOW & SMOOTH */
-  .chart-card {
+  .chart-box {
     background: rgba(15, 23, 42, 0.9);
     border: 1px solid rgba(51, 65, 85, 0.5);
     border-radius: 1rem;
     padding: 1.5rem;
     backdrop-filter: blur(10px);
-    transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
+    transition: all 0.4s ease;
   }
   
-  /* Short hover preview effects */
-  .chart-card.hovered {
-    transform: scale(1.05);
-    border-color: rgba(255, 145, 77, 0.5);
-    box-shadow: 0 10px 30px rgba(255, 145, 77, 0.2);
+  .chart-box:hover {
+    border-color: rgba(255, 145, 77, 0.3);
+    box-shadow: 0 8px 25px rgba(255, 145, 77, 0.15);
+  }
+  
+  /* Toggle Header Styles */
+  .toggle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .toggle-buttons {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(51, 65, 85, 0.3);
+    border-radius: 0.75rem;
+    padding: 0.25rem;
+  }
+  
+  .toggle-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: #94a3b8;
+  }
+  
+  .toggle-btn.active {
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* More specific toggle styling using nth-child */
+  .toggle-btn:nth-child(1).active {
+    background: var(--brand-blue);
+  }
+  
+  .toggle-btn:nth-child(2).active {
+    background: var(--brand-orange-text);
+  }
+  
+  .toggle-btn:hover:not(.active) {
+    background: rgba(51, 65, 85, 0.6);
+    color: #e2e8f0;
+  }
+  
+  /* Horizontal Bars Container */
+  .horizontal-bars-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* Separator Line */
+  .separator-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(51, 65, 85, 0.5), transparent);
+    margin: 0.5rem 0;
+  }
+  
+  /* Total Bar Styling */
+  .total-bar .bar-label.total-label {
+    color: var(--brand-orange);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .total-bar .bar-value.total-value {
+    color: var(--brand-orange);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  
+  .total-bar .bar-track {
+    height: 36px;
+  }
+  
+  /* Gradient Styles */
+  .total-gradient.conservative-gradient {
+    background: linear-gradient(90deg, var(--brand-blue), var(--brand-orange)) !important;
+  }
+  
+  .total-gradient.highly-likely-gradient {
+    background: linear-gradient(90deg, var(--brand-blue), var(--brand-orange-text)) !important;
+  }
+  
+  /* Smooth bar animations */
+  .bar-fill {
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Timeline Box Responsive */
+  .timeline-box .countdown-number {
     transition: all 0.3s ease;
   }
   
-  /* Box 1: Market Size - Left to Right Expansion */
-  .chart-card.expanded:nth-child(1) {
-    position: fixed;
-    top: 50%;
-    left: 0;
-    width: 80vw;
-    max-width: 1200px;
-    transform: translateY(-50%);
-    transform-origin: left center;
-    z-index: 15;
-    box-shadow: 0 25px 70px rgba(255, 145, 77, 0.25);
-    border-color: var(--brand-orange);
-    transition: all 1.8s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-  
-  /* Box 2: Growth Rate - Centered Vertical Expansion */
-  .chart-card.expanded:nth-child(2) {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 70vw;
-    height: 80vh;
-    max-width: 1000px;
-    transform: translate(-50%, -50%);
-    z-index: 15;
-    box-shadow: 0 30px 80px rgba(12, 192, 223, 0.3);
-    border-color: var(--brand-cyan);
-    transition: all 2.0s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-  }
-  
-  /* Box 3: Timeline - Centered Square Format */
-  .chart-card.expanded:nth-child(3) {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 60vmin;
-    height: 60vmin;
-    max-width: 600px;
-    max-height: 600px;
-    transform: translate(-50%, -50%);
-    z-index: 15;
-    box-shadow: 0 20px 60px rgba(255, 145, 77, 0.2);
-    border-color: var(--brand-orange);
-    border-radius: 1.5rem;
-    transition: all 1.6s cubic-bezier(0.34, 1.2, 0.64, 1);
-  }
-  
-  /* Minimized state - Slow gentle fade, no jarring changes */
-  .chart-card.minimized {
-    opacity: 0.3;
-    transform: scale(0.98);
-    filter: blur(1px);
-    transition: all 1.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  /* Backdrop overlay when any chart is CLICKED and expanded */
-  .chart-trinity.has-clicked::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-    z-index: 10;
-    opacity: 0;
-    animation: fadeIn 1s ease forwards;
-  }
-  
-  @keyframes fadeIn {
-    to { opacity: 1; }
-  }
-  
-  .chart-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--brand-orange), var(--brand-cyan), var(--brand-orange));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .chart-card.expanded::before {
-    opacity: 1;
-  }
   
   .chart-title {
     color: var(--brand-cyan);
@@ -1296,6 +1321,43 @@
     
     .opportunity-text {
       font-size: 1.3rem;
+    }
+    
+    /* Mobile responsiveness for 2-box layout */
+    .charts-container {
+      padding: 0 1rem;
+    }
+    
+    .top-row {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .toggle-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    
+    .toggle-buttons {
+      align-self: stretch;
+    }
+    
+    .toggle-btn {
+      flex: 1;
+    }
+    
+    .chart-bar-horizontal {
+      grid-template-columns: 1fr 1.5fr auto;
+      gap: 0.75rem;
+    }
+    
+    .bar-label {
+      font-size: 0.8rem;
+    }
+    
+    .bar-value {
+      font-size: 0.9rem;
     }
   }
 </style>
