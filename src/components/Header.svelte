@@ -176,11 +176,21 @@
       }
     });
     
+    // Listen for hide header event for manual toggle
+    window.addEventListener('hideHeader', () => {
+      if (currentPath === '/' && isDesktop) {
+        showHeader = false;
+        sequenceTriggered = false; // Reset sequence state
+      }
+    });
+    
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('showHeader', () => {});
+      window.removeEventListener('hideHeader', () => {});
     };
   });
 </script>

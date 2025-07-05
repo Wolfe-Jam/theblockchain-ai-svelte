@@ -8,6 +8,7 @@
   let showModal = false;
   let showThankYou = false;
   let accordionItems = {};
+  let manualMenuToggle = false; // Track if menu was manually toggled by clicking
   
   // Arrow position states: 'hidden' (shows white arrow), 'above-solution' (shows orange arrow)
   let arrowPosition = 'hidden';
@@ -248,10 +249,25 @@
       showThankYou = true;
     }).catch((error) => alert(error));
   }
+  
+  function handlePageClick() {
+    // Toggle menu visibility - show/hide on each click
+    if (manualMenuToggle) {
+      // Menu is currently shown by manual click, hide it
+      window.dispatchEvent(new CustomEvent('hideHeader'));
+      manualMenuToggle = false;
+    } else {
+      // Menu is hidden, show it
+      window.dispatchEvent(new CustomEvent('showHeader'));
+      manualMenuToggle = true;
+    }
+  }
 </script>
 
 <!-- Hero Scene Container -->
-<div class="scene-container" bind:this={sceneContainer}>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="scene-container" bind:this={sceneContainer} on:click={handlePageClick}>
   <div class="sky">
     <div class="sun-disk"></div>
     <div class="sun-glow"></div>
