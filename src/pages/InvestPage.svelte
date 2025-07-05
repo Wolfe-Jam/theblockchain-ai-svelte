@@ -299,10 +299,15 @@
       <!-- Hero Transition -->
       <div class="hero-transition">
         <div class="convergence-statement">
-          <h2 class="transition-title">Your Position in This<br>Historic Market Shift</h2>
+          <h2 class="transition-title">Your Position in This<br><span class="historic-highlight">Historic Market Shift</span></h2>
           <p class="transition-text">
-            We're building the infrastructure that captures value from this convergence. 
-            Early positioning in our platform means exposure to all three market segments simultaneously.
+            <span class="emphasis-text">We're not just watching the convergence—we're building it.</span>
+            <br><br>
+            While others chase individual markets, we've positioned at the <strong>intersection of all three</strong>. 
+            Your early stake in our platform means <span class="value-highlight">simultaneous exposure</span> 
+            to the AI revolution, blockchain transformation, and software evolution.
+            <br><br>
+            <span class="opportunity-text">This is your moment. The infrastructure is ready. The market is moving.</span>
           </p>
         </div>
         
@@ -869,6 +874,119 @@
     .bar-value {
       text-align: center;
       min-width: auto;
+    }
+  }
+  
+  /* Dramatic Convergence Statement Styling */
+  .convergence-statement {
+    text-align: center;
+    margin: 4rem auto;
+    max-width: 900px;
+    padding: 3rem 2rem;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 2rem;
+    border: 2px solid rgba(255, 145, 77, 0.3);
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .convergence-statement::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(255, 145, 77, 0.1), transparent, rgba(12, 192, 223, 0.1), transparent);
+    animation: rotate 20s linear infinite;
+    z-index: -1;
+  }
+  
+  .transition-title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+    color: #f8fafc;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .historic-highlight {
+    background: linear-gradient(135deg, var(--brand-orange), var(--brand-cyan), var(--brand-orange));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease-in-out infinite;
+    display: inline-block;
+    text-shadow: none;
+  }
+  
+  .transition-text {
+    font-size: 1.3rem;
+    line-height: 1.7;
+    color: #e2e8f0;
+    margin: 0;
+  }
+  
+  .emphasis-text {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--brand-cyan);
+    text-shadow: 0 2px 10px rgba(12, 192, 223, 0.3);
+  }
+  
+  .value-highlight {
+    color: var(--brand-orange);
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(255, 145, 77, 0.3);
+  }
+  
+  .opportunity-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--brand-orange), var(--brand-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-top: 1rem;
+  }
+  
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  @keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  
+  /* Responsive adjustments for convergence statement */
+  @media (max-width: 768px) {
+    .convergence-statement {
+      margin: 2rem auto;
+      padding: 2rem 1.5rem;
+    }
+    
+    .transition-title {
+      font-size: 2.5rem;
+    }
+    
+    .transition-text {
+      font-size: 1.2rem;
+    }
+    
+    .emphasis-text {
+      font-size: 1.3rem;
+    }
+    
+    .opportunity-text {
+      font-size: 1.3rem;
     }
   }
 </style>
