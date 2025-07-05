@@ -86,7 +86,57 @@
     
     return () => clearInterval(spotsInterval);
   });
-      <!-- Interactive Chart Trinity - Built with Svelte -->
+</script>
+
+<svelte:head>
+  <title>Investment Opportunity | theBlockchain.ai</title>
+  <meta name="description" content="Position yourself in the $6+ trillion convergence of AI, Blockchain, and Software markets. Professional investment opportunities available." />
+</svelte:head>
+
+<!-- Market-Shock Hero Section -->
+<div class="market-hero">
+  <div class="container">
+    <!-- BANG! Headline -->
+    <div class="hero-content">
+      <div class="market-headline">
+        <div class="market-progression">
+          <div class="market-year">{currentYear}</div>
+          <h1 class="market-title">
+            <span class="market-value">${animatedMarketValue.toFixed(2)}</span>
+            <span class="market-label">TRILLION</span>
+          </h1>
+          
+          <!-- Reset Prompt - Always Visible -->
+          <div class="reset-prompt">
+            <p class="reset-question">Are you IN yet?</p>
+            <button class="reset-btn primary" on:click={resetAnimation}>
+              <i class="fas fa-redo"></i>
+              Start Over
+            </button>
+          </div>
+          
+          <p class="market-subtitle">Market Convergence Is Here</p>
+          <div class="market-breakdown">
+            <div class="breakdown-item">
+              <span class="breakdown-label">AI</span>
+              <span class="breakdown-value">${marketData[currentYear].ai.toFixed(2)}T</span>
+            </div>
+            <div class="breakdown-separator">+</div>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Blockchain</span>
+              <span class="breakdown-value">${marketData[currentYear].blockchain.toFixed(2)}T</span>
+            </div>
+            <div class="breakdown-separator">+</div>
+            <div class="breakdown-item">
+              <span class="breakdown-label">Software</span>
+              <span class="breakdown-value">${marketData[currentYear].software.toFixed(2)}T</span>
+            </div>
+          </div>
+        </div>
+        <p class="market-description">
+          AI, Blockchain, and Software markets are converging into the largest economic opportunity of our generation. Position yourself at the intersection.
+        </p>
+      </div>
       <div class="chart-trinity">
         <!-- Market Size Chart -->
         <div class="chart-card">
