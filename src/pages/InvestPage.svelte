@@ -26,6 +26,7 @@
   };
   
   let currentMarketValue = marketData[currentYear].total;
+  let animatedMarketValue = currentMarketValue;
   let spotsLeft = 1337;
   
   onMount(() => {
@@ -37,7 +38,7 @@
       initializeCharts(Chart.default);
     });
     
-    // Realistic market progression animation
+    // Realistic market progression animation with smooth counter
     animateMarketProgression();
     
     // Spots counter animation
@@ -52,15 +53,31 @@
   function animateMarketProgression() {
     const years = Object.keys(marketData).map(Number);
     let currentIndex = 0;
+    let targetValue = marketData[years[currentIndex]].total;
     
-    const interval = setInterval(() => {
+    // Smooth counter animation - always going up
+    const smoothCounter = setInterval(() => {
+      const difference = targetValue - animatedMarketValue;
+      
+      if (Math.abs(difference) > 0.01) {
+        // Smooth increment toward target
+        const increment = difference * 0.02; // 2% of remaining distance
+        animatedMarketValue += Math.max(increment, 0.001); // Minimum increment
+      }
+    }, 50); // 20fps smooth animation
+    
+    // Year milestone updates
+    const yearProgression = setInterval(() => {
+      currentIndex = (currentIndex + 1) % years.length;
       currentYear = years[currentIndex];
       currentMarketValue = marketData[currentYear].total;
-      
-      currentIndex = (currentIndex + 1) % years.length;
-    }, 4000); // Change every 4 seconds for realistic viewing
+      targetValue = currentMarketValue;
+    }, 4000); // Year changes every 4 seconds
     
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(smoothCounter);
+      clearInterval(yearProgression);
+    };
   }
   
   function initializeCharts(Chart) {
@@ -225,7 +242,7 @@
         <div class="market-progression">
           <div class="market-year">{currentYear}</div>
           <h1 class="market-title">
-            <span class="market-value">${currentMarketValue.toFixed(2)}</span>
+            <span class="market-value">${animatedMarketValue.toFixed(2)}</span>
             <span class="market-label">TRILLION</span>
           </h1>
           <p class="market-subtitle">Market Convergence Is Here</p>
