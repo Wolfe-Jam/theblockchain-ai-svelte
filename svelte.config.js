@@ -1,13 +1,33 @@
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-export default {
-  // Consult https://svelte.dev/docs#compile-time-svelte-preprocess
-  // for more information about preprocessors
-  preprocess: vitePreprocess(),
-  
-  // Component development guidelines for brand compliance:
-  // - Use exact brand hex codes for graphics: #004AAE, #0CC0DF, #FF914D
-  // - Use Tailwind text variants for typography readability
-  // - Reference _BrandCompliantTemplate.svelte for new components
-  // - See docs/SVELTE-BRAND-COMPLIANCE.md for full guidelines
-}
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
+	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
+	preprocess: vitePreprocess(),
+
+	kit: {
+		// adapter-static configuration for static site generation
+		adapter: adapter({
+			// default options
+			pages: 'dist',
+			assets: 'dist',
+			fallback: null,
+			precompress: false,
+			strict: true
+		}),
+		
+		// Configure routing
+		files: {
+			routes: 'src/routes'
+		},
+		
+		// Prerender all routes for static deployment
+		prerender: {
+			handleMissingId: 'warn',
+			handleHttpError: 'warn'
+		}
+	}
+};
+
+export default config;
