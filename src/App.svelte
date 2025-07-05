@@ -9,6 +9,7 @@
   import VisionPage from './pages/VisionPage.svelte';
   import ReportPage from './pages/ReportPage.svelte';
   import InvestPage from './pages/InvestPage.svelte';
+  import InvestOpportunitiesPage from './pages/InvestOpportunitiesPage.svelte';
   import FAQsPage from './pages/FAQsPage.svelte';
   import BriefingsPage from './pages/BriefingsPage.svelte';
   import ToolsPage from './pages/ToolsPage.svelte';
@@ -63,6 +64,8 @@
       <ReportPage />
     {:else if currentPath === '/invest'}
       <InvestPage />
+    {:else if currentPath === '/invest/opportunities'}
+      <InvestOpportunitiesPage />
     {:else if currentPath === '/faqs'}
       <FAQsPage />
     {:else}

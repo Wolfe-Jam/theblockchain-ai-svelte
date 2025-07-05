@@ -9,7 +9,7 @@
   style="width: {size}; height: {size};"
 >
   <img 
-    src="/theBlockchain-ai-logo.svg" 
+    src="/zero-fraud-icon.svg" 
     alt="Zero Fraud - theBlockchain.ai" 
     class="zero-fraud-logo"
   />

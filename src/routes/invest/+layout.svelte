@@ -5,7 +5,15 @@
   import Footer from '../../../components/Footer.svelte';
   
   // Reactive page title based on route
-  $: pageTitle = $page.route.id?.includes('dashboard') ? 'Investor Dashboard' : 'Investment Opportunities';
+  $: {
+    if ($page.route.id?.includes('dashboard')) {
+      pageTitle = 'Investor Dashboard';
+    } else if ($page.route.id?.includes('opportunities')) {
+      pageTitle = 'Investment Opportunities';
+    } else {
+      pageTitle = 'Investment Overview';
+    }
+  }
 </script>
 
 <svelte:head>

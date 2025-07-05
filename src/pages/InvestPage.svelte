@@ -362,7 +362,7 @@
       
       <div class="highlight-item">
         <div class="highlight-icon trust-bg">
-          <img src="/theBlockchain-ai-logo.svg" alt="theBlockchain.ai" class="trust-logo">
+          <img src="/zero-fraud-icon.svg" alt="Zero Fraud" class="trust-logo">
         </div>
         <h3>Zero Fraud</h3>
         <p>First-ever blockchain-based development platform ensuring complete transparency and trust</p>

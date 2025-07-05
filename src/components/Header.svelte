@@ -14,6 +14,8 @@
   let visionHoverTimeout; // Track hover timeout
   let resourceDropdownOpen = false; // Track resource dropdown state
   let resourceHoverTimeout; // Track hover timeout
+  let investDropdownOpen = false; // Track invest dropdown state
+  let investHoverTimeout; // Track hover timeout
   
   function showVisionDropdown() {
     clearTimeout(visionHoverTimeout);
@@ -34,6 +36,17 @@
   function hideResourceDropdown() {
     resourceHoverTimeout = setTimeout(() => {
       resourceDropdownOpen = false;
+    }, 150); // Small delay to allow mouse movement
+  }
+  
+  function showInvestDropdown() {
+    clearTimeout(investHoverTimeout);
+    investDropdownOpen = true;
+  }
+  
+  function hideInvestDropdown() {
+    investHoverTimeout = setTimeout(() => {
+      investDropdownOpen = false;
     }, 150); // Small delay to allow mouse movement
   }
   
@@ -87,6 +100,14 @@
   
   function closeResourceDropdown() {
     resourceDropdownOpen = false;
+  }
+  
+  function toggleInvestDropdown() {
+    investDropdownOpen = !investDropdownOpen;
+  }
+  
+  function closeInvestDropdown() {
+    investDropdownOpen = false;
   }
   
   onMount(() => {
@@ -254,7 +275,26 @@
               {/if}
             </div>
             
-            <a href="/invest" on:click={closeMobileMenu}>Invest</a>
+            <!-- Invest Dropdown -->
+            <div class="dropdown" class:open={investDropdownOpen}
+                 on:mouseenter={showInvestDropdown}
+                 on:mouseleave={hideInvestDropdown}>
+              <span class="dropdown-trigger" style="cursor: pointer;">
+                Invest 
+                <svg class="dropdown-arrow" class:rotated={investDropdownOpen} width="12" height="12" viewBox="0 0 12 12">
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                </svg>
+              </span>
+              
+              {#if investDropdownOpen}
+                <div class="dropdown-menu">
+                  <a href="/invest" on:click={closeInvestDropdown}>Investment Overview</a>
+                  <a href="/invest/opportunities" on:click={closeInvestDropdown}>Investment Opportunities</a>
+                  <a href="/invest/dashboard" on:click={closeInvestDropdown}>Dashboard</a>
+                </div>
+              {/if}
+            </div>
+            
             <button type="button" class="ask-ai-link" on:click={openAskAI}>Ask AI 🤖</button>
         </div>
         
@@ -301,7 +341,14 @@
                   <a href="/faqs" on:click={closeMobileMenu}>FAQs</a>
                 </div>
                 
-                <a href="/invest" on:click={closeMobileMenu}>Invest</a>
+                <!-- Invest Section -->
+                <div class="mobile-section">
+                  <div class="mobile-section-title">Invest</div>
+                  <a href="/invest" on:click={closeMobileMenu}>Investment Overview</a>
+                  <a href="/invest/opportunities" on:click={closeMobileMenu}>Investment Opportunities</a>
+                  <a href="/invest/dashboard" on:click={closeMobileMenu}>Dashboard</a>
+                </div>
+                
                 <button type="button" class="ask-ai-mobile" on:click={openAskAI}>Ask AI 🤖</button>
             </div>
         </div>
