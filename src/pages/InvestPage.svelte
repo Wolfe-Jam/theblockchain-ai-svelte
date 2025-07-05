@@ -582,6 +582,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    padding: 1rem;
   }
   
   .chart-insight {
@@ -596,38 +598,43 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
   }
   
   .bar-label {
     font-size: 0.85rem;
     color: #cbd5e1;
-    min-width: 100px;
+    min-width: 120px;
     text-align: right;
+    flex-shrink: 0;
   }
   
   .bar-track {
     flex: 1;
-    height: 24px;
+    height: 32px;
     background: rgba(51, 65, 85, 0.3);
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
     position: relative;
+    max-width: 200px;
   }
   
   .bar-fill {
     height: 100%;
-    border-radius: 12px;
+    border-radius: 16px;
     transition: width 1s ease;
     position: relative;
+    min-width: 8px;
   }
   
   .bar-value {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #f8fafc;
     font-weight: 700;
-    min-width: 50px;
+    min-width: 60px;
     text-align: left;
+    flex-shrink: 0;
   }
   
   /* Vertical Bar Chart */
