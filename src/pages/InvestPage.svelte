@@ -152,7 +152,7 @@
       <!-- Hero Transition -->
       <div class="hero-transition">
         <div class="convergence-statement">
-          <h2 class="transition-title">Your Position in This Historic Market Shift</h2>
+          <h2 class="transition-title">Your Position in This<br>Historic Market Shift</h2>
           <p class="transition-text">
             We're building the infrastructure that captures value from this convergence. 
             Early positioning in our platform means exposure to all three market segments simultaneously.
