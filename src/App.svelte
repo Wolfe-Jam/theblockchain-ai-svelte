@@ -16,6 +16,7 @@
   import FoundersProofPage from './pages/FoundersProofPage.svelte';
   import GlossaryPage from './pages/GlossaryPage.svelte';
   import InteractiveGuidesPage from './pages/InteractiveGuidesPage.svelte';
+  import InvestorDashboard from './pages/InvestorDashboard.svelte';
   
   // Basic routing logic (will be expanded later with a proper router)
   let currentPath = window.location.pathname;
@@ -56,6 +57,8 @@
       <ToolsPage />
     {:else if currentPath === '/glossary'}
       <GlossaryPage />
+    {:else if currentPath === '/invest/dashboard'}
+      <InvestorDashboard />
     {:else if currentPath === '/report'}
       <ReportPage />
     {:else if currentPath === '/invest'}
