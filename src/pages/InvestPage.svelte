@@ -541,7 +541,7 @@
   
   .market-subtitle {
     font-size: clamp(1.8rem, 5vw, 3rem);
-    color: var(--brand-cyan);
+    color: var(--brand-orange);
     font-weight: 700;
     margin: 1.5rem 0 2rem;
     font-family: 'Roboto Mono', monospace;
