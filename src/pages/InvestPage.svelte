@@ -110,6 +110,8 @@
     animatedMarketValue = currentMarketValue;
     showResetPrompt = false;
     animationPaused = false;
+    // Restart the animation
+    animateMarketProgression();
   }
   
   function manualReset() {
@@ -276,7 +278,12 @@
     <div class="hero-content">
       <div class="market-headline">
         <div class="market-progression">
-          <div class="market-year">{currentYear}</div>
+          <div class="market-year-header">
+            <div class="market-year">{currentYear}</div>
+            <button class="simple-reset-btn" on:click={manualReset} title="Start Over">
+              <i class="fas fa-redo"></i>
+            </button>
+          </div>
           <h1 class="market-title">
             <span class="market-value">${animatedMarketValue.toFixed(2)}</span>
             <span class="market-label">TRILLION</span>
@@ -552,13 +559,42 @@
     margin: 3rem 0;
   }
   
+  .market-year-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
   .market-year {
     font-size: 2rem;
     color: var(--brand-orange-text);
     font-weight: 700;
     font-family: 'Roboto Mono', monospace;
-    margin-bottom: 1rem;
     opacity: 0.9;
+  }
+  
+  .simple-reset-btn {
+    background: rgba(15, 23, 42, 0.8);
+    color: var(--brand-orange);
+    border: 1px solid var(--brand-orange);
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    backdrop-filter: blur(5px);
+  }
+  
+  .simple-reset-btn:hover {
+    background: var(--brand-orange);
+    color: white;
+    transform: rotate(180deg);
   }
   
   .market-title {
