@@ -72,6 +72,11 @@
       currentYear = years[currentIndex];
       currentMarketValue = marketData[currentYear].total;
       targetValue = currentMarketValue;
+      
+      // Reset animation when cycling back to 2025
+      if (currentIndex === 0) {
+        animatedMarketValue = marketData[currentYear].total;
+      }
     }, 4000); // Year changes every 4 seconds
     
     return () => {
