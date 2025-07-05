@@ -545,6 +545,7 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    margin: 0 0.5rem;
   }
   
   .chart-card::before {
@@ -595,6 +596,7 @@
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
+    padding: 0 1rem;
   }
   
   .chart-insight {
@@ -755,6 +757,21 @@
   }
   
   /* Responsive Design */
+  @media (max-width: 1500px) {
+    .chart-trinity {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
+    
+    .chart-card {
+      margin: 0;
+    }
+    
+    .horizontal-chart-wrapper {
+      padding: 0 1.5rem;
+    }
+  }
+  
   @media (max-width: 768px) {
     .market-hero {
       padding: 3rem 0 4rem;
