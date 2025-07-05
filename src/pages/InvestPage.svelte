@@ -29,6 +29,11 @@
   let spotsLeft = 1337;
   let animationPaused = false;
   
+  // Chart display states
+  let showMarketChart = false;
+  let showCAGRChart = false;
+  let showTimelineChart = false;
+  
   // Svelte tweened animations for charts
   const aiMarketHeight = tweened(0, { duration: 1000, easing: cubicOut });
   const blockchainMarketHeight = tweened(0, { duration: 1200, easing: cubicOut });
@@ -851,3 +856,21 @@
   }
 </style>
 
+
+  function toggleMarketChart() {
+    showMarketChart = !showMarketChart;
+    showCAGRChart = false;
+    showTimelineChart = false;
+  }
+  
+  function toggleCAGRChart() {
+    showCAGRChart = !showCAGRChart;
+    showMarketChart = false;
+    showTimelineChart = false;
+  }
+  
+  function toggleTimelineChart() {
+    showTimelineChart = !showTimelineChart;
+    showMarketChart = false;
+    showCAGRChart = false;
+  }
