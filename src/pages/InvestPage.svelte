@@ -137,7 +137,10 @@
           AI, Blockchain, and Software markets are converging into the largest economic opportunity of our generation. Position yourself at the intersection.
         </p>
       </div>
-      <div class="chart-trinity">
+      
+      <!-- Charts Wide Container -->
+      <div class="charts-wide-container">
+        <div class="chart-trinity">
         <!-- Market Size Chart -->
         <div class="chart-card">
           <h3 class="chart-title">Market Size by 2030-2034</h3>
@@ -199,6 +202,7 @@
           </div>
           <p class="chart-insight">Exponential growth phase: 2024-2030</p>
         </div>
+      </div>
       </div>
       
       <!-- Hero Transition -->
@@ -525,15 +529,20 @@
     line-height: 1.6;
   }
   
-  /* Chart Trinity */
+  /* Charts Wide Container */
+  .charts-wide-container {
+    width: 100%;
+    padding: 0 3rem;
+    margin: 4rem 0;
+  }
+  
+  /* Chart Trinity - 3 Equal Columns */
   .chart-trinity {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 2rem;
-    margin: 4rem 2rem;
     max-width: 1400px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
   }
   
   .chart-card {
