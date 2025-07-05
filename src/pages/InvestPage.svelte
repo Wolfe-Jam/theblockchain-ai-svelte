@@ -142,18 +142,20 @@
         <div class="chart-card">
           <h3 class="chart-title">Market Size by 2030-2034</h3>
           <div class="svelte-chart-container">
-            {#each marketSizeData as item, i}
-              <div class="chart-bar-horizontal">
-                <div class="bar-label">{item.label}</div>
-                <div class="bar-track">
-                  <div 
-                    class="bar-fill"
-                    style="background: {item.color}; width: {i === 0 ? $aiMarketHeight : i === 1 ? $blockchainMarketHeight : $softwareMarketHeight}%"
-                  ></div>
+            <div class="horizontal-chart-wrapper">
+              {#each marketSizeData as item, i}
+                <div class="chart-bar-horizontal">
+                  <div class="bar-label">{item.label}</div>
+                  <div class="bar-track">
+                    <div 
+                      class="bar-fill"
+                      style="background: {item.color}; width: {i === 0 ? $aiMarketHeight : i === 1 ? $blockchainMarketHeight : $softwareMarketHeight}%"
+                    ></div>
+                  </div>
+                  <div class="bar-value">${item.value}T</div>
                 </div>
-                <div class="bar-value">${item.value}T</div>
-              </div>
-            {/each}
+              {/each}
+            </div>
           </div>
           <p class="chart-insight">Combined $6.15T+ opportunity</p>
         </div>
@@ -582,8 +584,17 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     padding: 1rem;
+  }
+  
+  .horizontal-chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
   }
   
   .chart-insight {
@@ -595,29 +606,27 @@
   
   /* Horizontal Bar Chart */
   .chart-bar-horizontal {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1.5rem;
     width: 100%;
   }
   
   .bar-label {
     font-size: 0.85rem;
     color: #cbd5e1;
-    min-width: 120px;
     text-align: right;
-    flex-shrink: 0;
+    padding-right: 0.5rem;
   }
   
   .bar-track {
-    flex: 1;
     height: 32px;
     background: rgba(51, 65, 85, 0.3);
     border-radius: 16px;
     overflow: hidden;
     position: relative;
-    max-width: 200px;
+    width: 100%;
   }
   
   .bar-fill {
@@ -632,9 +641,8 @@
     font-size: 1rem;
     color: #f8fafc;
     font-weight: 700;
-    min-width: 60px;
     text-align: left;
-    flex-shrink: 0;
+    padding-left: 0.5rem;
   }
   
   /* Vertical Bar Chart */
