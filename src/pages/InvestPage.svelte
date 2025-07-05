@@ -278,27 +278,20 @@
     <div class="hero-content">
       <div class="market-headline">
         <div class="market-progression">
-          <div class="market-year-header">
-            <div class="market-year">{currentYear}</div>
-            <button class="simple-reset-btn" on:click={manualReset} title="Start Over">
-              <i class="fas fa-redo"></i>
-            </button>
-          </div>
+          <div class="market-year">{currentYear}</div>
           <h1 class="market-title">
             <span class="market-value">${animatedMarketValue.toFixed(2)}</span>
             <span class="market-label">TRILLION</span>
           </h1>
           
-          <!-- Reset Prompt -->
-          {#if showResetPrompt}
-            <div class="reset-prompt">
-              <p class="reset-question">Are you IN yet?</p>
-              <button class="reset-btn primary" on:click={resetAnimation}>
-                <i class="fas fa-redo"></i>
-                Start Over
-              </button>
-            </div>
-          {/if}
+          <!-- Reset Prompt - Always Visible -->
+          <div class="reset-prompt">
+            <p class="reset-question">Are you IN yet?</p>
+            <button class="reset-btn primary" on:click={resetAnimation}>
+              <i class="fas fa-redo"></i>
+              Start Over
+            </button>
+          </div>
           
           <p class="market-subtitle">Market Convergence Is Here</p>
           <div class="market-breakdown">
@@ -559,19 +552,12 @@
     margin: 3rem 0;
   }
   
-  .market-year-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
   .market-year {
     font-size: 2rem;
     color: var(--brand-orange-text);
     font-weight: 700;
     font-family: 'Roboto Mono', monospace;
+    margin-bottom: 1rem;
     opacity: 0.9;
   }
   
@@ -669,23 +655,17 @@
     line-height: 1.6;
   }
   
-  /* Reset Prompt Styling - Simple & Sleek */
+  /* Reset Prompt Styling - Simple & Minimal */
   .reset-prompt {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid var(--brand-cyan);
-    border-radius: 0.75rem;
-    padding: 1rem;
-    margin: 1rem 0;
-    backdrop-filter: blur(5px);
-    animation: slideIn 0.3s ease;
+    margin: 0.5rem 0;
     display: inline-block;
   }
   
   .reset-question {
     color: var(--brand-cyan);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.5rem 0;
     text-align: center;
   }
   
@@ -693,20 +673,20 @@
     background: linear-gradient(135deg, var(--brand-cyan), var(--brand-orange));
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.4rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
+    gap: 0.4rem;
+    font-size: 0.85rem;
   }
   
   .reset-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(12, 192, 223, 0.3);
+    box-shadow: 0 3px 8px rgba(12, 192, 223, 0.3);
   }
   
   .timeline-reset-btn {
