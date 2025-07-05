@@ -329,10 +329,17 @@
           </div>
         </div>
         
-        <button class="hero-cta" on:click={scrollToOpportunities}>
-          <span>Explore Investment Opportunities</span>
-          <i class="fas fa-arrow-down"></i>
-        </button>
+        <div class="hero-cta-group">
+          <button class="hero-cta" on:click={scrollToOpportunities}>
+            <span>Explore Investment Opportunities</span>
+            <i class="fas fa-arrow-down"></i>
+          </button>
+          
+          <a href="/invest/dashboard" class="hero-cta secondary">
+            <span>View Live Dashboard</span>
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -827,6 +834,48 @@
   .timeline-points strong {
     color: var(--brand-orange);
   }
+  
+  /* Hero CTA Styles */
+  .hero-cta-group {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .hero-cta {
+    background: linear-gradient(135deg, var(--brand-orange), var(--brand-cyan));
+    color: white;
+    border: none;
+    padding: 1.25rem 2.5rem;
+    border-radius: 3rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(255, 145, 77, 0.3);
+  }
+  
+  .hero-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 145, 77, 0.4);
+  }
+  
+  .hero-cta.secondary {
+    background: linear-gradient(135deg, var(--brand-blue), var(--brand-cyan));
+    box-shadow: 0 4px 15px rgba(12, 192, 223, 0.3);
+  }
+  
+  .hero-cta.secondary:hover {
+    box-shadow: 0 8px 25px rgba(12, 192, 223, 0.4);
+  }
+  
   @keyframes glow {
     from {
       text-shadow: 0 0 20px rgba(255, 145, 77, 0.3);
