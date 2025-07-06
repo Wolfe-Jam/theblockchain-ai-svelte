@@ -30,7 +30,7 @@
   <!-- Header -->
   <div class="timeline-header">
     <h3 class="timeline-title">🚀 Market Explosion Timeline</h3>
-    <div class="timeline-subtitle">Critical Investment Window Analysis</div>
+    <div class="timeline-subtitle">✅ Green means 🚦 GO!</div>
   </div>
   
   <!-- Time Progression Bar -->
@@ -119,16 +119,17 @@
   }
   
   .timeline-title {
-    color: var(--brand-cyan);
+    color: #f8fafc;
     font-size: 1.3rem;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
   }
   
   .timeline-subtitle {
-    color: #94a3b8;
+    color: #f8fafc;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.05em;
   }
   
   /* Time Progression */
