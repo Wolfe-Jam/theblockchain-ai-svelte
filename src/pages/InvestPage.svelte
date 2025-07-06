@@ -7,6 +7,7 @@
   import InvestorModal from '../components/InvestorModal.svelte';
   import ReportDownload from '../components/ReportDownload.svelte';
   import DataBox from '../components/DataBox.svelte';
+  import TimelineBox from '../components/TimelineBox.svelte';
   
   let showModal = false;
   let showReportDownload = false;
@@ -333,37 +334,7 @@
         
         <!-- Bottom Row: Box 3 Timeline Full Width -->
         <div class="bottom-row">
-          <div class="chart-box timeline-box">
-            <h3 class="chart-title">🚀 Market Explosion Timeline</h3>
-            <div class="timeline-content">
-              <div class="countdown-container">
-                <div class="countdown-item">
-                  <div class="countdown-number">9</div>
-                  <div class="countdown-label">Years</div>
-                </div>
-                <div class="countdown-separator">→</div>
-                <div class="countdown-item">
-                  <div class="countdown-number">{marketOutlook === 'conservative' ? '6.4' : '11.43'}</div>
-                  <div class="countdown-label">Trillion</div>
-                </div>
-              </div>
-              
-              <div class="explosion-stats">
-                <div class="stat-item">
-                  <span class="stat-icon">⚡</span>
-                  <span class="stat-text">Critical Window: 2024-2034</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-icon">🔥</span>
-                  <span class="stat-text">Blockchain: {marketOutlook === 'conservative' ? '45%' : '90%'} CAGR</span>
-                </div>
-                <div class="stat-item">
-                  <span class="stat-icon">💎</span>
-                  <span class="stat-text">Early Entry Advantage</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <TimelineBox {marketOutlook} />
         </div>
       </div>
       
