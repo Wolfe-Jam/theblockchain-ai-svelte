@@ -1,6 +1,7 @@
-<!-- src/pages/ToolsPage.svelte - Enhanced with HTML features -->
+<!-- SvelteKit Tools Page - Direct Migration from ToolsPage.svelte -->
 <script>
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   
   let promptInput = '';
   let generatedCode = '';
@@ -143,6 +144,26 @@
 <svelte:head>
   <title>Smart Contract Generator | theBlockchain.ai</title>
   <meta name="description" content="Generate Solidity smart contracts using AI. Describe your logic in plain English and get production-ready code." />
+  <meta name="keywords" content="smart contracts, solidity, AI, blockchain, ethereum, code generator" />
+  
+  <!-- Enhanced SEO for SvelteKit -->
+  <meta property="og:title" content="Smart Contract Generator | theBlockchain.ai" />
+  <meta property="og:description" content="Generate Solidity smart contracts using AI. Describe your logic in plain English and get production-ready code." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://theblockchain.ai/tools" />
+  
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Smart Contract Generator",
+    "description": "AI-powered tool to generate Solidity smart contracts from plain English descriptions",
+    "url": "https://theblockchain.ai/tools",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web"
+  }
+  </script>
 </svelte:head>
 
 <div class="min-h-screen bg-slate-900 text-white">

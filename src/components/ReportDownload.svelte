@@ -77,7 +77,7 @@
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Log the lead capture (in production, send to your CRM/database)
-      console.log('Professional Lead Captured:', formData);
+      // TODO: Send formData to CRM/database
       
       // Show success and trigger download
       showSuccess = true;

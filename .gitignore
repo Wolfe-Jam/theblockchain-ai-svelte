@@ -66,3 +66,10 @@ yarn-error.log*
 
 # Keep all documentation and organized structure
 # (Previous .gitignore was too restrictive)
+
+# Strategic Planning Documents (Private)
+SVELTE-EXCELLENCE-ROADMAP.md
+TOOLS-MIGRATION-COMPLETE.md
+*ROADMAP*.md
+*STRATEGIC*.md
+*CONFIDENTIAL*.md

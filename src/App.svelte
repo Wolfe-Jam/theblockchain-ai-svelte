@@ -12,7 +12,7 @@
   import InvestOpportunitiesPage from './pages/InvestOpportunitiesPage.svelte';
   import FAQsPage from './pages/FAQsPage.svelte';
   import BriefingsPage from './pages/BriefingsPage.svelte';
-  import ToolsPage from './pages/ToolsPage.svelte';
+
   import ConvergentEconomyPage from './pages/deep-dive/ConvergentEconomyPage.svelte';
   import FoundersProofPage from './pages/FoundersProofPage.svelte';
   import GlossaryPage from './pages/GlossaryPage.svelte';
@@ -34,7 +34,6 @@
   }
   
   function handleOpenAbout() {
-    console.log('handleOpenAbout called in App, setting showAbout to true'); // Debug log
     showAbout = true;
   }
 </script>
@@ -54,8 +53,6 @@
       <ConvergentEconomyPage />
     {:else if currentPath === '/founders-proof'}
       <FoundersProofPage />
-    {:else if currentPath === '/tools'}
-      <ToolsPage />
     {:else if currentPath === '/glossary'}
       <GlossaryPage />
     {:else if currentPath === '/invest/dashboard'}
