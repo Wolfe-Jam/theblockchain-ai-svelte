@@ -194,6 +194,14 @@
     window.location.href = '/invest/opportunities';
   }
   
+  function navigateToFoundersMint() {
+    window.location.href = '/founders-mint';
+  }
+  
+  function navigateToSmartContract() {
+    window.location.href = '/smart-contract';
+  }
+  
   function toggleMarketChart() {
     showMarketChart = !showMarketChart;
     showCAGRChart = false;
@@ -353,23 +361,37 @@
           </p>
         </div>
         
-        <div class="urgency-indicators">
-          <div class="indicator">
-            <div class="indicator-icon animate-pulse">📈</div>
-            <span>Market acceleration phase</span>
+        <div class="conversion-section">
+          <div class="conversion-prompt">
+            <h3 class="prompt-text">Ready to position yourself in this opportunity?</h3>
           </div>
-          <div class="indicator">
-            <div class="indicator-icon animate-pulse">⏰</div>
-            <span>{spotsLeft} investment opportunities remaining</span>
-          </div>
-          <div class="indicator">
-            <div class="indicator-icon animate-pulse">🎯</div>
-            <span>Early-stage positioning window</span>
-          </div>
-          <div class="indicator">
-            <button class="timeline-reset-btn" on:click={manualReset} title="Start Over">
-              <i class="fas fa-redo"></i>
-              <span>Start Over</span>
+          
+          <div class="cta-options">
+            <!-- Primary: Email Collection -->
+            <button class="cta-primary" on:click={openInvestorModal}>
+              <span class="cta-icon">📊</span>
+              <div class="cta-content">
+                <div class="cta-title">Get Investment Details</div>
+                <div class="cta-subtitle">Exclusive data & positioning strategy</div>
+              </div>
+            </button>
+            
+            <!-- Secondary: Founders Mint -->
+            <button class="cta-secondary" on:click={navigateToFoundersMint}>
+              <span class="cta-icon">🏆</span>
+              <div class="cta-content">
+                <div class="cta-title">Founders Mint</div>
+                <div class="cta-subtitle">Early access token opportunity</div>
+              </div>
+            </button>
+            
+            <!-- Tertiary: Smart Contract -->
+            <button class="cta-tertiary" on:click={navigateToSmartContract}>
+              <span class="cta-icon">⚡</span>
+              <div class="cta-content">
+                <div class="cta-title">Smart Contract Access</div>
+                <div class="cta-subtitle">Direct blockchain integration</div>
+              </div>
             </button>
           </div>
         </div>
@@ -409,6 +431,14 @@
     --brand-blue: #004AAE;
     --brand-blue-text: #2563EB;
     --brand-cyan-text: #06B6D4;
+  }
+  
+  /* Container */
+  .container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
   }
   
   /* Market Hero Section */
@@ -592,7 +622,101 @@
     grid-template-columns: 1fr;
   }
   
-  /* Simple, Minimal Toggle Styles */
+  /* Conversion Section */
+  .conversion-section {
+    text-align: center;
+    margin: 3rem 0;
+    padding: 2rem 0;
+  }
+  
+  .conversion-prompt {
+    margin-bottom: 2rem;
+  }
+  
+  .prompt-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--brand-cyan);
+    margin: 0;
+    line-height: 1.3;
+  }
+  
+  .cta-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .cta-primary,
+  .cta-secondary,
+  .cta-tertiary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+  }
+  
+  .cta-primary {
+    background: linear-gradient(135deg, var(--brand-cyan), var(--brand-blue));
+    color: white;
+    box-shadow: 0 4px 15px rgba(12, 192, 223, 0.3);
+  }
+  
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(12, 192, 223, 0.4);
+  }
+  
+  .cta-secondary {
+    background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-text));
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 145, 77, 0.3);
+  }
+  
+  .cta-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(255, 145, 77, 0.4);
+  }
+  
+  .cta-tertiary {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    color: #e2e8f0;
+  }
+  
+  .cta-tertiary:hover {
+    background: rgba(51, 65, 85, 0.6);
+    border-color: rgba(255, 145, 77, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  .cta-icon {
+    font-size: 1.5rem;
+    min-width: 2rem;
+  }
+  
+  .cta-content {
+    flex: 1;
+  }
+  
+  .cta-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  
+  .cta-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    font-weight: 500;
+  }
   .toggle-buttons {
     display: flex;
     gap: 0.25rem;
@@ -1202,6 +1326,27 @@
     
     .bar-value {
       font-size: 0.9rem;
+    }
+    
+    /* Mobile CTA Options */
+    .cta-options {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .prompt-text {
+      font-size: 1.5rem;
+    }
+    
+    .cta-primary,
+    .cta-secondary,
+    .cta-tertiary {
+      padding: 1.25rem;
+    }
+    
+    /* Mobile Container */
+    .container {
+      padding: 0 1rem;
     }
   }
 </style>
