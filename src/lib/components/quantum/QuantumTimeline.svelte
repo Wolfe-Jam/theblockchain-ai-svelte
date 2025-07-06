@@ -38,9 +38,7 @@
   // AI-driven scenario adaptation
   const adaptiveScenarios = derived([userBehavior, quantumState], 
     ([behavior, quantum]) => {
-      if (!quantum.superposition) return null;
-      
-      // Weight scenarios based on user profile
+      // Always generate scenarios for both superposition and collapsed states
       const riskWeight = behavior.riskTolerance;
       const scenarios = {
         conservative: {
@@ -227,7 +225,7 @@
     </div>
   </div>
   
-  {#if $quantumState.superposition && $adaptiveScenarios}
+  {#if $quantumState.superposition}
     <!-- Quantum Superposition State -->
     <div class="superposition-container">
       <h3>📊 Quantum Market Scenarios</h3>
@@ -280,7 +278,8 @@
       
       <!-- Single definitive timeline -->
       <div class="definitive-timeline">
-        {#each $adaptiveScenarios[$quantumState.collapsed].phases as phase, index}
+        {#if $adaptiveScenarios && $quantumState.collapsed && $adaptiveScenarios[$quantumState.collapsed]}
+          {#each $adaptiveScenarios[$quantumState.collapsed].phases as phase, index}
           <div class="definitive-phase" style="--phase-delay: {index * 0.2}s">
             <div class="phase-node">
               <div class="node-year">{phase.year}</div>
@@ -293,6 +292,7 @@
             </div>
           </div>
         {/each}
+        {/if}
       </div>
       
       <!-- AI Recommendations -->
