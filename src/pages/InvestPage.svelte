@@ -357,7 +357,7 @@
             Your early stake in our platform means <span class="value-highlight">simultaneous exposure</span> 
             to the AI revolution, blockchain transformation, and software evolution.
             <br><br>
-            <span class="opportunity-text">This is your moment. The infrastructure is ready. The market is moving.</span>
+            <span class="opportunity-text">The infrastructure is ready. The market is moving.<br>This is your moment.</span>
           </p>
         </div>
         
