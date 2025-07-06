@@ -4,15 +4,12 @@
   "version": "1.2.0",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --host",
     "build": "vite build",
     "preview": "vite preview",
     "version": "node scripts/update-version.js",
     "brand:check": "node scripts/validate-brand-colors.js",
-    "brand:check:fix": "node scripts/validate-brand-colors.js --fix",
-    "kit:dev": "svelte-kit dev",
-    "kit:build": "svelte-kit build",
-    "kit:preview": "svelte-kit preview"
+    "brand:check:fix": "node scripts/validate-brand-colors.js --fix"
   },
   "dependencies": {
     "@google/generative-ai": "^0.11.0",
