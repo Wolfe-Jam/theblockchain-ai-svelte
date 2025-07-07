@@ -13,12 +13,10 @@
   let showAbout = false;
   
   function handleOpenAskAI() {
-    console.log('SvelteKit Layout: received openAskAI event'); // Debug log
     showAskAI = true;
   }
   
   function handleOpenAbout() {
-    console.log('SvelteKit Layout: received openAbout event'); // Debug log
     showAbout = true;
   }
   
