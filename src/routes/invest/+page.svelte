@@ -248,12 +248,17 @@
   }
   
   .market-subtitle {
-    font-size: clamp(2rem, 6vw, 4rem);
+    font-size: clamp(1.8rem, 5vw, 3.5rem);
     color: #FF914D;
     font-weight: 700;
     margin: 3rem 0;
     font-family: 'Roboto Mono', monospace;
     letter-spacing: 0.05em;
+    text-align: center;
+    line-height: 1.2;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .market-breakdown {
@@ -348,7 +353,7 @@
   }
   
   .hero-cta {
-    background: linear-gradient(135deg, #FF914D, #0CC0DF);
+    background: linear-gradient(135deg, #004AAE, #0CC0DF);
     color: white;
     border: none;
     padding: 1.5rem 3rem;
@@ -361,21 +366,21 @@
     align-items: center;
     gap: 1rem;
     text-decoration: none;
-    box-shadow: 0 6px 20px rgba(255, 145, 77, 0.4);
+    box-shadow: 0 6px 20px rgba(12, 192, 223, 0.4);
   }
   
   .hero-cta:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(255, 145, 77, 0.5);
+    box-shadow: 0 12px 30px rgba(12, 192, 223, 0.5);
   }
   
   .hero-cta.secondary {
-    background: linear-gradient(135deg, #004AAE, #0CC0DF);
-    box-shadow: 0 6px 20px rgba(12, 192, 223, 0.4);
+    background: linear-gradient(135deg, #EA580C, #FF914D);
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
   }
   
   .hero-cta.secondary:hover {
-    box-shadow: 0 12px 30px rgba(12, 192, 223, 0.5);
+    box-shadow: 0 12px 30px rgba(234, 88, 12, 0.5);
   }
   
   /* Animations */
@@ -405,6 +410,12 @@
     
     .market-year {
       font-size: 2rem;
+    }
+    
+    .market-subtitle {
+      font-size: 1.8rem;
+      margin: 2rem 0;
+      padding: 0 1rem;
     }
     
     .market-breakdown {

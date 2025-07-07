@@ -125,7 +125,7 @@
   }
   
   const examplePrompts = [
-    "An ERC721 contract where the minting fee is split 90% to the artist and 10% to the platform.",
+    "An ERC-1155 contract where the minting fee is split 90% to the artist and 10% to the platform.",
     "A simple voting contract where users can vote on proposals with a deadline.",
     "An ERC20 token with built-in staking rewards for holders."
   ];
@@ -134,13 +134,35 @@
     promptInput = prompt;
   }
   
-  let spotsLeft = 1337;
+  let spotsLeft = 0;
+  
+  // Function to calculate contracts generated today (minutes since midnight EST)
+  function calculateContractsGenerated() {
+    // Get current time in Eastern Time (handles EST/EDT automatically)
+    const easternTime = new Date().toLocaleString("en-US", {
+      timeZone: "America/New_York"
+    });
+    
+    const now = new Date(easternTime);
+    
+    // Get midnight of today in Eastern Time
+    const midnight = new Date(now);
+    midnight.setHours(0, 0, 0, 0);
+    
+    // Calculate minutes since midnight
+    const minutesSinceMidnight = Math.floor((now.getTime() - midnight.getTime()) / (1000 * 60));
+    
+    return Math.max(0, minutesSinceMidnight);
+  }
   
   onMount(() => {
+    // Initialize the counter
+    spotsLeft = calculateContractsGenerated();
+    
+    // Update every minute (60,000 milliseconds)
     const interval = setInterval(() => {
-      spotsLeft -= Math.floor(Math.random() * 3) + 1;
-      if (spotsLeft < 500) spotsLeft = 1337;
-    }, 2500);
+      spotsLeft = calculateContractsGenerated();
+    }, 60000);
     
     return () => clearInterval(interval);
   });
@@ -222,8 +244,7 @@
         </button>
         
         <div class="flex items-center text-slate-400 text-sm">
-          <img src="https://ai.google.dev/static/site-assets/images/gemini-favicon.svg" alt="Gemini" class="w-5 h-5 mr-2" />
-          Powered by Gemini 2.0 Flash
+          Powered by 🧠 bAI
         </div>
       </div>
     </div>
@@ -316,8 +337,6 @@
     background-color: #020617;
     color: #f8fafc;
   }
-
-<style>
   .loader {
     width: 20px;
     height: 20px;
