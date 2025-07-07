@@ -1,8 +1,10 @@
 <!-- SvelteKit Layout for Investment Routes -->
 <script>
   import { page } from '$app/stores';
-  import Header from '../../../components/Header.svelte';
-  import Footer from '../../../components/Footer.svelte';
+  import Header from '../../components/Header.svelte';
+  import Footer from '../../components/Footer.svelte';
+  
+  let pageTitle = 'Investment Overview';
   
   // Reactive page title based on route
   $: {

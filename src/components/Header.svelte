@@ -130,13 +130,13 @@
       if (visionDropdownOpen || resourceDropdownOpen || investDropdownOpen) return;
       
       // Show header when mouse is in top 100px OR on content pages (always visible) OR sequence completed on home
-      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides'];
+      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides', '/quantum-demo'];
       showHeader = e.clientY <= 100 || contentPages.includes(currentPath) || (currentPath === '/' && sequenceTriggered);
     };
     
     const handleKeyDown = (e) => {
       // Toggle header on spacebar (ONLY works on home page - content pages always show header)
-      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides'];
+      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides', '/quantum-demo'];
       if (e.key === ' ' && !contentPages.includes(currentPath) && isDesktop) {
         e.preventDefault();
         showHeader = !showHeader;

@@ -394,7 +394,12 @@
     </main>
   </div>
 {/if}
-: 0;
+
+<style>
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
     left: 0;
     right: 0;
     height: 3px;
