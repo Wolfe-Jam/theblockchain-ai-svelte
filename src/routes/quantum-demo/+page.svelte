@@ -39,6 +39,11 @@
       <ol>
         <li><strong>Move your mouse</strong> to create probability fields</li>
         <li><strong>Observe scenarios</strong> to collapse quantum superposition</li>
+        <li class="deep-dive-instruction">
+          <strong>🔥 DEEP DIVE INTO YEARS</strong><br>
+          to unlock quarterly breakdowns, market progression,<br>
+          and AI-powered strategic insights
+        </li>
         <li><strong>Watch AI adaptation</strong> based on your interaction patterns</li>
         <li><strong>Reset superposition</strong> to explore different realities</li>
       </ol>
@@ -138,10 +143,10 @@
   
   .demo-features {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin-bottom: 32px;
-    max-width: 800px;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -196,6 +201,40 @@
   
   .demo-instructions strong {
     color: #60a5fa;
+  }
+
+  .deep-dive-instruction {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2));
+    border: 2px solid rgba(139, 92, 246, 0.4);
+    border-radius: 12px;
+    padding: 16px !important;
+    margin: 12px 0 !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .deep-dive-instruction::before {
+    content: '✨';
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 1.2rem;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+
+  .deep-dive-instruction strong {
+    background: linear-gradient(135deg, #8b5cf6, #06b6d4, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
   }
   
   .demo-footer {
