@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://theblockchain.ai/</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://theblockchain.ai/theBlockchain-ai-landscape.webp</image:loc>
+      <image:title>theBlockchain.ai - The Economic Layer for Open-Source</image:title>
+      <image:caption>Building the economic backbone for the next generation of software</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- Tools Page -->
+  <url>
+    <loc>https://theblockchain.ai/tools</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Investment Overview -->
+  <url>
+    <loc>https://theblockchain.ai/invest</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Deep Dive - Featured Content -->
+  <url>
+    <loc>https://theblockchain.ai/deep-dive/the-convergent-economy</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://theblockchain.ai/theBlockchain-ai-landscape.webp</image:loc>
+      <image:title>The Convergent Economy - Deep Dive Analysis</image:title>
+      <image:caption>Market analysis of AI, Software, and Blockchain convergence</image:caption>
+    </image:image>
+  </url>
+  
+  <!-- Founder's Proof -->
+  <url>
+    <loc>https://theblockchain.ai/founders-proof</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Vision and Strategy -->
+  <url>
+    <loc>https://theblockchain.ai/vision</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Report - Three Pillars -->
+  <url>
+    <loc>https://theblockchain.ai/report</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Briefings -->
+  <url>
+    <loc>https://theblockchain.ai/briefings</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Interactive Guides -->
+  <url>
+    <loc>https://theblockchain.ai/interactive-guides</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Investment Dashboard -->
+  <url>
+    <loc>https://theblockchain.ai/invest/dashboard</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Investment Opportunities -->
+  <url>
+    <loc>https://theblockchain.ai/invest/opportunities</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Glossary -->
+  <url>
+    <loc>https://theblockchain.ai/glossary</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- FAQs -->
+  <url>
+    <loc>https://theblockchain.ai/faqs</loc>
+    <lastmod>2025-01-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+</urlset>

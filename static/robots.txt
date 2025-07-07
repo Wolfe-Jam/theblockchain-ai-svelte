@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://theblockchain.ai/sitemap.xml
+
+# Disallow admin or development paths
+Disallow: /admin/
+Disallow: /_app/
+Disallow: /.svelte-kit/
+Disallow: /docs/development/
+
+# Allow important pages
+Allow: /
+Allow: /tools
+Allow: /invest
+Allow: /deep-dive/the-convergent-economy
+Allow: /founders-proof
+Allow: /vision
+Allow: /briefings
+Allow: /glossary
+Allow: /faqs
+
+# Crawl delay (optional)
+Crawl-delay: 1

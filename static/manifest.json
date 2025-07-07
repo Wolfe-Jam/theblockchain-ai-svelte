@@ -1,0 +1,56 @@
+{
+  "name": "theBlockchain.ai",
+  "short_name": "theBlockchain.ai",
+  "description": "The Economic Layer for Open-Source - Building the convergent economy of AI, Blockchain, and Software",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#004AAE",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "categories": ["technology", "blockchain", "ai", "finance"],
+  "icons": [
+    {
+      "src": "/theBlockchain-ai-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/theBlockchain-ai-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/theBlockchain-ai-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "AI Tools",
+      "short_name": "Tools",
+      "description": "Smart Contract Generator",
+      "url": "/tools",
+      "icons": [{ "src": "/theBlockchain-ai-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Investment Overview",
+      "short_name": "Invest",
+      "description": "Market Analysis & Opportunities",
+      "url": "/invest",
+      "icons": [{ "src": "/theBlockchain-ai-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Deep Dive",
+      "short_name": "Analysis",
+      "description": "The Convergent Economy",
+      "url": "/deep-dive/the-convergent-economy",
+      "icons": [{ "src": "/theBlockchain-ai-logo.png", "sizes": "96x96" }]
+    }
+  ]
+}
