@@ -128,19 +128,19 @@
   
   function generateModeratePhases() {
     return [
-      { year: 2025, market: 2.8, opportunity: 100, urgency: 'critical', emotion: 'excited' },
-      { year: 2028, market: 6.2, opportunity: 80, urgency: 'strong', emotion: 'confident' },
-      { year: 2031, market: 11.4, opportunity: 55, urgency: 'moderate', emotion: 'strategic' },
-      { year: 2034, market: 18.7, opportunity: 25, urgency: 'late', emotion: 'regretful' }
+      { year: 2025, market: 2.5, opportunity: 100, urgency: 'critical', emotion: 'excited' },
+      { year: 2028, market: 5.8, opportunity: 80, urgency: 'strong', emotion: 'confident' },
+      { year: 2031, market: 8.9, opportunity: 55, urgency: 'moderate', emotion: 'strategic' },
+      { year: 2034, market: 11.4, opportunity: 25, urgency: 'late', emotion: 'regretful' }
     ];
   }
   
   function generateAggressivePhases() {
     return [
-      { year: 2025, market: 4.1, opportunity: 100, urgency: 'explosive', emotion: 'euphoric' },
-      { year: 2028, market: 12.3, opportunity: 85, urgency: 'massive', emotion: 'ambitious' },
-      { year: 2031, market: 28.9, opportunity: 60, urgency: 'substantial', emotion: 'aggressive' },
-      { year: 2034, market: 67.2, opportunity: 30, urgency: 'remaining', emotion: 'desperate' }
+      { year: 2025, market: 3.1, opportunity: 100, urgency: 'explosive', emotion: 'euphoric' },
+      { year: 2028, market: 7.2, opportunity: 85, urgency: 'massive', emotion: 'ambitious' },
+      { year: 2031, market: 10.8, opportunity: 60, urgency: 'substantial', emotion: 'aggressive' },
+      { year: 2034, market: 14.6, opportunity: 30, urgency: 'remaining', emotion: 'optimistic' }
     ];
   }
   
