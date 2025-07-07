@@ -77,7 +77,10 @@
   <main class="quantum-demo-main">
     <div class="demo-container">
       <div class="demo-header">
-        <h1>🔮 Quantum Timeline System</h1>
+        <h1 class="quantum-title">
+          <span class="title-line-1">🔮 Quantum AI</span>
+          <span class="title-line-2">Investment Toolbox</span>
+        </h1>
         <p class="demo-subtitle">
           Revolutionary investment interface with quantum superposition states and AI behavioral adaptation
         </p>
@@ -310,6 +313,27 @@
     filter: drop-shadow(0 2px 4px rgba(107, 70, 193, 0.3));
     letter-spacing: -0.025em;
     line-height: 1.1;
+  }
+
+  .quantum-demo-container .quantum-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .quantum-demo-container .title-line-1 {
+    display: block;
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .quantum-demo-container .title-line-2 {
+    display: block;
+    font-size: 2.5rem;
+    line-height: 1;
+    margin-left: 2.5rem; /* Offset to clear the 🔮 icon */
+    font-weight: 700;
   }
   
   .quantum-demo-container .demo-subtitle {

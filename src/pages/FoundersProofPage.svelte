@@ -1,6 +1,7 @@
 <!-- src/pages/FoundersProofPage.svelte - Flagship Founder's Proof Minting Experience -->
 <script>
   import { onMount } from 'svelte';
+  import WaitingListModal from '../components/WaitingListModal.svelte';
   
   // State management
   let spotsLeft = 1337;
@@ -10,6 +11,9 @@
   let isMinting = false;
   let mintSuccess = false;
   let mintError = '';
+  
+  // Waiting list modal state
+  let showWaitingListModal = false;
   
   // Animated counter
   onMount(() => {
@@ -126,50 +130,42 @@
         {#if mintSuccess}
           <div class="inline-flex flex-col items-center bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 border border-green-500/30">
             <i class="fas fa-check-circle text-4xl text-white mb-4"></i>
-            <h3 class="text-2xl font-bold text-white mb-2">Founder's Proof Minted!</h3>
-            <p class="text-green-100 mb-4">Welcome to the founding community</p>
-            <div class="text-sm text-green-200 font-mono">
-              Token ID: #{1337 - spotsLeft + 1}
+            <h3 class="text-2xl font-bold text-white mb-2">Welcome, Founder!</h3>
+            <p class="text-green-100 mb-4">Your Founder's Proof has been minted successfully.</p>
+            <div class="flex items-center text-green-100">
+              <i class="fas fa-wallet mr-2"></i>
+              <span class="font-mono">{formatAddress(walletAddress)}</span>
             </div>
           </div>
-        {:else if !isConnected}
-          <button 
-            on:click={connectWallet}
-            disabled={isConnecting}
-            class="inline-flex items-center text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50"
-            style="background: linear-gradient(to right, #EA580C, #0CC0DF);"
-          >
-            {#if isConnecting}
-              <div class="loader mr-3"></div>
-              Connecting Wallet...
-            {:else}
-              <i class="fas fa-wallet mr-3"></i>
-              Connect Wallet to Mint
-            {/if}
-          </button>
-        {:else}
+        {:else if isConnected}
           <div class="flex flex-col items-center gap-4">
-            <div class="flex items-center bg-slate-800/50 rounded-full px-6 py-3 border border-brand-cyan/30">
-              <i class="fas fa-check-circle text-brand-cyan mr-3"></i>
-              <span class="text-brand-cyan-text font-semibold">Connected: {formatAddress(walletAddress)}</span>
-              <button on:click={disconnectWallet} class="ml-4 text-slate-400 hover:text-white transition-colors">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            
             <button 
               on:click={mintFoundersProof}
               disabled={isMinting}
-              class="inline-flex items-center text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50"
-              style="background: linear-gradient(to right, #0CC0DF, #004AAE);"
+              class="inline-flex flex-col items-center bg-gradient-to-r from-brand-orange to-brand-cyan hover:from-brand-orange/90 hover:to-brand-cyan/90 text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
             >
               {#if isMinting}
-                <div class="loader mr-3"></div>
-                Minting Your Proof...
+                <div class="flex items-center mb-1">
+                  <div class="loader mr-3"></div>
+                  <span>Minting Your Proof...</span>
+                </div>
+                <span class="text-sm font-normal opacity-75">Simulation Mode</span>
               {:else}
-                <i class="fas fa-certificate mr-3"></i>
-                Mint My Founder's Proof
+                <div class="flex items-center mb-1">
+                  <i class="fas fa-certificate mr-3"></i>
+                  <span>Mint Founder's Proof</span>
+                </div>
+                <span class="text-sm font-normal opacity-75">Simulation Mode</span>
               {/if}
+            </button>
+            
+            <!-- Secondary CTA: Join Waiting List -->
+            <button 
+              on:click={() => showWaitingListModal = true}
+              class="inline-flex items-center bg-slate-800/50 hover:bg-slate-700/50 border border-brand-cyan/30 hover:border-brand-cyan/50 text-brand-cyan-text font-semibold py-3 px-8 rounded-xl text-lg transition-all duration-300"
+            >
+              <i class="fas fa-bell mr-3"></i>
+              Join the Waiting List
             </button>
             
             {#if mintError}
@@ -178,6 +174,37 @@
                 {mintError}
               </div>
             {/if}
+          </div>
+        {:else}
+          <div class="flex flex-col items-center gap-4">
+            <button 
+              on:click={connectWallet}
+              disabled={isConnecting}
+              class="inline-flex flex-col items-center bg-gradient-to-r from-brand-orange to-brand-cyan hover:from-brand-orange/90 hover:to-brand-cyan/90 text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
+            >
+              {#if isConnecting}
+                <div class="flex items-center mb-1">
+                  <div class="loader mr-3"></div>
+                  <span>Connecting Wallet...</span>
+                </div>
+                <span class="text-sm font-normal opacity-75">Simulation Mode</span>
+              {:else}
+                <div class="flex items-center mb-1">
+                  <i class="fas fa-wallet mr-3"></i>
+                  <span>Connect Wallet to Mint</span>
+                </div>
+                <span class="text-sm font-normal opacity-75">Simulation Mode</span>
+              {/if}
+            </button>
+            
+            <!-- Secondary CTA: Join Waiting List -->
+            <button 
+              on:click={() => showWaitingListModal = true}
+              class="inline-flex items-center bg-slate-800/50 hover:bg-slate-700/50 border border-brand-cyan/30 hover:border-brand-cyan/50 text-brand-cyan-text font-semibold py-3 px-8 rounded-xl text-lg transition-all duration-300"
+            >
+              <i class="fas fa-bell mr-3"></i>
+              Join the Waiting List
+            </button>
           </div>
         {/if}
       </div>
@@ -345,6 +372,12 @@
       {/if}
     </div>
   </section>
+  
+  <!-- Waiting List Modal -->
+  <WaitingListModal 
+    bind:isOpen={showWaitingListModal} 
+    on:close={() => showWaitingListModal = false} 
+  />
 </div>
 
 <style>
