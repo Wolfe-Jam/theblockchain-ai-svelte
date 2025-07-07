@@ -1,9 +1,42 @@
 <!-- QuantumTimeline.svelte - Revolutionary Investment Timeline -->
 <script>
   import { onMount } from 'svelte';
-  import { writable, derived } from 'svelte/store';
+  import { writable, derived, get } from 'svelte/store';
   import { spring, tweened } from 'svelte/motion';
   import { cubicOut, elasticOut } from 'svelte/easing';
+
+  // Load PDF generation libraries
+  let html2canvas, jsPDF;
+  
+  onMount(async () => {
+    // Dynamically load pdf generation libraries
+    try {
+      if (typeof window !== 'undefined') {
+        // Load html2canvas
+        if (!window.html2canvas) {
+          const script1 = document.createElement('script');
+          script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+          document.head.appendChild(script1);
+          await new Promise(resolve => script1.onload = resolve);
+        }
+        
+        // Load jsPDF
+        if (!window.jspdf) {
+          const script2 = document.createElement('script');
+          script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+          document.head.appendChild(script2);
+          await new Promise(resolve => script2.onload = resolve);
+        }
+        
+        html2canvas = window.html2canvas;
+        jsPDF = window.jspdf?.jsPDF;
+        
+        console.log('PDF libraries loaded successfully');
+      }
+    } catch (error) {
+      console.error('Failed to load PDF libraries:', error);
+    }
+  });
   
   // Quantum state management
   const quantumState = writable({
@@ -29,7 +62,20 @@
   const uiState = writable({
     showDebug: false,
     zoomedYear: null,
-    showMovementViz: false
+    showMovementViz: false,
+    showHistoricalCharts: false
+  });
+
+  // Historical analysis data
+  const behaviorHistory = writable([]);
+  const sessionStartTime = Date.now();
+  const sessionMetadata = writable({
+    startTime: sessionStartTime,
+    totalInteractions: 0,
+    scenariosObserved: [],
+    yearsExplored: [],
+    peakRiskTolerance: 0,
+    averageRiskTolerance: 0
   });
   
   // Physics-based motion systems
@@ -105,6 +151,12 @@
       superposition: false,
       collapsed: scenario,
       observationTimestamp: Date.now()
+    }));
+
+    // Track scenario observation
+    sessionMetadata.update(meta => ({
+      ...meta,
+      scenariosObserved: [...new Set([...meta.scenariosObserved, scenario])]
     }));
     
     // Physics reaction to observation
@@ -204,13 +256,41 @@
     const behaviorTimer = setInterval(() => {
       userBehavior.update(behavior => {
         const analysis = analyzeBehavior(behavior.interactionHistory);
-        return {
+        const newBehavior = {
           ...behavior,
           riskTolerance: analysis.riskTolerance,
           interactionPattern: analysis.interactionPattern
         };
+
+        // Store historical data point
+        behaviorHistory.update(history => [
+          ...history,
+          {
+            timestamp: Date.now(),
+            riskTolerance: newBehavior.riskTolerance,
+            interactionPattern: newBehavior.interactionPattern,
+            totalInteractions: newBehavior.interactionHistory.length,
+            currentVolatility: calculateMovementVolatility(newBehavior.interactionHistory),
+            timeFromStart: Date.now() - sessionStartTime
+          }
+        ]);
+
+        // Update session metadata
+        sessionMetadata.update(meta => {
+          const currentHistory = get(behaviorHistory);
+          return {
+            ...meta,
+            totalInteractions: newBehavior.interactionHistory.length,
+            peakRiskTolerance: Math.max(meta.peakRiskTolerance, newBehavior.riskTolerance),
+            averageRiskTolerance: currentHistory.length > 0 
+              ? currentHistory.reduce((sum, point) => sum + point.riskTolerance, 0) / currentHistory.length 
+              : newBehavior.riskTolerance
+          };
+        });
+
+        return newBehavior;
       });
-    }, 2000);
+    }, 3000); // Every 3 seconds
     
     return () => clearInterval(behaviorTimer);
   });
@@ -220,6 +300,12 @@
     uiState.update(state => ({
       ...state,
       zoomedYear: { year, scenario }
+    }));
+
+    // Track year exploration
+    sessionMetadata.update(meta => ({
+      ...meta,
+      yearsExplored: [...new Set([...meta.yearsExplored, year])]
     }));
   }
 
@@ -297,6 +383,399 @@
       showMovementViz: !state.showMovementViz
     }));
   }
+
+  function toggleHistoricalCharts() {
+    uiState.update(state => ({
+      ...state,
+      showHistoricalCharts: !state.showHistoricalCharts
+    }));
+  }
+
+  // PDF Generation functionality
+  async function generateSessionPDF() {
+    if (!html2canvas || !jsPDF) {
+      console.error('PDF libraries not loaded');
+      // Fallback to JSON download
+      const sessionData = {
+        metadata: $sessionMetadata,
+        behaviorHistory: $behaviorHistory,
+        currentState: {
+          riskTolerance: $userBehavior.riskTolerance,
+          interactionPattern: $userBehavior.interactionPattern,
+          totalInteractions: $userBehavior.interactionHistory.length
+        },
+        timestamp: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(sessionData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `theblockchain-ai-quantum-analysis-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    try {
+      // Show loading state
+      const pdfButton = document.querySelector('.pdf-download');
+      const originalText = pdfButton.textContent;
+      pdfButton.textContent = '⏳ Generating PDF...';
+      pdfButton.disabled = true;
+
+      // Create new PDF document
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 20;
+      
+      // Page 1: Cover Page with Session Summary
+      // WHITE BACKGROUND FOR PRINT
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      
+      // Header line
+      pdf.setDrawColor(139, 92, 246);
+      pdf.setLineWidth(2);
+      pdf.line(margin, 25, pageWidth - margin, 25);
+      
+      // Title - LEFT ALIGNED
+      pdf.setTextColor(139, 92, 246);
+      pdf.setFontSize(20);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('QUANTUM INVESTMENT ANALYSIS REPORT', margin, 20);
+      
+      // Subtitle - LEFT ALIGNED
+      pdf.setTextColor(100, 100, 100);
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, 'normal');
+      pdf.text('Behavioral Pattern & Risk Assessment', margin, 35);
+      
+      // Generated date
+      pdf.setTextColor(60, 60, 60);
+      pdf.setFontSize(10);
+      pdf.text(`Generated: ${new Date().toLocaleString()}`, margin, 45);
+      
+      // Session Summary Section
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(14);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('SESSION OVERVIEW', margin, 60);
+      
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(margin, 65, pageWidth - margin, 65);
+      
+      // Session data - clean formatting
+      pdf.setTextColor(60, 60, 60);
+      pdf.setFontSize(11);
+      pdf.setFont(undefined, 'normal');
+      
+      const sessionDuration = Math.floor((Date.now() - sessionStartTime) / 60000);
+      const sessionData = [
+        ['Session Duration:', `${sessionDuration}m ${Math.floor(((Date.now() - sessionStartTime) % 60000) / 1000)}s`],
+        ['Total Interactions:', `${$sessionMetadata.totalInteractions}`],
+        ['Scenarios Explored:', `${$sessionMetadata.scenariosObserved.join(', ') || 'None'}`],
+        ['Years Analyzed:', `${$sessionMetadata.yearsExplored.join(', ') || 'None'}`],
+        ['Current Risk Level:', `${($userBehavior.riskTolerance * 100).toFixed(0)}%`],
+        ['Peak Risk Tolerance:', `${($sessionMetadata.peakRiskTolerance * 100).toFixed(0)}%`],
+        ['Average Risk Level:', `${($sessionMetadata.averageRiskTolerance * 100).toFixed(0)}%`],
+        ['Behavioral Pattern:', `${$userBehavior.interactionPattern.toUpperCase()}`]
+      ];
+      
+      sessionData.forEach((item, index) => {
+        const yPos = 75 + (index * 8);
+        pdf.setFont(undefined, 'bold');
+        pdf.text(item[0], margin, yPos);
+        pdf.setFont(undefined, 'normal');
+        pdf.text(item[1], margin + 50, yPos);
+      });
+
+      // Key Insights Section
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(14);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('KEY BEHAVIORAL INSIGHTS', margin, 155);
+      
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(margin, 160, pageWidth - margin, 160);
+      
+      // Insights box with border
+      pdf.setDrawColor(139, 92, 246);
+      pdf.setLineWidth(1);
+      pdf.rect(margin, 170, pageWidth - (margin * 2), 60);
+      
+      pdf.setTextColor(60, 60, 60);
+      pdf.setFontSize(10);
+      pdf.setFont(undefined, 'normal');
+      
+      const insights = [
+        `Investment Approach: ${$userBehavior.interactionPattern.toUpperCase()}`,
+        `Risk Appetite: ${$userBehavior.riskTolerance > 0.7 ? 'High growth orientation' : 
+           $userBehavior.riskTolerance > 0.4 ? 'Balanced risk-reward preference' : 
+           'Capital preservation focus'}`,
+        '',
+        `Analysis based on ${$behaviorHistory.length} behavioral data points`,
+        `Risk pattern: ${$sessionMetadata.peakRiskTolerance > $sessionMetadata.averageRiskTolerance * 1.2 ? 
+           'Variable (adaptive decision-making)' :
+           'Stable (consistent philosophy)'}`,
+        '',
+        `Recommended Strategy: ${
+           $userBehavior.riskTolerance > 0.65 ? 'AGGRESSIVE GROWTH' :
+           $userBehavior.riskTolerance > 0.35 ? 'BALANCED PORTFOLIO' :
+           'CONSERVATIVE INCOME'
+        }`
+      ];
+      
+      insights.forEach((line, index) => {
+        if (line) {
+          pdf.text(line, margin + 5, 180 + (index * 6));
+        }
+      });
+
+      // Footer
+      pdf.setTextColor(150, 150, 150);
+      pdf.setFontSize(8);
+      pdf.text('theBlockchain.ai Quantum Investment Timeline', margin, pageHeight - 10);
+
+      // Page 2: Data Summary Table
+      pdf.addPage();
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      
+      pdf.setTextColor(139, 92, 246);
+      pdf.setFontSize(16);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('BEHAVIORAL DATA ANALYSIS', margin, 25);
+      
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(margin, 30, pageWidth - margin, 30);
+
+      // Risk tolerance history table (if we have data)
+      if ($behaviorHistory.length > 0) {
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(12);
+        pdf.setFont(undefined, 'bold');
+        pdf.text('RISK TOLERANCE EVOLUTION', margin, 45);
+        
+        // Table headers
+        pdf.setDrawColor(200, 200, 200);
+        pdf.setFillColor(240, 240, 240);
+        pdf.rect(margin, 55, pageWidth - (margin * 2), 10, 'FD');
+        
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(9);
+        pdf.setFont(undefined, 'bold');
+        pdf.text('Time', margin + 5, 62);
+        pdf.text('Risk Level', margin + 40, 62);
+        pdf.text('Pattern', margin + 80, 62);
+        pdf.text('Interactions', margin + 120, 62);
+        
+        // Table data (show last 10 entries)
+        const recentHistory = $behaviorHistory.slice(-10);
+        recentHistory.forEach((point, index) => {
+          const yPos = 72 + (index * 8);
+          const timeElapsed = Math.floor((point.timestamp - sessionStartTime) / 1000);
+          
+          pdf.setFont(undefined, 'normal');
+          pdf.setTextColor(60, 60, 60);
+          pdf.setFontSize(8);
+          
+          pdf.text(`${timeElapsed}s`, margin + 5, yPos);
+          pdf.text(`${(point.riskTolerance * 100).toFixed(0)}%`, margin + 40, yPos);
+          pdf.text(point.interactionPattern, margin + 80, yPos);
+          pdf.text(`${point.totalInteractions}`, margin + 120, yPos);
+        });
+
+        // Pattern distribution
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(12);
+        pdf.setFont(undefined, 'bold');
+        pdf.text('INTERACTION PATTERN DISTRIBUTION', margin, 170);
+        
+        ['conservative', 'moderate', 'aggressive'].forEach((pattern, index) => {
+          const count = $behaviorHistory.filter(point => point.interactionPattern === pattern).length;
+          const percentage = $behaviorHistory.length > 0 ? (count / $behaviorHistory.length) * 100 : 0;
+          const yPos = 185 + (index * 12);
+          
+          pdf.setFont(undefined, 'normal');
+          pdf.setTextColor(60, 60, 60);
+          pdf.setFontSize(10);
+          
+          pdf.text(`${pattern.toUpperCase()}:`, margin, yPos);
+          pdf.text(`${percentage.toFixed(1)}% (${count} instances)`, margin + 50, yPos);
+          
+          // Simple bar visualization
+          const barWidth = (percentage / 100) * 80;
+          pdf.setFillColor(139, 92, 246);
+          pdf.rect(margin + 120, yPos - 3, barWidth, 6, 'F');
+        });
+      }
+
+      // Page 3: Timeline Capture (improved)
+      pdf.addPage();
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      
+      pdf.setTextColor(139, 92, 246);
+      pdf.setFontSize(16);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('INTERACTIVE TIMELINE CAPTURE', margin, 25);
+      
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(margin, 30, pageWidth - margin, 30);
+
+      // Better screenshot capture
+      try {
+        const timelineElement = document.querySelector('.quantum-timeline-container');
+        if (timelineElement) {
+          const canvas = await html2canvas(timelineElement, {
+            backgroundColor: '#ffffff',
+            scale: 1.5,
+            logging: false,
+            useCORS: true,
+            allowTaint: true,
+            scrollX: 0,
+            scrollY: 0,
+            width: timelineElement.scrollWidth,
+            height: timelineElement.scrollHeight
+          });
+          
+          const imgData = canvas.toDataURL('image/jpeg', 0.9);
+          const imgWidth = pageWidth - (margin * 2);
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          // Fit to page with margin
+          const maxHeight = pageHeight - 60;
+          if (imgHeight > maxHeight) {
+            const scaledWidth = (canvas.width * maxHeight) / canvas.height;
+            const xPos = (pageWidth - scaledWidth) / 2;
+            pdf.addImage(imgData, 'JPEG', xPos, 40, scaledWidth, maxHeight);
+          } else {
+            pdf.addImage(imgData, 'JPEG', margin, 40, imgWidth, imgHeight);
+          }
+        }
+      } catch (error) {
+        console.error('Screenshot capture failed:', error);
+        pdf.setTextColor(100, 100, 100);
+        pdf.setFontSize(12);
+        pdf.text('Timeline screenshot unavailable', margin, 100);
+        pdf.setFontSize(10);
+        pdf.text('Interface capture encountered technical limitations', margin, 115);
+      }
+
+      // Page 4: Strategic Recommendations
+      pdf.addPage();
+      pdf.setFillColor(255, 255, 255);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      
+      pdf.setTextColor(139, 92, 246);
+      pdf.setFontSize(16);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('STRATEGIC RECOMMENDATIONS', margin, 25);
+      
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(margin, 30, pageWidth - margin, 30);
+      
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(11);
+      pdf.setFont(undefined, 'normal');
+      
+      const recommendations = [
+        'Based on your behavioral analysis, we recommend the following strategic actions:',
+        '',
+        'PORTFOLIO ALIGNMENT:',
+        `${$userBehavior.riskTolerance > 0.65 ? 
+           '• Focus on growth-oriented investments with higher volatility tolerance' :
+           $userBehavior.riskTolerance > 0.35 ?
+           '• Balance growth and income investments for optimal risk-return ratio' :
+           '• Prioritize capital preservation with steady income generation'}`,
+        `• Consider ${$userBehavior.riskTolerance > 0.65 ? '70-90%' : $userBehavior.riskTolerance > 0.35 ? '50-70%' : '20-40%'} equity allocation`,
+        '',
+        'INVESTMENT TIMELINE:',
+        `• Your analysis suggests ${$sessionMetadata.yearsExplored.includes(2025) ? 'immediate action preference' : 'medium to long-term investment horizon'}`,
+        `• Consider ${$sessionMetadata.yearsExplored.length > 2 ? 'diversified time-horizon strategy' : 'focused timeline approach'}`,
+        '',
+        'RISK MANAGEMENT:',
+        `• ${$sessionMetadata.peakRiskTolerance - $sessionMetadata.averageRiskTolerance > 0.2 ?
+           'Implement dynamic allocation strategies for variable risk tolerance' :
+           'Maintain stable, systematic investment approaches for consistent profile'}`,
+        '• Regular portfolio rebalancing recommended',
+        '• Consider stop-loss mechanisms for growth positions',
+        '',
+        'NEXT STEPS:',
+        '• Review detailed scenario projections for your preferred risk level',
+        '• Consider consultation with qualified investment advisor',
+        '• Monitor market conditions and adjust positions accordingly',
+        '• Revisit this analysis quarterly to track behavioral evolution'
+      ];
+      
+      let yPosition = 45;
+      recommendations.forEach((line) => {
+        if (line === '') {
+          yPosition += 6;
+        } else if (line.includes(':') && line.length < 30) {
+          // Section header
+          pdf.setFont(undefined, 'bold');
+          pdf.setTextColor(0, 0, 0);
+          pdf.text(line, margin, yPosition);
+          yPosition += 8;
+          pdf.setFont(undefined, 'normal');
+          pdf.setTextColor(60, 60, 60);
+        } else {
+          pdf.text(line, margin, yPosition);
+          yPosition += 6;
+        }
+      });
+
+      // Footer
+      pdf.setTextColor(150, 150, 150);
+      pdf.setFontSize(8);
+      pdf.text('Generated by theBlockchain.ai Quantum Investment Timeline', margin, pageHeight - 10);
+
+      // Save the PDF
+      const filename = `theblockchain-ai-quantum-investment-analysis-${new Date().toISOString().slice(0, 10)}.pdf`;
+      pdf.save(filename);
+      
+      // Reset button
+      pdfButton.textContent = originalText;
+      pdfButton.disabled = false;
+      
+      console.log('PDF generated successfully:', filename);
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      
+      // Reset button on error
+      const pdfButton = document.querySelector('.pdf-download');
+      if (pdfButton) {
+        pdfButton.textContent = '📄 Download Report';
+        pdfButton.disabled = false;
+      }
+      
+      // Fallback to JSON download
+      const sessionData = {
+        metadata: $sessionMetadata,
+        behaviorHistory: $behaviorHistory,
+        currentState: {
+          riskTolerance: $userBehavior.riskTolerance,
+          interactionPattern: $userBehavior.interactionPattern,
+          totalInteractions: $userBehavior.interactionHistory.length
+        },
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(sessionData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `theblockchain-ai-quantum-analysis-fallback-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  }
 </script>
 
 <div class="quantum-timeline-container" role="application" aria-label="Quantum Investment Timeline Interactive Interface">
@@ -313,6 +792,12 @@
       </button>
       <button class="movement-toggle" on:click={toggleMovementViz}>
         {$uiState.showMovementViz ? '🎯 Hide Trail' : '🎯 Show Trail'}
+      </button>
+      <button class="charts-toggle" on:click={toggleHistoricalCharts}>
+        {$uiState.showHistoricalCharts ? '📈 Hide Charts' : '📈 Historical Analysis'}
+      </button>
+      <button class="pdf-download" on:click={generateSessionPDF}>
+        📄 Download Report
       </button>
       <div class="coherence-indicator">
         Coherence: {($quantumState.coherenceLevel * 100).toFixed(0)}%
@@ -363,6 +848,131 @@
             {#each Object.entries($adaptiveScenarios) as [name, data]}
               <span class="prob-item">{name}: {(data.probability * 100).toFixed(0)}%</span>
             {/each}
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Historical Analysis Charts -->
+  {#if $uiState.showHistoricalCharts}
+    <div class="historical-analysis">
+      <h4>📈 Historical Behavioral Analysis</h4>
+      
+      <div class="charts-grid">
+        <!-- Risk Tolerance Timeline -->
+        <div class="chart-container">
+          <h5>Risk Tolerance Evolution</h5>
+          <div class="chart-wrapper">
+            <svg width="350" height="150" class="timeline-chart">
+              {#if $behaviorHistory.length > 1}
+                <defs>
+                  <linearGradient id="riskGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
+                    <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.3" />
+                  </linearGradient>
+                </defs>
+                
+                <!-- Chart background -->
+                <rect width="350" height="150" fill="rgba(15, 23, 42, 0.3)" rx="8"/>
+                
+                <!-- Grid lines -->
+                {#each Array(5) as _, i}
+                  <line 
+                    x1="30" y1={30 + (i * 24)} 
+                    x2="330" y2={30 + (i * 24)}
+                    stroke="rgba(255, 255, 255, 0.1)" 
+                    stroke-width="1"
+                  />
+                {/each}
+                
+                <!-- Risk tolerance line -->
+                <polyline
+                  points={$behaviorHistory.map((point, i) => {
+                    const x = 30 + (i / Math.max($behaviorHistory.length - 1, 1)) * 300;
+                    const y = 130 - (point.riskTolerance * 100);
+                    return `${x},${y}`;
+                  }).join(' ')}
+                  fill="none"
+                  stroke="#8b5cf6"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                
+                <!-- Data points -->
+                {#each $behaviorHistory as point, i}
+                  <circle
+                    cx={30 + (i / Math.max($behaviorHistory.length - 1, 1)) * 300}
+                    cy={130 - (point.riskTolerance * 100)}
+                    r="4"
+                    fill="#8b5cf6"
+                  />
+                {/each}
+                
+                <!-- Labels -->
+                <text x="10" y="35" fill="#94a3b8" font-size="10">High</text>
+                <text x="10" y="135" fill="#94a3b8" font-size="10">Low</text>
+              {:else}
+                <text x="175" y="80" text-anchor="middle" fill="#94a3b8" font-size="14">
+                  Collecting data... interact to see your pattern
+                </text>
+              {/if}
+            </svg>
+          </div>
+        </div>
+
+        <!-- Interaction Pattern Distribution -->
+        <div class="chart-container">
+          <h5>Interaction Patterns</h5>
+          <div class="pattern-stats">
+            {#each ['conservative', 'moderate', 'aggressive'] as pattern}
+              {@const count = $behaviorHistory.filter(point => point.interactionPattern === pattern).length}
+              {@const percentage = $behaviorHistory.length > 0 ? (count / $behaviorHistory.length) * 100 : 0}
+              <div class="pattern-bar">
+                <span class="pattern-label">{pattern}</span>
+                <div class="bar-track">
+                  <div 
+                    class="bar-fill pattern-{pattern}" 
+                    style="width: {percentage}%"
+                  ></div>
+                </div>
+                <span class="pattern-value">{percentage.toFixed(0)}%</span>
+              </div>
+            {/each}
+          </div>
+        </div>
+
+        <!-- Session Summary -->
+        <div class="chart-container">
+          <h5>Session Insights</h5>
+          <div class="session-stats">
+            <div class="stat-item">
+              <span class="stat-label">Duration:</span>
+              <span class="stat-value">
+                {Math.floor((Date.now() - sessionStartTime) / 60000)}m {Math.floor(((Date.now() - sessionStartTime) % 60000) / 1000)}s
+              </span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Total Interactions:</span>
+              <span class="stat-value">{$sessionMetadata.totalInteractions}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Scenarios Explored:</span>
+              <span class="stat-value">{$sessionMetadata.scenariosObserved.length}/3</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Years Deep Dived:</span>
+              <span class="stat-value">{$sessionMetadata.yearsExplored.length}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Peak Risk Tolerance:</span>
+              <span class="stat-value">{($sessionMetadata.peakRiskTolerance * 100).toFixed(0)}%</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Average Risk Tolerance:</span>
+              <span class="stat-value">{($sessionMetadata.averageRiskTolerance * 100).toFixed(0)}%</span>
+            </div>
           </div>
         </div>
       </div>
@@ -889,7 +1499,7 @@
   }
 
   /* Phase 1: Debug Panel Styles */
-  .debug-toggle, .movement-toggle {
+  .debug-toggle, .movement-toggle, .charts-toggle, .pdf-download {
     background: rgba(59, 130, 246, 0.2);
     color: #60a5fa;
     border: 1px solid rgba(59, 130, 246, 0.3);
@@ -901,9 +1511,19 @@
     transition: all 0.3s ease;
   }
 
-  .debug-toggle:hover, .movement-toggle:hover {
+  .debug-toggle:hover, .movement-toggle:hover, .charts-toggle:hover, .pdf-download:hover {
     background: rgba(59, 130, 246, 0.3);
     transform: scale(1.05);
+  }
+
+  .pdf-download {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, 0.3);
+  }
+
+  .pdf-download:hover {
+    background: rgba(34, 197, 94, 0.3);
   }
 
   .debug-panel {
@@ -1013,6 +1633,137 @@
     color: #8b5cf6;
     font-weight: 600;
     text-transform: capitalize;
+  }
+
+  /* Historical Analysis Styles */
+  .historical-analysis {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(10px);
+  }
+
+  .historical-analysis h4 {
+    margin: 0 0 20px 0;
+    color: #8b5cf6;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .chart-container {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .chart-container h5 {
+    margin: 0 0 12px 0;
+    color: #10b981;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .chart-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .timeline-chart {
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .pattern-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pattern-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pattern-label {
+    min-width: 80px;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    text-transform: capitalize;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 20px;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+
+  .pattern-conservative {
+    background: linear-gradient(90deg, #10b981, #059669);
+  }
+
+  .pattern-moderate {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+  }
+
+  .pattern-aggressive {
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+  }
+
+  .pattern-value {
+    min-width: 35px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+    text-align: right;
+  }
+
+  .session-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .stat-item:last-child {
+    border-bottom: none;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #94a3b8;
+  }
+
+  .stat-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #10b981;
   }
 
   /* Timeline Phase Enhancements */
@@ -1303,6 +2054,29 @@
 
     .insight-cards {
       grid-template-columns: 1fr;
+    }
+
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+      padding: 12px;
+    }
+
+    .timeline-chart {
+      width: 100%;
+      height: 120px;
+    }
+
+    .pattern-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .bar-track {
+      width: 100%;
     }
   }
 </style>
