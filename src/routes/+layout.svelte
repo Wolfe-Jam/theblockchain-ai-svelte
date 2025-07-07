@@ -6,12 +6,14 @@
   import AboutModal from '../components/AboutModal.svelte';
   import AskAIModal from '../components/AskAIModal.svelte';
   import SerenityBoat from '../components/SerenityBoat.svelte';
+  import { page } from '$app/stores';
   
   // Modal state management
   let showAskAI = false;
   let showAbout = false;
   
   function handleOpenAskAI() {
+    console.log('SvelteKit Layout: received openAskAI event'); // Debug log
     showAskAI = true;
   }
   
@@ -19,6 +21,9 @@
     console.log('SvelteKit Layout: received openAbout event'); // Debug log
     showAbout = true;
   }
+  
+  // Get current path for conditional SerenityBoat display
+  $: currentPath = $page.url.pathname;
 </script>
 
 <!-- SvelteKit Layout with Header and Modals -->
@@ -36,8 +41,10 @@
   <AskAIModal bind:isOpen={showAskAI} />
   <AboutModal bind:isOpen={showAbout} />
   
-  <!-- Serenity Boat Animation -->
-  <SerenityBoat />
+  <!-- Serenity Boat Animation - Hide on Deep Dive page (user already at destination) -->
+  {#if currentPath !== '/deep-dive/the-convergent-economy'}
+    <SerenityBoat />
+  {/if}
 </div>
 
 <style>
