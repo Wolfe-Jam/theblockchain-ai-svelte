@@ -8,7 +8,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="serenity-boat" on:click={navigateToDeepDive}>
-  <i class="fas fa-sailboat"></i>
+  <i class="fas fa-ship"></i>
 </div>
 
 <style>

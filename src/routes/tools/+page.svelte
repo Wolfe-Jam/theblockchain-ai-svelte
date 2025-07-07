@@ -1,21 +1,6 @@
-<!-- Simple Tools Test Page -->
+<!-- AI Tools Page - Smart Contract Generator -->
 <script>
   import { onMount } from 'svelte';
-  import Header from '../../components/Header.svelte';
-  import Footer from '../../components/Footer.svelte';
-  import AskAIModal from '../../components/AskAIModal.svelte';
-  import AboutModal from '../../components/AboutModal.svelte';
-  
-  let showAskAI = false;
-  let showAbout = false;
-  
-  function handleOpenAskAI() {
-    showAskAI = true;
-  }
-  
-  function handleOpenAbout() {
-    showAbout = true;
-  }
   
   let promptInput = '';
   let generatedCode = '';
@@ -173,10 +158,8 @@
   <meta name="description" content="Generate Solidity smart contracts using AI. Describe your logic in plain English and get production-ready code." />
 </svelte:head>
 
-<div class="app-container">
-  <Header on:openAskAI={handleOpenAskAI} on:openAbout={handleOpenAbout} />
-  
-  <div class="min-h-screen bg-slate-900 text-white">
+<!-- Main Tools Interface -->
+<div class="min-h-screen bg-slate-900 text-white">
   <div class="relative bg-gradient-to-br from-orange-900 via-slate-800 to-slate-900">
     <div class="absolute inset-0 bg-black/20"></div>
     <div class="relative max-w-5xl mx-auto px-6 py-24">
@@ -320,23 +303,7 @@
   </div>
 </div>
 
-  <Footer />
-</div>
-
-{#if showAskAI}
-  <AskAIModal on:close={() => showAskAI = false} />
-{/if}
-
-{#if showAbout}
-  <AboutModal on:close={() => showAbout = false} />
-{/if}
-
 <style>
-  .app-container {
-    min-height: 100vh;
-    background-color: #020617;
-    color: #f8fafc;
-  }
   .loader {
     width: 20px;
     height: 20px;

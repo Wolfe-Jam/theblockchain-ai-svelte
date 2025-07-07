@@ -68,6 +68,7 @@
       e.stopPropagation();
     }
     mobileMenuOpen = false; // Close mobile menu
+    console.log('Header: dispatching openAbout event'); // Debug log
     dispatch('openAbout');
   }
   

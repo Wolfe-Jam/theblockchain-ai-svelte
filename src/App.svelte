@@ -45,6 +45,7 @@
   }
   
   function handleOpenAbout() {
+    console.log('App.svelte: received openAbout event'); // Debug log
     showAbout = true;
   }
 </script>
