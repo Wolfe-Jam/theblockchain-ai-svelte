@@ -29,6 +29,22 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Quantum Timeline Development
+# Generated PDFs during testing (users keep their downloads)
+test-*.pdf
+debug-*.pdf
+quantum-test-*.pdf
+theblockchain-ai-quantum-*-test-*.pdf
+
+# Development artifacts
+*.debug.json
+behavioral-data-*.json
+session-analysis-*.json
+
+# Cache files
+.cache/
+*.cache
+
 # LaTeX build artifacts (temporary files only)
 *.aux
 *.bbl
