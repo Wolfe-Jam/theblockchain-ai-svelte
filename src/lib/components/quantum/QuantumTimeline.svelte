@@ -49,18 +49,18 @@
       // Always generate scenarios for both superposition and collapsed states
       const riskWeight = behavior.riskTolerance;
       const scenarios = {
-        conservative: {
-          probability: (1 - riskWeight) * 1.5,
-          color: { hue: 120, saturation: 60, lightness: 50 },
-          phases: generateConservativePhases()
-        },
         moderate: {
           probability: 1.0,
           color: { hue: 45, saturation: 70, lightness: 55 },
           phases: generateModeratePhases()
         },
+        conservative: {
+          probability: Math.max(0.4, (1 - riskWeight) * 1.2) + 0.3,
+          color: { hue: 120, saturation: 60, lightness: 50 },
+          phases: generateConservativePhases()
+        },
         aggressive: {
-          probability: riskWeight * 1.8,
+          probability: Math.max(0.4, riskWeight * 1.2) + 0.3,
           color: { hue: 280, saturation: 80, lightness: 60 },
           phases: generateAggressivePhases()
         }
@@ -299,7 +299,7 @@
   }
 </script>
 
-<div class="quantum-timeline-container" on:mousemove={handleMouseMove} role="application" aria-label="Quantum Investment Timeline Interactive Interface">
+<div class="quantum-timeline-container" role="application" aria-label="Quantum Investment Timeline Interactive Interface">
   <div class="quantum-header">
     <h2>🔮 Quantum Investment Timeline</h2>
     <div class="quantum-controls">
@@ -364,132 +364,6 @@
               <span class="prob-item">{name}: {(data.probability * 100).toFixed(0)}%</span>
             {/each}
           </div>
-        </div>
-      </div>
-    </div>
-  {/if}
-
-  <!-- Phase 1: Movement Visualization -->
-  {#if $uiState.showMovementViz}
-    <div class="movement-visualization">
-      <h4>🎯 Your Movement Pattern</h4>
-      <div class="movement-canvas">
-        <svg width="400" height="200" class="movement-trail">
-          {#each $userBehavior.movementTrail as point, i}
-            {#if i > 0}
-              <line
-                x1={$userBehavior.movementTrail[i-1].x * 400}
-                y1={$userBehavior.movementTrail[i-1].y * 200}
-                x2={point.x * 400}
-                y2={point.y * 200}
-                stroke="rgba(139, 92, 246, {1 - (($userBehavior.movementTrail.length - i) / $userBehavior.movementTrail.length)})"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            {/if}
-          {/each}
-          {#each $userBehavior.movementTrail.slice(-5) as point, i}
-            <circle
-              cx={point.x * 400}
-              cy={point.y * 200}
-              r={3 + i}
-              fill="rgba(139, 92, 246, {0.3 + (i * 0.2)})"
-            />
-          {/each}
-        </svg>
-        <div class="movement-analysis">
-          <div class="analysis-item">
-            Pattern: <span class="analysis-value">{$userBehavior.interactionPattern}</span>
-          </div>
-          <div class="analysis-item">
-            Volatility: <span class="analysis-value">{calculateMovementVolatility($userBehavior.interactionHistory) > 0.5 ? 'High' : 'Low'}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  {/if}
-  
-  {#if $quantumState.superposition}
-    <!-- Quantum Superposition State -->
-    <div class="superposition-container">
-      <h3>📊 Quantum Market Scenarios</h3>
-      <p class="superposition-hint">
-        🌀 Multiple realities exist simultaneously. Click to collapse wavefunction.
-      </p>
-      
-      {#each Object.entries($adaptiveScenarios) as [scenario, data]}
-        <div 
-          class="scenario-pathway"
-          style="opacity: {data.probability}; border-color: hsl({data.color.hue}, {data.color.saturation}%, {data.color.lightness}%)"
-          on:click={() => observeScenario(scenario)}
-        >
-          <div class="scenario-header">
-            <h4>{scenario.charAt(0).toUpperCase() + scenario.slice(1)} Path</h4>
-            <span class="probability">P = {(data.probability * 100).toFixed(0)}%</span>
-          </div>
-          
-          <div class="phase-timeline">
-            {#each data.phases as phase, index}
-              <div 
-                class="timeline-phase" 
-                style="--phase-hue: {data.color.hue + index * 20}"
-                on:click={() => zoomToYear(phase.year, scenario)}
-              >
-                <div class="phase-year">{phase.year}</div>
-                <div class="phase-market">${phase.market}T</div>
-                <div class="phase-opportunity">{phase.opportunity}%</div>
-                <div class="phase-emotion">{phase.emotion}</div>
-                <div class="zoom-hint">🔍 Click to zoom</div>
-              </div>
-            {/each}
-          </div>
-          
-          <!-- Probability field overlay -->
-          <div 
-            class="probability-field"
-            style="
-              background: radial-gradient(circle at {$probabilityField.x * 100}% {$probabilityField.y * 100}%,
-                hsla({data.color.hue}, {data.color.saturation}%, {data.color.lightness}%, {$probabilityField.intensity * 0.3}) 0%,
-                transparent 50%
-              )
-            "
-          ></div>
-        </div>
-      {/each}
-    </div>
-  {:else if $quantumState.collapsed}
-    <!-- Collapsed State - Single Reality -->
-    <div class="collapsed-container">
-      <h3>🎯 Observed Reality: {$quantumState.collapsed.toUpperCase()}</h3>
-      <p class="collapse-timestamp">
-        Wavefunction collapsed at {new Date($quantumState.observationTimestamp).toLocaleTimeString()}
-      </p>
-      
-      <!-- Single definitive timeline -->
-      <div class="definitive-timeline">
-        {#if $adaptiveScenarios && $quantumState.collapsed && $adaptiveScenarios[$quantumState.collapsed]}
-          {#each $adaptiveScenarios[$quantumState.collapsed].phases as phase, index}
-          <div class="definitive-phase" style="--phase-delay: {index * 0.2}s">
-            <div class="phase-node">
-              <div class="node-year">{phase.year}</div>
-              <div class="node-market">${phase.market}T</div>
-              <div class="node-opportunity">{phase.opportunity}% left</div>
-            </div>
-            <div class="phase-details">
-              <div class="detail-emotion">{phase.emotion}</div>
-              <div class="detail-urgency">{phase.urgency}</div>
-            </div>
-          </div>
-        {/each}
-        {/if}
-      </div>
-      
-      <!-- AI Recommendations -->
-      <div class="ai-recommendations">
-        <h4>🤖 AI Strategic Analysis</h4>
-        <div class="recommendation">
-          Based on your {$userBehavior.riskTolerance > 0.6 ? 'high' : 'moderate'} risk tolerance and 
-          {$userBehavior.interactionPattern} interaction pattern, this scenario aligns with your profile.
         </div>
       </div>
     </div>
@@ -577,6 +451,7 @@
             style="opacity: {data.probability}; border-color: hsl({data.color.hue}, {data.color.saturation}%, {data.color.lightness}%)"
             on:click={() => observeScenario(scenario)}
             on:keydown={(e) => e.key === 'Enter' && observeScenario(scenario)}
+            on:mousemove={handleMouseMove}
             role="button"
             tabindex="0"
             aria-label="Observe {scenario} investment scenario"
@@ -642,7 +517,7 @@
                 <div class="detail-urgency">{phase.urgency}</div>
               </div>
             </div>
-          {/each}
+            {/each}
           {/if}
         </div>
         
@@ -652,6 +527,46 @@
           <div class="recommendation">
             Based on your {$userBehavior.riskTolerance > 0.6 ? 'high' : 'moderate'} risk tolerance and 
             {$userBehavior.interactionPattern} interaction pattern, this scenario aligns with your profile.
+          </div>
+        </div>
+      </div>
+    {/if}
+
+    <!-- Movement Pattern Analysis (below scenarios) -->
+    {#if $uiState.showMovementViz}
+      <div class="movement-visualization">
+        <h4>🎯 Your Movement Pattern</h4>
+        <div class="movement-canvas">
+          <svg width="400" height="200" class="movement-trail">
+            {#each $userBehavior.movementTrail as point, i}
+              {#if i > 0}
+                <line
+                  x1={$userBehavior.movementTrail[i-1].x * 400}
+                  y1={$userBehavior.movementTrail[i-1].y * 200}
+                  x2={point.x * 400}
+                  y2={point.y * 200}
+                  stroke="rgba(139, 92, 246, {1 - (($userBehavior.movementTrail.length - i) / $userBehavior.movementTrail.length)})"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              {/if}
+            {/each}
+            {#each $userBehavior.movementTrail.slice(-5) as point, i}
+              <circle
+                cx={point.x * 400}
+                cy={point.y * 200}
+                r={3 + i}
+                fill="rgba(139, 92, 246, {0.3 + (i * 0.2)})"
+              />
+            {/each}
+          </svg>
+          <div class="movement-analysis">
+            <div class="analysis-item">
+              Pattern: <span class="analysis-value">{$userBehavior.interactionPattern}</span>
+            </div>
+            <div class="analysis-item">
+              Volatility: <span class="analysis-value">{calculateMovementVolatility($userBehavior.interactionHistory) > 0.5 ? 'High' : 'Low'}</span>
+            </div>
           </div>
         </div>
       </div>
