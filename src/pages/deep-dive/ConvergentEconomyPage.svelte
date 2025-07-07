@@ -1100,8 +1100,13 @@ const aiAgentToken = {
   }
   
   .scene-boat-trigger i {
-    color: white;
-    font-size: 1.2rem;
+    color: white !important;
+    font-size: 1.2rem !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
   }
   
   /* Responsive Design */
