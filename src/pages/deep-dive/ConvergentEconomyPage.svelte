@@ -71,7 +71,7 @@
           tabindex="0"
           on:keydown={e => e.key === 'Enter' && toggleOverlay()}
         >
-          <i class="fas fa-ship"></i>
+          <i class="fas fa-anchor"></i>
         </div>
         <SceneOverlay bind:visible={isOverlayVisible} />
       </div>
@@ -1078,7 +1078,7 @@ const aiAgentToken = {
   .scene-boat-trigger {
     width: 36px;
     height: 36px;
-    background: rgba(255, 145, 77, 0.9);
+    background: rgba(0, 0, 0, 0.8);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1087,7 +1087,7 @@ const aiAgentToken = {
     transition: all 0.3s ease;
     color: white;
     font-size: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.6);
     outline: none;
     z-index: 10;
     backdrop-filter: blur(4px);
@@ -1095,17 +1095,18 @@ const aiAgentToken = {
   
   .scene-boat-trigger:hover,
   .scene-boat-trigger:focus {
-    background: rgba(255, 145, 77, 1);
+    background: rgba(0, 0, 0, 0.95);
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(255, 145, 77, 0.4);
-    border: 2px solid rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.9);
   }
   
   .scene-boat-trigger i {
-    color: white;
-    font-size: 1.1rem;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-    filter: brightness(1.1);
+    color: #ffffff !important;
+    font-size: 1.2rem;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+    filter: brightness(1.3) contrast(1.2);
+    font-weight: 900;
   }
   
   /* Responsive Design */
