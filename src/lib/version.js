@@ -1,8 +1,12 @@
 // src/lib/version.js
-import packageJson from '../../package.json';
+// Static version info (auto-updated by scripts/update-version.js)
+const packageInfo = {
+  version: "1.2.0",
+  name: "my-theblockchain-ai-app"
+};
 
-export const version = packageJson.version;
-export const appName = packageJson.name;
+export const version = packageInfo.version;
+export const appName = packageInfo.name;
 export const fullVersion = `v${version}`;
 
 // Helper function to get formatted version for display

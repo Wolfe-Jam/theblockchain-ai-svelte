@@ -4,9 +4,25 @@
   import { tweened } from 'svelte/motion';
   import { cubicOut } from 'svelte/easing';
   import { page } from '$app/stores';
+  import Header from '../../../components/Header.svelte';
+  import Footer from '../../../components/Footer.svelte';
+  import AskAIModal from '../../../components/AskAIModal.svelte';
+  import AboutModal from '../../../components/AboutModal.svelte';
   
   /** @type {import('./$types').PageData} */
   export let data;
+  
+  // Modal state for Header integration
+  let showAskAI = false;
+  let showAbout = false;
+  
+  function handleOpenAskAI() {
+    showAskAI = true;
+  }
+  
+  function handleOpenAbout() {
+    showAbout = true;
+  }
   
   // Extract data with fallbacks
   $: ({ marketData, portfolioData, analyticsData, error } = data || {});
@@ -99,6 +115,9 @@
   <title>Investor Dashboard | theBlockchain.ai</title>
   <meta name="description" content="Professional investor dashboard with real-time market data, portfolio analytics, and convergence economy insights." />
 </svelte:head>
+
+<div class="app-container">
+  <Header on:openAskAI={handleOpenAskAI} on:openAbout={handleOpenAbout} />
 
 {#if error}
   <div class="error-container">
@@ -395,7 +414,44 @@
   </div>
 {/if}
 
+  <Footer />
+</div>
+
+{#if showAskAI}
+  <AskAIModal on:close={() => showAskAI = false} />
+{/if}
+
+{#if showAbout}
+  <AboutModal on:close={() => showAbout = false} />
+{/if}
+
 <style>
+  .app-container {
+    min-height: 100vh;
+    background-color: #020617;
+    color: #f8fafc;
+  }
+
+  /* CSS Variables for Dashboard */
+  :global(:root) {
+    --dashboard-bg: #0f172a;
+    --card-bg: #1e293b;
+    --border-color: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --brand-orange: #ff914d;
+    --brand-cyan: #0cc0df;
+    --brand-blue: #004aae;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+  }
+
+  /* Override dashboard background for integration */
+  :global(.dashboard-container) {
+    background: transparent !important;
+  }
   .metric-card::before {
     content: '';
     position: absolute;

@@ -1,0 +1,39 @@
+<!-- Root page - redirect to main Svelte Classic site -->
+<script>
+  import { onMount } from 'svelte';
+  
+  onMount(() => {
+    // Redirect to main site (Svelte Classic app)
+    // The main site should be served by the Svelte Classic routing
+    window.location.href = '/index.html';
+  });
+</script>
+
+<svelte:head>
+  <title>theBlockchain.ai - Revolutionary Fintech Platform</title>
+  <meta name="description" content="AI-powered blockchain investment platform" />
+</svelte:head>
+
+<div class="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+  <div class="text-center">
+    <h1 class="text-4xl font-bold mb-4">🚀 theBlockchain.ai</h1>
+    <p class="text-xl text-slate-300 mb-8">Redirecting to main site...</p>
+    <div class="loader mx-auto"></div>
+  </div>
+</div>
+
+<style>
+  .loader {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #1e293b;
+    border-top: 4px solid #0cc0df;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>

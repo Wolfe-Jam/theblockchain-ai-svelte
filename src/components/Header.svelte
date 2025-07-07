@@ -130,13 +130,13 @@
       if (visionDropdownOpen || resourceDropdownOpen || investDropdownOpen) return;
       
       // Show header when mouse is in top 100px OR on content pages (always visible) OR sequence completed on home
-      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides', '/quantum-demo'];
+      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides'];
       showHeader = e.clientY <= 100 || contentPages.includes(currentPath) || (currentPath === '/' && sequenceTriggered);
     };
     
     const handleKeyDown = (e) => {
       // Toggle header on spacebar (ONLY works on home page - content pages always show header)
-      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides', '/quantum-demo'];
+      const contentPages = ['/report', '/vision', '/invest', '/briefings', '/tools', '/deep-dive/the-convergent-economy', '/glossary', '/faqs', '/interactive-guides'];
       if (e.key === ' ' && !contentPages.includes(currentPath) && isDesktop) {
         e.preventDefault();
         showHeader = !showHeader;
@@ -294,6 +294,7 @@
               {/if}
             </div>
             
+            <a href="/quantum-demo" class="quantum-demo-link" title="🔮 Quantum Timeline Demo">🧠</a>
             <button type="button" class="ask-ai-link" on:click={openAskAI}>Ask AI 🤖</button>
         </div>
         
@@ -421,6 +422,24 @@
     transition: color 0.3s ease;
   }
 
+  .quantum-demo-link {
+    font-size: 1.5rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    margin-left: 2rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    position: relative;
+  }
+  
+  .quantum-demo-link:hover {
+    color: white;
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+
   .ask-ai-link {
     font-family: 'Roboto Mono', monospace !important;
     font-weight: 600;
@@ -428,7 +447,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    margin-left: 2rem;
+    margin-left: 1rem;
     transition: color 0.3s ease;
   }
 

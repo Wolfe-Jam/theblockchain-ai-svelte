@@ -19,14 +19,25 @@
   import InteractiveGuidesPage from './pages/InteractiveGuidesPage.svelte';
   import InvestorDashboard from './pages/InvestorDashboard.svelte';
   
-  // Basic routing logic (will be expanded later with a proper router)
-  let currentPath = window.location.pathname;
+  // SvelteKit imports for proper routing
+  import { page } from '$app/stores';
+  import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
+  
+  // Basic routing logic using SvelteKit stores
+  let currentPath = '/';
   let showAskAI = false;
   let showAbout = false;
   
-  // Listen for navigation changes (e.g., when user clicks a link)
-  window.addEventListener('popstate', () => {
-    currentPath = window.location.pathname;
+  // Subscribe to page store for routing
+  $: currentPath = $page.url.pathname;
+  
+  // Browser-specific code should run in onMount
+  onMount(() => {
+    if (browser) {
+      // Any browser-specific initialization can go here
+      console.log('App mounted in browser');
+    }
   });
   
   function handleOpenAskAI() {

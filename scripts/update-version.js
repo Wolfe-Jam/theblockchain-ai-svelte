@@ -35,19 +35,29 @@ try {
   
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
   
-  // Check if version.js is properly reading from package.json
+  // Update src/lib/version.js with new version
   const versionJsPath = path.join(__dirname, '..', 'src', 'lib', 'version.js');
   if (fs.existsSync(versionJsPath)) {
-    console.log('📋 Verified: src/lib/version.js automatically imports from package.json');
+    let versionJsContent = fs.readFileSync(versionJsPath, 'utf8');
+    
+    // Update the static version info
+    versionJsContent = versionJsContent.replace(
+      /version: "[^"]*"/,
+      `version: "${newVersion}"`
+    );
+    
+    fs.writeFileSync(versionJsPath, versionJsContent);
+    console.log('📋 Updated: src/lib/version.js with new version');
   }
   
   console.log(`✅ Version updated: ${oldVersion} → ${newVersion}`);
   console.log('📦 Updated files:');
   console.log('   - package.json');
+  console.log('   - src/lib/version.js');
   console.log('   - About modal will show new version automatically');
   console.log('');
   console.log('🚀 Next steps:');
-  console.log(`   git add package.json`);
+  console.log(`   git add package.json src/lib/version.js`);
   console.log(`   git commit -m "v${newVersion}: Version bump"`);
   console.log(`   git push`);
   
