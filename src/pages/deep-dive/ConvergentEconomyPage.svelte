@@ -1078,7 +1078,7 @@ const aiAgentToken = {
   .scene-boat-trigger {
     width: 36px;
     height: 36px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(255, 145, 77, 0.9);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1087,22 +1087,25 @@ const aiAgentToken = {
     transition: all 0.3s ease;
     color: white;
     font-size: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.8);
     outline: none;
     z-index: 10;
+    backdrop-filter: blur(4px);
   }
   
   .scene-boat-trigger:hover,
   .scene-boat-trigger:focus {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(255, 145, 77, 1);
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(255, 145, 77, 0.4);
+    border: 2px solid rgba(255, 255, 255, 1);
   }
   
   .scene-boat-trigger i {
     color: white;
-    font-size: 1rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-size: 1.1rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    filter: brightness(1.1);
   }
   
   /* Responsive Design */
