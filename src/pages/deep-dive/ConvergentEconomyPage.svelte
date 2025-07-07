@@ -71,7 +71,7 @@
           tabindex="0"
           on:keydown={e => e.key === 'Enter' && toggleOverlay()}
         >
-          <i class="fas fa-sailboat"></i>
+          <i class="fas fa-ship"></i>
         </div>
         <SceneOverlay bind:visible={isOverlayVisible} />
       </div>
