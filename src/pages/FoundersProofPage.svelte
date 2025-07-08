@@ -340,34 +340,88 @@
         Join the founding community of the convergent economy. Your future self will thank you.
       </p>
       
-      {#if !mintSuccess && !isConnected}
-        <button 
-          on:click={connectWallet}
-          disabled={isConnecting}
-          class="inline-flex items-center text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
-          style="background: linear-gradient(to right, #EA580C, #004AAE);"
-        >
-          {#if isConnecting}
-            <div class="loader mr-3"></div>
-            Connecting...
-          {:else}
-            <i class="fas fa-certificate mr-3"></i>
-            Mint Your Proof Now
-          {/if}
-        </button>
-      {:else if mintSuccess}
+      {#if mintSuccess}
+        <!-- Success State: Show next steps -->
         <div class="flex flex-col items-center gap-6">
-          <div class="text-6xl text-green-400">
+          <div class="text-6xl text-green-400 mb-4">
             <i class="fas fa-check-circle"></i>
           </div>
-          <h4 class="text-2xl font-bold text-white">Welcome, Founder #{1337 - spotsLeft + 1}</h4>
-          <a 
-            href="/deep-dive/the-convergent-economy"
-            class="inline-flex items-center bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-bold py-4 px-8 rounded-lg transition-all duration-300"
+          <h4 class="text-2xl font-bold text-white mb-6">Welcome, Founder #{1337 - spotsLeft + 1}</h4>
+          
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a 
+              href="/deep-dive/the-convergent-economy"
+              class="inline-flex items-center bg-gradient-to-r from-brand-cyan to-brand-blue hover:from-brand-cyan/90 hover:to-brand-blue/90 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <i class="fas fa-book-open mr-3"></i>
+              Explore The Convergent Economy
+            </a>
+            
+            <a 
+              href="/invest"
+              class="inline-flex items-center bg-gradient-to-r from-brand-orange to-orange-600 hover:from-brand-orange/90 hover:to-orange-600/90 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105"
+            >
+              <i class="fas fa-chart-line mr-3"></i>
+              View Investment Opportunities
+            </a>
+          </div>
+        </div>
+      {:else if isConnected}
+        <!-- Connected State: Show minting or waiting list options -->
+        <div class="flex flex-col items-center gap-6">
+          <button 
+            on:click={mintFoundersProof}
+            disabled={isMinting}
+            class="inline-flex items-center bg-gradient-to-r from-brand-orange to-brand-cyan hover:from-brand-orange/90 hover:to-brand-cyan/90 text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <i class="fas fa-book-open mr-3"></i>
-            Explore The Convergent Economy
-          </a>
+            {#if isMinting}
+              <div class="loader mr-3"></div>
+              Minting Your Proof...
+            {:else}
+              <i class="fas fa-certificate mr-3"></i>
+              Mint Your Founder's Proof
+            {/if}
+          </button>
+          
+          <p class="text-sm text-slate-400 italic">Simulation Mode - Real minting coming soon</p>
+          
+          {#if mintError}
+            <div class="text-red-400 text-center bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              {mintError}
+            </div>
+          {/if}
+        </div>
+      {:else}
+        <!-- Not Connected State: Show connection and alternative options -->
+        <div class="flex flex-col items-center gap-6">
+          <button 
+            on:click={connectWallet}
+            disabled={isConnecting}
+            class="inline-flex items-center bg-gradient-to-r from-brand-orange to-brand-cyan hover:from-brand-orange/90 hover:to-brand-cyan/90 text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {#if isConnecting}
+              <div class="loader mr-3"></div>
+              Connecting Wallet...
+            {:else}
+              <i class="fas fa-wallet mr-3"></i>
+              Connect Wallet to Mint
+            {/if}
+          </button>
+          
+          <p class="text-sm text-slate-400 italic">Simulation Mode - Real wallet integration coming soon</p>
+          
+          <!-- Alternative: Join Waiting List -->
+          <div class="mt-4">
+            <p class="text-slate-300 mb-4">Don't have a wallet yet?</p>
+            <button 
+              on:click={() => showWaitingListModal = true}
+              class="inline-flex items-center bg-slate-800/50 hover:bg-slate-700/50 border border-brand-cyan/30 hover:border-brand-cyan/50 text-brand-cyan-text font-semibold py-3 px-8 rounded-xl transition-all duration-300"
+            >
+              <i class="fas fa-bell mr-3"></i>
+              Join the Waiting List Instead
+            </button>
+          </div>
         </div>
       {/if}
     </div>
