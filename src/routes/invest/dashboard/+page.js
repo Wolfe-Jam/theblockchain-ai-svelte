@@ -1,12 +1,19 @@
 // SvelteKit data loader for investor dashboard
-// Demonstrates server-side data fetching and SEO optimization
+// Static data version for deployment compatibility
 
 /** @type {import('./$types').PageLoad} */
-export async function load({ fetch, params, url }) {
+export async function load({ params, url }) {
   try {
-    // Fetch real-time market data
-    const marketResponse = await fetch('/api/market-data');
-    const marketData = await marketResponse.json();
+    // Static market data (no server fetch during build)
+    const marketData = {
+      totalMarketCap: 2.52,
+      ai: 1.80,
+      blockchain: 0.12,
+      software: 0.60,
+      lastUpdated: new Date().toISOString(),
+      trending: 'up',
+      dailyChange: 3.2
+    };
     
     // Simulate investor portfolio data
     // In production: authenticated data fetching
