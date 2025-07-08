@@ -96,7 +96,7 @@ export const documentSections = {
         content: `
           <p class="text-xl leading-relaxed mb-6">
             We stand at the threshold of the most significant economic transformation since the internet's inception. 
-            Three trillion-dollar industries—<strong class="text-brand-blue-text">Artificial Intelligence</strong>, 
-            <strong class="text-brand-cyan-text">Software Development</strong>, and 
-            <strong class="text-brand-orange-text">Blockchain Technology</strong>—are not merely growing in parallel; 
+            Three trillion-dollar industries—<strong class="text-brand-cyan-text">Artificial Intelligence</strong>, 
+            <strong class="text-brand-orange-text">Software Development</strong>, and 
+            <strong class="text-brand-blue-text">Blockchain Technology</strong>—are not merely growing in parallel; 
             they are converging into a singular

@@ -7,6 +7,10 @@
   import Header from '../../../components/Header.svelte';
   import AskAIModal from '../../../components/AskAIModal.svelte';
   import AboutModal from '../../../components/AboutModal.svelte';
+  import PortfolioChart from '../../../lib/components/PortfolioChart.svelte';
+  import ConvergenceChart from '../../../lib/components/ConvergenceChart.svelte';
+  import LiveCAGR from '../../../lib/components/LiveCAGR.svelte';
+  import DataSourcesTab from '../../../lib/components/DataSourcesTab.svelte';
   
   /** @type {import('./$types').PageData} */
   export let data;
@@ -132,8 +136,9 @@
   </div>
 {:else}
   <div class="dashboard-container">
-    <!-- Dashboard Header -->
-    <header class="dashboard-header">
+    <div class="container">
+      <!-- Dashboard Header -->
+      <header class="dashboard-header">
       <div class="header-left">
         <h1 class="dashboard-title">
           <i class="fas fa-chart-line"></i>
@@ -171,9 +176,18 @@
           <button 
             class="view-btn" 
             class:active={selectedView === 'markets'}
+            data-view="markets"
             on:click={() => changeView('markets')}
           >
             Markets
+          </button>
+          <button 
+            class="view-btn" 
+            class:active={selectedView === 'sources'}
+            data-view="sources"
+            on:click={() => changeView('sources')}
+          >
+            Data Sources
           </button>
         </div>
       </div>
@@ -181,11 +195,14 @@
 
     <!-- Main Dashboard Content -->
     <main class="dashboard-main">
+      <!-- Live CAGR Analysis - Always Visible -->
+      <LiveCAGR />
+      
       {#if selectedView === 'overview'}
         <!-- Portfolio Overview -->
         <section class="portfolio-overview">
           <div class="overview-cards">
-            <div class="metric-card primary">
+            <div class="metric-card primary portfolio">
               <div class="card-header">
                 <h3>Portfolio Value</h3>
                 <i class="fas fa-wallet"></i>
@@ -199,7 +216,7 @@
               </div>
             </div>
             
-            <div class="metric-card">
+            <div class="metric-card gain-loss">
               <div class="card-header">
                 <h3>Total Gain/Loss</h3>
                 <i class="fas fa-chart-bar"></i>
@@ -265,10 +282,16 @@
               {selectedTimeframe} Performance
             </div>
           </div>
+          
+          <!-- Enhanced Portfolio Performance Chart -->
+          <PortfolioChart {portfolioData} timeframe={selectedTimeframe} />
         </section>
       {/if}
 
       {#if selectedView === 'markets'}
+        <!-- Enhanced Convergence Market Visualization -->
+        <ConvergenceChart {marketData} />
+        
         <!-- Real-Time Market Data -->
         <section class="market-data-section">
           <h2>Market Intelligence</h2>
@@ -376,6 +399,11 @@
         </section>
       {/if}
 
+      {#if selectedView === 'sources'}
+        <!-- Data Sources & Methodology -->
+        <DataSourcesTab />
+      {/if}
+
       <!-- Notifications Panel -->
       {#if notifications?.length > 0}
         <section class="notifications-section">
@@ -410,6 +438,7 @@
         </section>
       {/if}
     </main>
+    </div> <!-- End container -->
   </div>
 {/if}
 
@@ -445,12 +474,172 @@
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
+    --convergence-green: #10b981; /* Positive "GO" green for convergence */
   }
 
   /* Override dashboard background for integration */
   :global(.dashboard-container) {
     background: transparent !important;
   }
+
+  /* Container for proper centering and max-width */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+  }
+
+  /* Dashboard Layout */
+  .dashboard-container {
+    min-height: 100vh;
+    padding: 2rem 0;
+    background: var(--dashboard-bg);
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+  }
+
+  .dashboard-main {
+    max-width: 100%;
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .dashboard-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dashboard-title i {
+    color: var(--brand-cyan);
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: background-color 0.3s ease;
+  }
+
+  .status-dot.live {
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  }
+
+  .status-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .action-btn {
+    background: var(--brand-orange);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .action-btn:hover {
+    background: var(--brand-cyan);
+    transform: translateY(-1px);
+  }
+
+  .view-selector {
+    display: flex;
+    background: var(--dashboard-bg);
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    border: 1px solid var(--border-color);
+    min-width: 350px; /* Accommodate four buttons */
+  }
+
+  .view-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+  }
+
+  .view-btn.active {
+    background: var(--brand-cyan);
+    color: white;
+  }
+
+  /* Special convergence tab styling */
+  .view-btn[data-view="convergence"].active {
+    background: var(--convergence-green);
+    color: white;
+  }
+
+  .view-btn:hover:not(.active) {
+    background: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  /* Portfolio Overview */
+  .portfolio-overview {
+    margin-bottom: 3rem;
+  }
+
+  .overview-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
   .metric-card::before {
     content: '';
     position: absolute;
@@ -471,6 +660,24 @@
 
   .metric-card:hover::before {
     opacity: 1;
+  }
+
+  .metric-card.primary.portfolio {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border-color: var(--success);
+  }
+
+  .metric-card.primary.portfolio .card-header i {
+    color: var(--success);
+  }
+
+  .metric-card.gain-loss {
+    border: 1px solid var(--success);
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(16, 185, 129, 0.03) 100%);
+  }
+
+  .metric-card.gain-loss .card-header i {
+    color: var(--success);
   }
 
   .metric-card.primary {
@@ -712,14 +919,14 @@
   }
 
   .stat-value.opportunity {
-    color: var(--brand-orange);
+    color: var(--convergence-green);
     font-weight: 700;
   }
 
   /* Convergence Card */
   .convergence-card {
-    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 145, 77, 0.05) 100%);
-    border: 1px solid var(--brand-orange);
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border: 1px solid var(--convergence-green);
     border-radius: 1rem;
     padding: 2rem;
     margin-top: 2rem;
@@ -728,7 +935,7 @@
   .convergence-card h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--brand-orange);
+    color: var(--convergence-green);
     margin-bottom: 1.5rem;
     text-align: center;
   }
@@ -1016,23 +1223,35 @@
 
   /* Responsive Design */
   @media (max-width: 768px) {
+    .container {
+      padding: 0 1rem;
+    }
+
+    .dashboard-container {
+      padding: 1rem 0;
+    }
+
     .dashboard-header {
       flex-direction: column;
       gap: 1rem;
-      padding: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     .header-actions {
       width: 100%;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .dashboard-main {
-      padding: 1rem;
+    .view-selector {
+      width: 100%;
     }
 
     .overview-cards {
       grid-template-columns: 1fr;
+      gap: 1rem;
     }
 
     .market-grid {
@@ -1065,8 +1284,8 @@
       justify-content: space-between;
     }
 
-    .view-selector {
-      width: 100%;
+    .dashboard-title {
+      font-size: 1.5rem;
     }
   }
 
