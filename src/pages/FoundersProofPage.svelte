@@ -132,9 +132,13 @@
             <i class="fas fa-check-circle text-4xl text-white mb-4"></i>
             <h3 class="text-2xl font-bold text-white mb-2">Welcome, Founder!</h3>
             <p class="text-green-100 mb-4">Your Founder's Proof has been minted successfully.</p>
-            <div class="flex items-center text-green-100">
+            <div class="flex items-center text-green-100 mb-3">
               <i class="fas fa-wallet mr-2"></i>
               <span class="font-mono">{formatAddress(walletAddress)}</span>
+            </div>
+            <!-- Simulation Mode Badge -->
+            <div class="bg-yellow-600/20 border border-yellow-500/40 rounded-lg px-3 py-1">
+              <span class="text-yellow-300 text-sm font-semibold">🧪 SIMULATION MODE</span>
             </div>
           </div>
         {:else if isConnected}
@@ -149,15 +153,18 @@
                   <div class="loader mr-3"></div>
                   <span>Minting Your Proof...</span>
                 </div>
-                <span class="text-sm font-normal opacity-75">Simulation Mode</span>
               {:else}
                 <div class="flex items-center mb-1">
                   <i class="fas fa-certificate mr-3"></i>
                   <span>Mint Founder's Proof</span>
                 </div>
-                <span class="text-sm font-normal opacity-75">Simulation Mode</span>
               {/if}
             </button>
+            
+            <!-- Prominent Simulation Mode Warning -->
+            <div class="bg-yellow-600/20 border border-yellow-500/40 rounded-lg px-4 py-2 mb-2">
+              <span class="text-yellow-300 text-sm font-semibold">🧪 SIMULATION MODE - Real blockchain integration coming soon</span>
+            </div>
             
             <!-- Secondary CTA: Join Waiting List -->
             <button 
@@ -187,15 +194,18 @@
                   <div class="loader mr-3"></div>
                   <span>Connecting Wallet...</span>
                 </div>
-                <span class="text-sm font-normal opacity-75">Simulation Mode</span>
               {:else}
                 <div class="flex items-center mb-1">
                   <i class="fas fa-wallet mr-3"></i>
                   <span>Connect Wallet to Mint</span>
                 </div>
-                <span class="text-sm font-normal opacity-75">Simulation Mode</span>
               {/if}
             </button>
+            
+            <!-- Prominent Simulation Mode Warning -->
+            <div class="bg-yellow-600/20 border border-yellow-500/40 rounded-lg px-4 py-2 mb-2">
+              <span class="text-yellow-300 text-sm font-semibold">🧪 SIMULATION MODE - Real wallet integration coming soon</span>
+            </div>
             
             <!-- Secondary CTA: Join Waiting List -->
             <button 
@@ -383,7 +393,10 @@
             {/if}
           </button>
           
-          <p class="text-sm text-slate-400 italic">Simulation Mode - Real minting coming soon</p>
+          <!-- Prominent Simulation Mode Warning -->
+          <div class="bg-yellow-600/20 border border-yellow-500/40 rounded-lg px-4 py-2">
+            <span class="text-yellow-300 text-sm font-semibold">🧪 SIMULATION MODE - Real blockchain integration coming soon</span>
+          </div>
           
           {#if mintError}
             <div class="text-red-400 text-center bg-red-900/20 border border-red-500/30 rounded-lg p-4">
@@ -409,7 +422,10 @@
             {/if}
           </button>
           
-          <p class="text-sm text-slate-400 italic">Simulation Mode - Real wallet integration coming soon</p>
+          <!-- Prominent Simulation Mode Warning -->
+          <div class="bg-yellow-600/20 border border-yellow-500/40 rounded-lg px-4 py-2">
+            <span class="text-yellow-300 text-sm font-semibold">🧪 SIMULATION MODE - Real wallet integration coming soon</span>
+          </div>
           
           <!-- Alternative: Join Waiting List -->
           <div class="mt-4">
