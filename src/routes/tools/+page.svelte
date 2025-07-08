@@ -8,6 +8,7 @@
   let showResult = false;
   let copyButtonText = 'Copy';
   let apiError = '';
+  let selectedModel = 'free'; // Track model selection
   
   // Professional Gemini API integration with environment variables
   async function callGemini(prompt) {
@@ -47,9 +48,26 @@
     throw new Error("Invalid response structure from API.");
   }
   
-  // Enhanced generate function with better error handling
+  // Enhanced generate function with model selection
   async function generateContract() {
     if (!promptInput.trim()) return;
+    
+    // Handle premium model selection (preview for now)
+    if (selectedModel === 'premium') {
+      // For now, show upgrade prompt - later this will call premium APIs
+      apiError = `🔒 Premium Feature: Advanced AI models (GPT-4o, Claude Sonnet 4) require a Pro subscription. 
+      
+Premium benefits:
+• 2-3x better code quality
+• Advanced security patterns  
+• Gas optimization
+• Production-ready architecture
+• Unlimited generations
+
+Ready to upgrade? Contact us for early access pricing.`;
+      showResult = true;
+      return;
+    }
     
     isGenerating = true;
     showResult = false;
@@ -301,6 +319,97 @@
   </div>
 
   <div class="max-w-5xl mx-auto px-6 py-16">
+    
+    <!-- Model Selection -->
+    <div class="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl p-6 mb-6 border border-slate-600">
+      <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+        <i class="fas fa-robot mr-2 text-cyan-400"></i>
+        Choose Your AI Model
+      </h3>
+      
+      <div class="grid md:grid-cols-2 gap-4">
+        <!-- Free Model -->
+        <label class="cursor-pointer">
+          <input 
+            type="radio" 
+            bind:group={selectedModel} 
+            value="free"
+            class="sr-only"
+          />
+          <div class="relative p-4 rounded-lg border-2 transition-all duration-300"
+               class:border-cyan-400={selectedModel === 'free'}
+               class:bg-cyan-400/10={selectedModel === 'free'}
+               class:border-slate-600={selectedModel !== 'free'}
+               class:bg-slate-800/50={selectedModel !== 'free'}>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-lg font-bold text-white flex items-center">
+                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold mr-2">FREE</span>
+                Basic Generator
+              </h4>
+              {#if selectedModel === 'free'}
+                <i class="fas fa-check-circle text-cyan-400 text-xl"></i>
+              {/if}
+            </div>
+            <p class="text-slate-300 text-sm mb-3">Perfect for learning and prototyping</p>
+            <ul class="text-xs text-slate-400 space-y-1">
+              <li>• Gemini 2.0 Flash</li>
+              <li>• 5 generations per day</li>
+              <li>• Basic security analysis</li>
+              <li>• Standard templates</li>
+            </ul>
+          </div>
+        </label>
+        
+        <!-- Premium Model -->
+        <label class="cursor-pointer">
+          <input 
+            type="radio" 
+            bind:group={selectedModel} 
+            value="premium"
+            class="sr-only"
+          />
+          <div class="relative p-4 rounded-lg border-2 transition-all duration-300"
+               class:border-orange-400={selectedModel === 'premium'}
+               class:bg-orange-400/10={selectedModel === 'premium'}
+               class:border-slate-600={selectedModel !== 'premium'}
+               class:bg-slate-800/50={selectedModel !== 'premium'}>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-lg font-bold text-white flex items-center">
+                <span class="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-2 py-1 rounded text-xs font-bold mr-2">PRO</span>
+                Advanced Generator
+              </h4>
+              {#if selectedModel === 'premium'}
+                <i class="fas fa-check-circle text-orange-400 text-xl"></i>
+              {/if}
+            </div>
+            <p class="text-slate-300 text-sm mb-3">Production-ready foundations</p>
+            <ul class="text-xs text-slate-400 space-y-1">
+              <li>• GPT-4o + Claude Sonnet 4</li>
+              <li>• Unlimited generations</li>
+              <li>• Advanced security analysis</li>
+              <li>• Gas optimization</li>
+              <li>• Priority support</li>
+            </ul>
+            {#if selectedModel !== 'premium'}
+              <div class="mt-3 pt-3 border-t border-slate-600">
+                <span class="text-orange-400 font-semibold text-sm">$29/month</span>
+                <span class="text-slate-500 text-xs ml-2">Try free for 7 days</span>
+              </div>
+            {/if}
+          </div>
+        </label>
+      </div>
+      
+      {#if selectedModel === 'premium'}
+        <div class="mt-4 p-3 bg-orange-500/10 border border-orange-400/30 rounded-lg">
+          <p class="text-orange-300 text-sm flex items-center">
+            <i class="fas fa-crown mr-2"></i>
+            <strong>Premium Preview:</strong> Experience enterprise-grade smart contract generation with advanced AI models.
+          </p>
+        </div>
+      {/if}
+    </div>
+    
     <div class="bg-slate-800 rounded-xl p-8 mb-8 border border-slate-700">
       <label for="prompt-input" class="block text-xl font-bold mb-4 text-cyan-400">
         <i class="fas fa-code mr-2"></i>
@@ -334,12 +443,21 @@
             </div>
           {:else}
             <i class="fas fa-magic mr-2"></i>
-            Generate Solidity Contract
+            {#if selectedModel === 'premium'}
+              Generate with Premium AI
+            {:else}
+              Generate Solidity Contract  
+            {/if}
           {/if}
         </button>
         
         <div class="flex items-center text-slate-400 text-sm">
-          Powered by 🧠 bAI
+          {#if selectedModel === 'premium'}
+            <i class="fas fa-crown text-orange-400 mr-1"></i>
+            Powered by GPT-4o + Claude Sonnet 4
+          {:else}
+            Powered by 🧠 Gemini 2.0 Flash
+          {/if}
         </div>
       </div>
     </div>
@@ -394,17 +512,62 @@
         </div>
         
         {#if apiError}
-          <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center">
-            <i class="fas fa-exclamation-triangle text-red-400 text-3xl mb-4"></i>
-            <p class="text-red-300 text-lg mb-4">{apiError}</p>
-            <button 
-              on:click={generateContract}
-              class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors"
-            >
-              <i class="fas fa-redo mr-2"></i>
-              Try Again
-            </button>
-          </div>
+          {#if apiError.includes('🔒 Premium Feature')}
+            <!-- Premium upgrade message -->
+            <div class="bg-gradient-to-br from-orange-900/20 to-pink-900/20 border border-orange-500/30 rounded-lg p-6 text-center">
+              <i class="fas fa-crown text-orange-400 text-3xl mb-4"></i>
+              <h4 class="text-xl font-bold text-orange-300 mb-4">Unlock Premium Smart Contracts</h4>
+              <div class="text-left max-w-2xl mx-auto mb-6">
+                <p class="text-slate-300 mb-4">Experience enterprise-grade smart contract generation:</p>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h5 class="text-orange-400 font-semibold mb-2">Advanced AI Models</h5>
+                    <ul class="text-slate-400 space-y-1">
+                      <li>• GPT-4o for complex logic</li>
+                      <li>• Claude Sonnet 4 for security</li>
+                      <li>• 2-3x better code quality</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 class="text-orange-400 font-semibold mb-2">Pro Features</h5>
+                    <ul class="text-slate-400 space-y-1">
+                      <li>• Gas optimization</li>
+                      <li>• Advanced security patterns</li>
+                      <li>• Production architecture</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-4 justify-center">
+                <button 
+                  on:click={() => selectedModel = 'free'}
+                  class="bg-slate-600 hover:bg-slate-500 text-white px-6 py-2 rounded-lg transition-colors"
+                >
+                  <i class="fas fa-arrow-left mr-2"></i>
+                  Back to Free
+                </button>
+                <button 
+                  class="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white px-6 py-2 rounded-lg transition-colors font-semibold"
+                >
+                  <i class="fas fa-rocket mr-2"></i>
+                  Get Early Access
+                </button>
+              </div>
+            </div>
+          {:else}
+            <!-- Regular error message -->
+            <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center">
+              <i class="fas fa-exclamation-triangle text-red-400 text-3xl mb-4"></i>
+              <p class="text-red-300 text-lg mb-4">{apiError}</p>
+              <button 
+                on:click={generateContract}
+                class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                <i class="fas fa-redo mr-2"></i>
+                Try Again
+              </button>
+            </div>
+          {/if}
         {:else}
           <div class="bg-slate-900 rounded-lg p-6 overflow-x-auto border border-slate-600">
             <pre class="text-green-400 text-sm leading-relaxed"><code>{generatedCode}</code></pre>
