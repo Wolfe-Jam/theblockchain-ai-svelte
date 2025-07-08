@@ -267,7 +267,7 @@
               
               {#if resourceDropdownOpen}
                 <div class="dropdown-menu">
-                  <a href="/invest#professional-report" on:click={closeResourceDropdown}>Professional Report</a>
+                  <a href="/invest#professional-report" on:click={closeResourceDropdown}>📊 Download PDF Report</a>
                   <button type="button" class="dropdown-about-btn" on:click={() => { closeResourceDropdown(); openAbout(); }}>About</button>
                   <a href="/glossary" on:click={closeResourceDropdown}>Glossary</a>
                   <a href="/faqs" on:click={closeResourceDropdown}>FAQs</a>

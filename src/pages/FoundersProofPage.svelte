@@ -4,7 +4,7 @@
   import WaitingListModal from '../components/WaitingListModal.svelte';
   
   // State management
-  let spotsLeft = 1337;
+  let spotsLeft = 111; // Start with moderate urgency
   let isConnecting = false;
   let isConnected = false;
   let walletAddress = '';
@@ -15,12 +15,18 @@
   // Waiting list modal state
   let showWaitingListModal = false;
   
-  // Animated counter
+  // 15-minute urgency cycle (111 → 11)
   onMount(() => {
     const interval = setInterval(() => {
-      spotsLeft -= Math.floor(Math.random() * 3) + 1;
-      if (spotsLeft < 500) spotsLeft = 1337; // reset for demo
-    }, 3500);
+      // 80% chance to decrease by 1, 20% chance by 2 (realistic)
+      const decrease = Math.random() < 0.8 ? 1 : 2;
+      spotsLeft -= decrease;
+      
+      // Reset to random number when it gets low
+      if (spotsLeft < 11) {
+        spotsLeft = Math.floor(Math.random() * 25) + 95; // Reset to 95-119
+      }
+    }, Math.random() * 6000 + 8000); // Every 8-14 seconds (15-min cycle)
     
     return () => clearInterval(interval);
   });
@@ -207,13 +213,13 @@
               <span class="text-yellow-300 text-sm font-semibold">🧪 SIMULATION MODE - Real wallet integration coming soon</span>
             </div>
             
-            <!-- Secondary CTA: Join Waiting List -->
+            <!-- Secondary CTA: Join Waiting List + Get PDF -->
             <button 
               on:click={() => showWaitingListModal = true}
               class="inline-flex items-center bg-slate-800/50 hover:bg-slate-700/50 border border-brand-cyan/30 hover:border-brand-cyan/50 text-brand-cyan-text font-semibold py-3 px-8 rounded-xl text-lg transition-all duration-300"
             >
-              <i class="fas fa-bell mr-3"></i>
-              Join the Waiting List
+              <i class="fas fa-file-pdf mr-3"></i>
+              Join Waiting List + Get PDF
             </button>
           </div>
         {/if}
@@ -254,6 +260,17 @@
           </div>
           
           <div class="space-y-6">
+            <!-- NEW: Immediate PDF Benefit -->
+            <div class="flex items-start gap-4 p-6 bg-gradient-to-r from-orange-600/20 to-cyan-600/20 rounded-xl border border-orange-500/30">
+              <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-file-pdf text-white"></i>
+              </div>
+              <div>
+                <h4 class="text-xl font-bold text-orange-400 mb-2">📊 Instant Market Report</h4>
+                <p class="text-slate-300"><strong>Get our $5+ Trillion Market Analysis PDF immediately</strong> when you join the waiting list. No waiting required!</p>
+              </div>
+            </div>
+            
             <div class="flex items-start gap-4 p-6 bg-slate-800/50 rounded-xl border border-brand-cyan/20">
               <div class="w-12 h-12 bg-brand-cyan rounded-full flex items-center justify-center flex-shrink-0">
                 <i class="fas fa-shield-alt text-slate-900"></i>

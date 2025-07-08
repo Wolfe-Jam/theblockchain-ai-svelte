@@ -1,6 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" fill="#0f172a"/>
-  <circle cx="16" cy="16" r="12" fill="none" stroke="#0cc0df" stroke-width="2"/>
-  <circle cx="16" cy="16" r="6" fill="#ff914d"/>
-  <circle cx="16" cy="16" r="2" fill="#fff"/>
+  <!-- Orange background -->
+  <rect width="32" height="32" fill="#FF914D"/>
+  
+  <!-- White sailboat -->
+  <!-- Main sail -->
+  <path d="M16 6 L16 20 L24 18 Z" fill="white"/>
+  
+  <!-- Jib sail -->
+  <path d="M16 8 L16 16 L10 14 Z" fill="white"/>
+  
+  <!-- Mast -->
+  <line x1="16" y1="6" x2="16" y2="22" stroke="white" stroke-width="1"/>
+  
+  <!-- Hull -->
+  <path d="M8 22 L24 22 L22 25 L10 25 Z" fill="white"/>
 </svg>

@@ -520,11 +520,11 @@
           
           <div class="cta-section">
             <button class="download-cta" on:click={openReportDownload}>
-              <i class="fas fa-download"></i>
-              Download Professional Report
+              <i class="fas fa-file-pdf"></i>
+              📊 Download PDF Report
             </button>
             
-            <p class="download-note">Free access with professional details</p>
+            <p class="download-note">Comprehensive Market Analysis PDF - Free with professional details</p>
           </div>
         </div>
       </div>

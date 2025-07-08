@@ -1,6 +1,7 @@
 <!-- src/components/WaitingListModal.svelte -->
 <script>
   import { fade, scale } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
   import { createEventDispatcher } from 'svelte';
   
   const dispatch = createEventDispatcher();
@@ -39,6 +40,8 @@
       
       if (response.ok) {
         showThankYou = true;
+        // Trigger PDF download
+        triggerPDFDownload();
       } else {
         console.error('Form submission failed');
       }
@@ -48,13 +51,21 @@
       isSubmitting = false;
     }
   }
+  
+  function triggerPDFDownload() {
+    // Create download link for the PDF
+    const link = document.createElement('a');
+    link.href = '/convergent-economy-report.pdf';
+    link.download = 'The-Convergent-Economy-Report-theBlockchain-ai.pdf';
+    link.click();
+  }
 </script>
 
 {#if isOpen}
   <div class="modal-backdrop" on:click={handleBackdropClick} 
-       transition:fade={{ duration: 400, easing: 'ease-out' }}>
+       transition:fade={{ duration: 400, easing: quintOut }}>
     <div class="modal-content" 
-         transition:scale={{ duration: 400, start: 0.9, easing: 'ease-out' }}>
+         transition:scale={{ duration: 400, start: 0.9, easing: quintOut }}>
       <button class="close-btn" on:click={closeModal}>&times;</button>
       
       {#if !showThankYou}
@@ -66,7 +77,7 @@
             <h3 class="modal-title">Join the Waiting List</h3>
             <p class="modal-description">
               Be the first to know when Founder's Proof minting goes live. 
-              Get exclusive early access and priority notifications.
+              <strong>Plus: Get our $5+ Trillion Market Analysis PDF immediately!</strong>
             </p>
           </div>
           
@@ -140,8 +151,8 @@
                 <div class="loader"></div>
                 Joining...
               {:else}
-                <i class="fas fa-bell mr-2"></i>
-                Join Waiting List
+                <i class="fas fa-file-pdf mr-2"></i>
+                Join Waiting List + Get PDF
               {/if}
             </button>
             
@@ -158,16 +169,17 @@
           <h3 class="modal-title">You're on the list!</h3>
           <p class="success-description">
             Thanks for joining the Founder's Proof waiting list, <strong>{firstName}</strong>! 
-            We'll notify you as soon as minting goes live.
+            <strong>Your Market Analysis PDF is downloading now.</strong>
           </p>
           
           <div class="next-steps">
             <h4>What happens next?</h4>
             <ul>
-              <li>You'll receive a confirmation email shortly</li>
-              <li>Get priority access when minting opens</li>
-              <li>Exclusive updates on the convergent economy</li>
-              <li>Early access to founder benefits</li>
+              <li>📊 Market Analysis PDF downloaded immediately</li>
+              <li>📧 Confirmation email with additional resources</li>
+              <li>🚀 Priority access when Founder's Proof minting opens</li>
+              <li>📈 Exclusive updates on the convergent economy</li>
+              <li>🏆 Early access to founder benefits</li>
             </ul>
           </div>
           

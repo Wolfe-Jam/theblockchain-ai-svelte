@@ -94,11 +94,11 @@
           
           <div class="cta-section">
             <button class="download-cta" on:click={openReportDownload}>
-              <i class="fas fa-download"></i>
-              Download Professional Report
+              <i class="fas fa-file-pdf"></i>
+              Download PDF Report
             </button>
             
-            <p class="download-note">Free access with professional details</p>
+            <p class="download-note">Comprehensive Market Analysis PDF - Free with professional details</p>
           </div>
         </div>
       </div>
@@ -272,10 +272,13 @@
   .column {
     background: rgba(15, 23, 42, 0.9);
     border-radius: 2rem;
-    padding: 3rem;
+    padding: 2rem 2rem 1.5rem 2rem;
     backdrop-filter: blur(15px);
     border: 2px solid rgba(51, 65, 85, 0.5);
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   .column:hover {
@@ -427,6 +430,17 @@
   /* CTA Sections */
   .cta-section {
     text-align: center;
+    margin-top: auto;
+    padding-top: 1rem;
+  }
+
+  .download-note,
+  .disclaimer {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+    line-height: 1.4;
   }
 
   .download-cta,
@@ -434,22 +448,23 @@
     background: linear-gradient(135deg, var(--brand-cyan), var(--brand-blue));
     color: white;
     border: none;
-    padding: 1.5rem 3rem;
-    border-radius: 3rem;
-    font-size: 1.2rem;
+    padding: 0.875rem 2rem;
+    border-radius: 1rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    box-shadow: 0 8px 25px rgba(12, 192, 223, 0.3);
+    gap: 0.75rem;
+    box-shadow: 0 4px 15px rgba(12, 192, 223, 0.3);
     margin-bottom: 1rem;
+    min-height: 3rem;
   }
 
   .investor-cta {
     background: linear-gradient(135deg, var(--brand-orange), #f59e0b);
-    box-shadow: 0 8px 25px rgba(255, 145, 77, 0.3);
+    box-shadow: 0 4px 15px rgba(255, 145, 77, 0.3);
   }
 
   .download-cta:hover,
