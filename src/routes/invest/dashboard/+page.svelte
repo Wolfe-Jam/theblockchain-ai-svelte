@@ -5,7 +5,6 @@
   import { cubicOut } from 'svelte/easing';
   import { page } from '$app/stores';
   import Header from '../../../components/Header.svelte';
-  import Footer from '../../../components/Footer.svelte';
   import AskAIModal from '../../../components/AskAIModal.svelte';
   import AboutModal from '../../../components/AboutModal.svelte';
   
@@ -414,7 +413,7 @@
   </div>
 {/if}
 
-  <Footer />
+  <!-- Footer removed - handled by main layout -->
 </div>
 
 {#if showAskAI}

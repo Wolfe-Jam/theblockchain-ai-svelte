@@ -2,7 +2,6 @@
 <script>
   import FAQsPage from '../../pages/FAQsPage.svelte';
   import Header from '../../components/Header.svelte';
-  import Footer from '../../components/Footer.svelte';
   import AskAIModal from '../../components/AskAIModal.svelte';
   import AboutModal from '../../components/AboutModal.svelte';
 
@@ -28,7 +27,7 @@
   <main class="min-h-screen">
     <FAQsPage />
   </main>
-  <Footer />
+  <!-- Footer removed - handled by main layout -->
 </div>
 
 {#if showAskAI}

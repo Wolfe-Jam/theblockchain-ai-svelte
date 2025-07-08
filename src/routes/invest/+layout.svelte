@@ -2,7 +2,6 @@
 <script>
   import { page } from '$app/stores';
   import Header from '../../components/Header.svelte';
-  import Footer from '../../components/Footer.svelte';
   
   let pageTitle = 'Investment Overview';
   
@@ -29,7 +28,7 @@
     <slot />
   </main>
   
-  <Footer />
+  <!-- Footer removed - handled by main layout -->
 </div>
 
 <style>
