@@ -435,7 +435,7 @@
               class="inline-flex items-center bg-slate-800/50 hover:bg-slate-700/50 border border-brand-cyan/30 hover:border-brand-cyan/50 text-brand-cyan-text font-semibold py-3 px-8 rounded-xl transition-all duration-300"
             >
               <i class="fas fa-bell mr-3"></i>
-              Join the Waiting List Instead
+              Join the Waiting List
             </button>
           </div>
         </div>
