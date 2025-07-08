@@ -119,10 +119,10 @@
   // Generate scenario phases based on market outlook
   function generateConservativePhases() {
     return [
-      { year: 2025, market: 2.1, opportunity: 100, urgency: 'maximum', emotion: 'secure' },
-      { year: 2028, market: 3.8, opportunity: 75, urgency: 'good', emotion: 'steady' },
-      { year: 2031, market: 6.4, opportunity: 45, urgency: 'moderate', emotion: 'cautious' },
-      { year: 2034, market: 9.2, opportunity: 20, urgency: 'late', emotion: 'concerned' }
+      { year: 2025, market: 1.8, opportunity: 100, urgency: 'maximum', emotion: 'secure' },
+      { year: 2028, market: 3.2, opportunity: 75, urgency: 'good', emotion: 'steady' },
+      { year: 2031, market: 5.1, opportunity: 45, urgency: 'moderate', emotion: 'cautious' },
+      { year: 2034, market: 7.2, opportunity: 20, urgency: 'late', emotion: 'concerned' }
     ];
   }
   
