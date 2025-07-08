@@ -129,13 +129,13 @@
   let spotsLeft = 0;
   let codeEvaluation = null;
   
-  // Dynamic code evaluation function - Improved UX scoring
+  // Dynamic code evaluation function - Balanced UX with accurate scoring
   function evaluateCode(code) {
     if (!code || code.length < 100) return null;
     
     const evaluation = {
-      foundationScore: 7, // Start with good baseline - AI gives solid foundations
-      securityScore: 6,   // Start with decent baseline
+      foundationScore: 7, // Good baseline for AI-generated code
+      securityScore: 6,   // Decent baseline, but needs validation
       developmentStage: "Boilerplate",
       timeToProduction: "2-4 hours",
       goodFeatures: [],
@@ -143,9 +143,9 @@
       devTasks: []
     };
     
-    // Check for security features (more generous scoring)
+    // Check for security features
     if (code.includes('@openzeppelin/contracts')) {
-      evaluation.securityScore += 2;
+      evaluation.securityScore += 1;
       evaluation.foundationScore += 1;
       evaluation.goodFeatures.push('Industry-standard OpenZeppelin foundation');
     }
@@ -154,30 +154,50 @@
       evaluation.goodFeatures.push('Professional access control patterns');
     }
     if (code.includes('require(') && code.includes('!= address(0)')) {
-      evaluation.securityScore += 1;
       evaluation.foundationScore += 1;
       evaluation.goodFeatures.push('Comprehensive input validation');
     }
+    
+    // Advanced security checks
     if (code.includes('ReentrancyGuard') || code.includes('nonReentrant')) {
-      evaluation.securityScore += 1;
-      evaluation.foundationScore += 1;
+      evaluation.securityScore += 2;
       evaluation.goodFeatures.push('Advanced reentrancy protection');
+    } else if (code.includes('transfer(') || code.includes('.call(')) {
+      evaluation.securityScore -= 1;
+      evaluation.nextSteps.push('Add reentrancy protection');
+      evaluation.devTasks.push('Implement ReentrancyGuard');
     }
     
-    // Check for documentation (positive framing)
+    // Check for documentation (positive but not overly generous)
     if (code.includes('/**') || code.includes('@dev') || code.includes('@param')) {
-      evaluation.foundationScore += 1;
       evaluation.goodFeatures.push('Professional documentation standards');
     }
     
-    // Check for development needs (positive framing)
+    // Production readiness issues (more strict detection)
+    if (code.includes('DO NOT USE IN PRODUCTION') || code.includes('for testing only')) {
+      evaluation.foundationScore -= 2;
+      evaluation.securityScore -= 2;
+      evaluation.nextSteps.push('Remove or secure testing functions');
+      evaluation.devTasks.push('Address production warnings');
+    }
+    
     if (code.includes('placeholder') || code.includes('TODO') || code.includes('not implemented')) {
+      evaluation.foundationScore -= 1;
       evaluation.developmentStage = "Ready for customization";
       evaluation.nextSteps.push('Complete custom business logic');
       evaluation.devTasks.push('Implement core functionality');
-    } else {
-      evaluation.developmentStage = "Near production";
-      evaluation.timeToProduction = "1-2 hours";
+    }
+    
+    // SafeMath in 0.8+ (minor issue)
+    if (code.includes('SafeMath') && code.includes('0.8.')) {
+      evaluation.nextSteps.push('Consider removing unnecessary SafeMath');
+    }
+    
+    // Transfer vs sendValue detection
+    if (code.includes('.transfer(') && !code.includes('sendValue')) {
+      evaluation.securityScore -= 1;
+      evaluation.nextSteps.push('Use OpenZeppelin Address.sendValue for safer transfers');
+      evaluation.devTasks.push('Replace transfer() with sendValue()');
     }
     
     if (!code.includes('test') && !code.includes('Test')) {
@@ -186,27 +206,28 @@
     }
     
     if (code.includes('withdraw') && !code.includes('mapping.*earnings')) {
-      evaluation.nextSteps.push('Implement earnings tracking');
-      evaluation.devTasks.push('Add balance management system');
+      evaluation.nextSteps.push('Implement proper accounting');
+      evaluation.devTasks.push('Add balance tracking system');
     }
     
-    // Ensure scores are encouraging but honest
-    evaluation.foundationScore = Math.max(6, Math.min(10, evaluation.foundationScore));
-    evaluation.securityScore = Math.max(5, Math.min(10, evaluation.securityScore));
+    // Ensure realistic scoring bounds
+    evaluation.foundationScore = Math.max(4, Math.min(9, evaluation.foundationScore));
+    evaluation.securityScore = Math.max(3, Math.min(9, evaluation.securityScore));
     
     // Add standard good features if none detected
     if (evaluation.goodFeatures.length === 0) {
       evaluation.goodFeatures.push('Clean, structured smart contract foundation');
-      evaluation.goodFeatures.push('Follows Solidity best practices');
     }
     
-    // Add encouraging context
+    // Add encouraging but realistic context
     if (evaluation.foundationScore >= 8) {
       evaluation.foundationQuality = "Excellent foundation";
     } else if (evaluation.foundationScore >= 7) {
       evaluation.foundationQuality = "Solid foundation";  
-    } else {
+    } else if (evaluation.foundationScore >= 6) {
       evaluation.foundationQuality = "Good starting point";
+    } else {
+      evaluation.foundationQuality = "Needs refinement";
     }
     
     return evaluation;
