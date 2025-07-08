@@ -62,18 +62,21 @@
       } catch (geminiError) {
         console.log('Gemini API failed, falling back to Netlify function:', geminiError);
         
-        const response = await fetch('/.netlify/functions/ask-ai', {
+        const response = await fetch('/.netlify/functions/gemini', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            userQuestion: `Generate a Solidity smart contract based on this description: ${promptInput}. 
-            Please provide clean, commented Solidity code that implements the described functionality. 
-            Include relevant imports and basic security considerations.`
+            prompt: `Act as an expert Solidity developer. Based on the following request, generate a complete, well-commented, and secure boilerplate smart contract using Solidity ^0.8.20. The request is: "${promptInput}". The contract should be clean, production-ready code with proper error handling and security considerations.`
           })
         });
         
         const data = await response.json();
-        code = data.answer;
+        if (data.candidates?.[0]?.content?.parts?.[0]) {
+          const responseText = data.candidates[0].content.parts[0].text;
+          code = responseText.replace(/^```solidity\n|```$/g, '').trim();
+        } else {
+          code = 'Error generating contract. Please try again.';
+        }
       }
       
       generatedCode = code || 'Error generating contract. Please try again.';
@@ -300,6 +303,85 @@
         {/if}
       </div>
     {/if}
+
+    <!-- Professional divider -->
+    <div class="flex items-center my-12">
+      <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
+      <div class="px-4">
+        <i class="fas fa-chevron-down text-slate-500"></i>
+      </div>
+      <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent"></div>
+    </div>
+
+    <!-- Complete 3-Step Workflow -->
+    <div class="bg-gradient-to-br from-cyan-500/20 via-blue-500/20 to-slate-800/20 rounded-xl p-8 border border-cyan-400/20">
+      <h3 class="text-3xl font-bold mb-8 text-center text-white">
+        <i class="fas fa-rocket text-orange-500 mr-3"></i>
+        What's Next? Deploy Your Contract
+      </h3>
+      
+      <div class="grid md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-600 hover:border-cyan-400 transition-colors group">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-cyan-600 text-slate-900 rounded-full flex items-center justify-center font-bold text-lg">
+              1
+            </div>
+            <h4 class="text-xl font-bold text-cyan-400 group-hover:text-cyan-400">Copy Code</h4>
+          </div>
+          <p class="text-slate-300 mb-4">Use the copy button above to grab your generated contract code.</p>
+          <div class="text-xs text-cyan-400 font-mono bg-slate-900/50 p-2 rounded">
+            Ctrl+C / Cmd+C
+          </div>
+        </div>
+        
+        <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-600 hover:border-orange-500 transition-colors group">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 text-slate-900 rounded-full flex items-center justify-center font-bold text-lg">
+              2
+            </div>
+            <h4 class="text-xl font-bold text-orange-400 group-hover:text-orange-400">Open Remix IDE</h4>
+          </div>
+          <p class="text-slate-300 mb-4">Paste your code into the free, web-based Solidity IDE.</p>
+          <a 
+            href="https://remix.ethereum.org" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+          >
+            <i class="fas fa-external-link-alt mr-2"></i>
+            Open Remix →
+          </a>
+        </div>
+        
+        <div class="bg-slate-800/50 rounded-lg p-6 border border-slate-600 hover:border-blue-400 transition-colors group">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 text-slate-900 rounded-full flex items-center justify-center font-bold text-lg">
+              3
+            </div>
+            <h4 class="text-xl font-bold text-blue-400 group-hover:text-blue-400">Compile & Deploy</h4>
+          </div>
+          <p class="text-slate-300 mb-4">Test on Sepolia testnet before mainnet deployment.</p>
+          <div class="text-xs text-blue-400 font-mono bg-slate-900/50 p-2 rounded">
+            Solidity ^0.8.20
+          </div>
+        </div>
+      </div>
+      
+      <!-- Call to action -->
+      <div class="text-center">
+        <div class="mb-4">
+          <span class="text-slate-400">Want to learn more about our vision?</span>
+        </div>
+        <a 
+          href="/deep-dive/the-convergent-economy" 
+          class="inline-flex items-center bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+        >
+          <i class="fas fa-book-open mr-3"></i>
+          Explore The Convergent Economy
+          <i class="fas fa-arrow-right ml-3"></i>
+        </a>
+      </div>
+    </div>
   </div>
 </div>
 
