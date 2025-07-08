@@ -32,21 +32,36 @@
     const formData = new FormData(event.target);
     
     try {
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData).toString()
-      });
+      // Check if we're on localhost for testing
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       
-      if (response.ok) {
+      if (isLocalhost) {
+        // Mock success for localhost testing
+        console.log('LOCALHOST: Mocking form submission success');
+        console.log('Form data:', Object.fromEntries(formData));
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
         showThankYou = true;
-        // Trigger PDF download
         triggerPDFDownload();
       } else {
-        console.error('Form submission failed');
+        // Real submission for production
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        });
+        
+        if (response.ok) {
+          showThankYou = true;
+          triggerPDFDownload();
+        } else {
+          console.error('Form submission failed:', response.status);
+          // Show error message to user
+          alert('There was an error submitting your request. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Form submission error:', error);
+      alert('There was an error submitting your request. Please try again.');
     } finally {
       isSubmitting = false;
     }
@@ -303,10 +318,25 @@
     padding: 0.75rem;
     border: 1px solid #475569;
     border-radius: 0.5rem;
-    background-color: #334155;
-    color: #f1f5f9;
+    background: #1e293b !important;
+    color: #ffffff !important;
     font-size: 0.875rem;
     transition: all 0.2s;
+  }
+
+  /* Fix placeholder styling */
+  .form-group input::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1;
+  }
+
+  /* Override browser autofill */
+  .form-group input:-webkit-autofill,
+  .form-group input:-webkit-autofill:hover,
+  .form-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #1e293b inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    border: 1px solid #475569 !important;
   }
 
   .form-group input:focus {

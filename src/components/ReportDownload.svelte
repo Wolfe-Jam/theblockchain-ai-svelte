@@ -1,6 +1,7 @@
 <!-- src/components/ReportDownload.svelte -->
 <script>
   import { createEventDispatcher } from 'svelte';
+  import GoogleSelect from '../lib/components/GoogleSelect.svelte';
   
   export let isOpen = false;
   
@@ -19,26 +20,55 @@
   let isSubmitting = false;
   let showSuccess = false;
   
-  const industries = [
-    'Technology',
-    'Financial Services',
-    'Investment/VC',
-    'Consulting',
-    'Healthcare',
-    'Manufacturing',
-    'Government',
-    'Education',
-    'Other'
+  const positionOptions = [
+    { value: '', label: 'Select Position' },
+    { value: 'ceo', label: 'CEO' },
+    { value: 'cto', label: 'CTO' },
+    { value: 'cfo', label: 'CFO' },
+    { value: 'president', label: 'President' },
+    { value: 'vp', label: 'Vice President' },
+    { value: 'director', label: 'Director' },
+    { value: 'manager', label: 'Manager' },
+    { value: 'senior-engineer', label: 'Senior Engineer' },
+    { value: 'engineer', label: 'Engineer' },
+    { value: 'architect', label: 'Architect' },
+    { value: 'analyst', label: 'Analyst' },
+    { value: 'consultant', label: 'Consultant' },
+    { value: 'researcher', label: 'Researcher' },
+    { value: 'founder', label: 'Founder' },
+    { value: 'investor', label: 'Investor' },
+    { value: 'advisor', label: 'Advisor' },
+    { value: 'student', label: 'Student' },
+    { value: 'professor', label: 'Professor' },
+    { value: 'other', label: 'Other' }
   ];
   
-  const useCases = [
-    'Investment Research',
-    'Strategic Planning',
-    'Market Analysis',
-    'Partnership Opportunities',
-    'Academic Research',
-    'Other'
+  const industryOptions = [
+    { value: '', label: 'Select Industry' },
+    { value: 'Technology', label: 'Technology' },
+    { value: 'Financial Services', label: 'Financial Services' },
+    { value: 'Investment/VC', label: 'Investment/VC' },
+    { value: 'Consulting', label: 'Consulting' },
+    { value: 'Healthcare', label: 'Healthcare' },
+    { value: 'Manufacturing', label: 'Manufacturing' },
+    { value: 'Government', label: 'Government' },
+    { value: 'Education', label: 'Education' },
+    { value: 'Other', label: 'Other' }
   ];
+  
+  const useCaseOptions = [
+    { value: '', label: 'Select Interest' },
+    { value: 'Investment Research', label: 'Investment Research' },
+    { value: 'Strategic Planning', label: 'Strategic Planning' },
+    { value: 'Market Analysis', label: 'Market Analysis' },
+    { value: 'Partnership Opportunities', label: 'Partnership Opportunities' },
+    { value: 'Academic Research', label: 'Academic Research' },
+    { value: 'Other', label: 'Other' }
+  ];
+  
+  // Legacy arrays for backward compatibility (if needed elsewhere)
+  const industries = industryOptions.map(opt => opt.value).filter(val => val);
+  const useCases = useCaseOptions.map(opt => opt.value).filter(val => val);
   
   function closeModal() {
     isOpen = false;
@@ -199,28 +229,14 @@
               </div>
               <div class="form-group">
                 <label for="jobTitle">Position *</label>
-                <select id="jobTitle" bind:value={formData.jobTitle} required>
-                  <option value="">Select Position</option>
-                  <option value="ceo">CEO</option>
-                  <option value="cto">CTO</option>
-                  <option value="cfo">CFO</option>
-                  <option value="president">President</option>
-                  <option value="vp">Vice President</option>
-                  <option value="director">Director</option>
-                  <option value="manager">Manager</option>
-                  <option value="senior-engineer">Senior Engineer</option>
-                  <option value="engineer">Engineer</option>
-                  <option value="architect">Architect</option>
-                  <option value="analyst">Analyst</option>
-                  <option value="consultant">Consultant</option>
-                  <option value="researcher">Researcher</option>
-                  <option value="founder">Founder</option>
-                  <option value="investor">Investor</option>
-                  <option value="advisor">Advisor</option>
-                  <option value="student">Student</option>
-                  <option value="professor">Professor</option>
-                  <option value="other">Other</option>
-                </select>
+                <GoogleSelect
+                  id="jobTitle"
+                  name="jobTitle"
+                  options={positionOptions}
+                  bind:value={formData.jobTitle}
+                  placeholder="Select Position"
+                  required
+                />
               </div>
             </div>
             
@@ -228,21 +244,25 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="industry">Industry *</label>
-                <select id="industry" bind:value={formData.industry} required>
-                  <option value="">Select Industry</option>
-                  {#each industries as industry}
-                    <option value={industry}>{industry}</option>
-                  {/each}
-                </select>
+                <GoogleSelect
+                  id="industry"
+                  name="industry"
+                  options={industryOptions}
+                  bind:value={formData.industry}
+                  placeholder="Select Industry"
+                  required
+                />
               </div>
               <div class="form-group">
                 <label for="useCase">Primary Interest *</label>
-                <select id="useCase" bind:value={formData.useCase} required>
-                  <option value="">Select Interest</option>
-                  {#each useCases as useCase}
-                    <option value={useCase}>{useCase}</option>
-                  {/each}
-                </select>
+                <GoogleSelect
+                  id="useCase"
+                  name="useCase"
+                  options={useCaseOptions}
+                  bind:value={formData.useCase}
+                  placeholder="Select Interest"
+                  required
+                />
               </div>
             </div>
             
@@ -288,7 +308,7 @@
   }
   
   .modal-content {
-    background: white;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     border-radius: 1rem;
     max-width: 550px;
     width: 100%;
@@ -296,6 +316,7 @@
     overflow: hidden;
     position: relative;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(12, 192, 223, 0.3);
   }
   
   .modal-header {
@@ -337,16 +358,19 @@
     font-size: 1.75rem;
     font-weight: 700;
     margin-bottom: 0.25rem;
+    color: white;
   }
   
   .report-subtitle {
     font-size: 1rem;
     opacity: 0.9;
     margin: 0;
+    color: white;
   }
   
   .modal-body {
     padding: 1.5rem;
+    background: transparent;
   }
   
   .value-proposition {
@@ -357,25 +381,25 @@
   .value-proposition h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #1f2937;
+    color: #f1f5f9;
     margin-bottom: 0.75rem;
   }
   
   .value-exchange {
     font-size: 0.9rem;
-    color: #6b7280;
+    color: #cbd5e1;
     line-height: 1.5;
     margin-bottom: 0.5rem;
     padding: 0.75rem;
-    background: #f8fafc;
+    background: rgba(12, 192, 223, 0.1);
     border-radius: 0.5rem;
-    border-left: 3px solid #007BFF;
+    border-left: 3px solid #0CC0DF;
   }
   
   .genuine-request {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #374151;
+    color: #f1f5f9;
     text-align: center;
     margin-bottom: 1rem;
     font-style: italic;
@@ -419,7 +443,7 @@
   .form-group label {
     display: block;
     font-weight: 600;
-    color: #374151;
+    color: #f1f5f9;
     margin-bottom: 0.25rem;
     font-size: 0.875rem;
   }
@@ -428,17 +452,33 @@
   .form-group select {
     width: 100%;
     padding: 0.625rem;
-    border: 2px solid #e5e7eb;
+    border: 2px solid #475569;
     border-radius: 0.5rem;
+    background: #1e293b !important;
+    color: #ffffff !important;
     font-size: 0.875rem;
     transition: border-color 0.2s;
+  }
+
+  .form-group input::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1;
+  }
+
+  /* Override browser autofill */
+  .form-group input:-webkit-autofill,
+  .form-group input:-webkit-autofill:hover,
+  .form-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #1e293b inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    border: 2px solid #475569 !important;
   }
   
   .form-group input:focus,
   .form-group select:focus {
     outline: none;
-    border-color: #007BFF;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    border-color: #0CC0DF;
+    box-shadow: 0 0 0 3px rgba(12, 192, 223, 0.1);
   }
   
   .download-btn {

@@ -237,17 +237,39 @@
     showThankYou = false;
   }
   
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     
-    fetch('/', {
-      method: 'POST',
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(formData).toString()
-    }).then(() => {
-      showThankYou = true;
-    }).catch((error) => alert(error));
+    try {
+      // Check if we're on localhost for testing
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      if (isLocalhost) {
+        // Mock success for localhost testing
+        console.log('LOCALHOST: Mocking HomePage register submission success');
+        console.log('Form data:', Object.fromEntries(formData));
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+        showThankYou = true;
+      } else {
+        // Real submission for production
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(formData).toString()
+        });
+        
+        if (response.ok) {
+          showThankYou = true;
+        } else {
+          console.error('Form submission failed:', response.status);
+          alert('There was an error submitting your request. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      alert('There was an error submitting your request. Please try again.');
+    }
   }
   
   function handlePageClick() {

@@ -1,6 +1,8 @@
 <!-- src/components/RegistrationModal.svelte -->
 <script>
   import { fade, scale } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
+  import GoogleSelect from '../lib/components/GoogleSelect.svelte';
   
   export let isOpen = false;
   
@@ -16,6 +18,10 @@
   
   let showThankYou = false;
   let isSubmitting = false;
+  
+  // Form field bindings
+  let selectedTitle = '';
+  let selectedOrganizationType = '';
   
   // Dropdown options for better UX
   const titleOptions = [
@@ -59,19 +65,33 @@
     const formData = new FormData(event.target);
     
     try {
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData).toString()
-      });
+      // Check if we're on localhost for testing
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       
-      if (response.ok) {
+      if (isLocalhost) {
+        // Mock success for localhost testing
+        console.log('LOCALHOST: Mocking RegistrationModal submission success');
+        console.log('Form data:', Object.fromEntries(formData));
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
         showThankYou = true;
       } else {
-        console.error('Form submission failed');
+        // Real submission for production
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        });
+        
+        if (response.ok) {
+          showThankYou = true;
+        } else {
+          console.error('Form submission failed:', response.status);
+          alert('There was an error submitting your request. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Form submission error:', error);
+      alert('There was an error submitting your request. Please try again.');
     } finally {
       isSubmitting = false;
     }
@@ -80,9 +100,9 @@
 
 {#if isOpen}
   <div class="modal-backdrop" on:click={handleBackdropClick} 
-       transition:fade={{ duration: 400, easing: 'ease-out' }}>
+       transition:fade={{ duration: 400, easing: quintOut }}>
     <div class="modal-content" 
-         transition:scale={{ duration: 400, start: 0.9, easing: 'ease-out' }}>
+         transition:scale={{ duration: 400, start: 0.9, easing: quintOut }}>
       <button class="close-btn" on:click={closeModal}>&times;</button>
       
       {#if !showThankYou}
@@ -97,11 +117,13 @@
             <div class="form-row">
               <div class="form-group form-group-small">
                 <label for="title">Title</label>
-                <select id="title" name="title" class="select-input">
-                  {#each titleOptions as option}
-                    <option value={option.value}>{option.label}</option>
-                  {/each}
-                </select>
+                <GoogleSelect
+                  id="title"
+                  name="title"
+                  options={titleOptions}
+                  bind:value={selectedTitle}
+                  placeholder="Select Title"
+                />
               </div>
               <div class="form-group form-group-large">
                 <label for="firstName">First Name</label>
@@ -123,11 +145,13 @@
             <div class="form-row">
               <div class="form-group form-group-half">
                 <label for="organizationType">Organization Type</label>
-                <select id="organizationType" name="organizationType" class="select-input">
-                  {#each organizationOptions as option}
-                    <option value={option.value}>{option.label}</option>
-                  {/each}
-                </select>
+                <GoogleSelect
+                  id="organizationType"
+                  name="organizationType"
+                  options={organizationOptions}
+                  bind:value={selectedOrganizationType}
+                  placeholder="Select Organization Type"
+                />
               </div>
               <div class="form-group form-group-half">
                 <label for="organizationName">Organization Name</label>
@@ -285,32 +309,21 @@
     font-size: 0.875rem;
   }
 
-  .form-group input,
-  .select-input {
+  .form-group input {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #475569;
+    padding: 0.625rem;
+    border: 2px solid #e5e7eb;
     border-radius: 0.5rem;
-    background-color: #334155;
-    color: #f1f5f9;
     font-size: 0.875rem;
-    transition: all 0.2s;
+    transition: border-color 0.2s;
+    background: white;
+    color: #374151;
   }
 
-  .form-group input:focus,
-  .select-input:focus {
+  .form-group input:focus {
     outline: none;
-    border-color: var(--brand-cyan-text);
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
-  }
-
-  .select-input {
-    cursor: pointer;
-  }
-
-  .select-input option {
-    background-color: #334155;
-    color: #f1f5f9;
+    border-color: #007BFF;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
   }
 
   .checkbox-group-label {
