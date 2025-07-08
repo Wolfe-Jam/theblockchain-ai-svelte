@@ -1,7 +1,7 @@
 {
   "name": "my-theblockchain-ai-app",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "scripts": {
     "dev": "vite dev --host",
