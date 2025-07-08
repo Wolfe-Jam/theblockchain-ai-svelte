@@ -80,6 +80,7 @@
       }
       
       generatedCode = code || 'Error generating contract. Please try again.';
+      codeEvaluation = evaluateCode(generatedCode);
       showResult = true;
       
     } catch (error) {
@@ -115,7 +116,10 @@
   const examplePrompts = [
     "An ERC-1155 contract where the minting fee is split 90% to the artist and 10% to the platform.",
     "A simple voting contract where users can vote on proposals with a deadline.",
-    "An ERC20 token with built-in staking rewards for holders."
+    "An ERC20 token with built-in staking rewards for holders.",
+    "A marketplace contract for buying and selling digital assets with escrow functionality.",
+    "A time-locked vault contract that releases tokens after a specific date.",
+    "A multi-signature wallet contract requiring 2 out of 3 signatures for transactions."
   ];
   
   function useExamplePrompt(prompt) {
@@ -123,6 +127,65 @@
   }
   
   let spotsLeft = 0;
+  let codeEvaluation = null;
+  
+  // Dynamic code evaluation function
+  function evaluateCode(code) {
+    if (!code || code.length < 100) return null;
+    
+    const evaluation = {
+      productionScore: 5,
+      securityScore: 5,
+      goodFeatures: [],
+      needsWork: [],
+      devTasks: []
+    };
+    
+    // Check for security features
+    if (code.includes('@openzeppelin/contracts')) {
+      evaluation.securityScore += 2;
+      evaluation.goodFeatures.push('OpenZeppelin imports (industry standard)');
+    }
+    if (code.includes('Ownable') || code.includes('AccessControl')) {
+      evaluation.securityScore += 1;
+      evaluation.goodFeatures.push('Access control mechanisms');
+    }
+    if (code.includes('require(') && code.includes('!= address(0)')) {
+      evaluation.securityScore += 1;
+      evaluation.goodFeatures.push('Input validation and zero address checks');
+    }
+    if (code.includes('ReentrancyGuard') || code.includes('nonReentrant')) {
+      evaluation.securityScore += 1;
+      evaluation.goodFeatures.push('Reentrancy protection');
+    }
+    
+    // Check for documentation
+    if (code.includes('/**') || code.includes('@dev') || code.includes('@param')) {
+      evaluation.productionScore += 1;
+      evaluation.goodFeatures.push('Comprehensive documentation');
+    }
+    
+    // Check for potential issues
+    if (code.includes('placeholder') || code.includes('TODO') || code.includes('not implemented')) {
+      evaluation.productionScore -= 2;
+      evaluation.needsWork.push('Contains placeholder or unimplemented functions');
+      evaluation.devTasks.push('Complete placeholder implementations');
+    }
+    if (!code.includes('test') && !code.includes('Test')) {
+      evaluation.needsWork.push('No testing framework included');
+      evaluation.devTasks.push('Write comprehensive tests');
+    }
+    if (code.includes('withdraw') && !code.includes('mapping')) {
+      evaluation.needsWork.push('Withdrawal without proper accounting');
+      evaluation.devTasks.push('Implement proper balance tracking');
+    }
+    
+    // Ensure scores are within bounds
+    evaluation.productionScore = Math.max(1, Math.min(10, evaluation.productionScore));
+    evaluation.securityScore = Math.max(1, Math.min(10, evaluation.securityScore));
+    
+    return evaluation;
+  }
   
   // Function to calculate contracts generated today (minutes since midnight EST)
   function calculateContractsGenerated() {
@@ -300,6 +363,131 @@
           <div class="bg-slate-900 rounded-lg p-6 overflow-x-auto border border-slate-600">
             <pre class="text-green-400 text-sm leading-relaxed"><code>{generatedCode}</code></pre>
           </div>
+          
+          <!-- Code Quality Assessment -->
+          {#if codeEvaluation}
+          <div class="mt-8 bg-gradient-to-br from-slate-800/50 to-slate-700/50 rounded-lg p-6 border border-slate-600/50">
+            <h4 class="text-xl font-bold text-white mb-6 flex items-center">
+              <i class="fas fa-chart-line text-yellow-400 mr-3"></i>
+              Code Quality Assessment
+            </h4>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+              <!-- Production Readiness Score -->
+              <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-600/30">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-slate-300 font-semibold">Production Ready</span>
+                  <span class="text-2xl font-bold text-yellow-400">{codeEvaluation.productionScore}/10</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full" style="width: {codeEvaluation.productionScore * 10}%"></div>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">
+                  {#if codeEvaluation.productionScore >= 8}Excellent foundation, minimal work needed
+                  {:else if codeEvaluation.productionScore >= 6}Solid foundation, needs development work
+                  {:else if codeEvaluation.productionScore >= 4}Basic structure, significant work required
+                  {:else}Prototype only, major development needed{/if}
+                </p>
+              </div>
+              
+              <!-- Security Score -->
+              <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-600/30">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-slate-300 font-semibold">Security</span>
+                  <span class="text-2xl font-bold text-green-400">{codeEvaluation.securityScore}/10</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-green-400 to-cyan-400 h-2 rounded-full" style="width: {codeEvaluation.securityScore * 10}%"></div>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">
+                  {#if codeEvaluation.securityScore >= 8}Strong security practices
+                  {:else if codeEvaluation.securityScore >= 6}Good security basics
+                  {:else if codeEvaluation.securityScore >= 4}Basic security, needs improvement
+                  {:else}Security review required{/if}
+                </p>
+              </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6 mt-6">
+              <!-- What's Good -->
+              <div>
+                <h5 class="text-lg font-bold text-green-400 mb-3 flex items-center">
+                  <i class="fas fa-check-circle mr-2"></i>
+                  What's Good
+                </h5>
+                <ul class="space-y-2 text-sm">
+                  {#each codeEvaluation.goodFeatures as feature}
+                  <li class="flex items-start gap-2 text-slate-300">
+                    <i class="fas fa-check text-green-400 mt-1 text-xs"></i>
+                    {feature}
+                  </li>
+                  {/each}
+                  {#if codeEvaluation.goodFeatures.length === 0}
+                  <li class="text-slate-400 italic">Basic structure in place</li>
+                  {/if}
+                </ul>
+              </div>
+              
+              <!-- Needs Work -->
+              <div>
+                <h5 class="text-lg font-bold text-orange-400 mb-3 flex items-center">
+                  <i class="fas fa-tools mr-2"></i>
+                  Needs Development
+                </h5>
+                <ul class="space-y-2 text-sm">
+                  {#each codeEvaluation.needsWork as issue}
+                  <li class="flex items-start gap-2 text-slate-300">
+                    <i class="fas fa-exclamation-triangle text-orange-400 mt-1 text-xs"></i>
+                    {issue}
+                  </li>
+                  {/each}
+                  {#if codeEvaluation.needsWork.length === 0}
+                  <li class="text-slate-400 italic">Minimal issues detected</li>
+                  {/if}
+                </ul>
+              </div>
+            </div>
+            
+            <!-- Developer Next Steps -->
+            <div class="mt-6 bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+              <h5 class="text-lg font-bold text-blue-400 mb-3 flex items-center">
+                <i class="fas fa-list-check mr-2"></i>
+                Developer Checklist
+              </h5>
+              <div class="grid md:grid-cols-2 gap-4">
+                {#each codeEvaluation.devTasks as task, index}
+                  {#if index % 2 === 0}
+                  <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+                      <input type="checkbox" class="text-blue-400 rounded" />
+                      {task}
+                    </label>
+                  </div>
+                  {:else}
+                  <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+                      <input type="checkbox" class="text-blue-400 rounded" />
+                      {task}
+                    </label>
+                  </div>
+                  {/if}
+                {/each}
+                {#if codeEvaluation.devTasks.length === 0}
+                <div class="col-span-2">
+                  <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+                    <input type="checkbox" class="text-blue-400 rounded" />
+                    Write comprehensive tests
+                  </label>
+                  <label class="flex items-center gap-2 text-sm text-slate-300 cursor-pointer mt-2">
+                    <input type="checkbox" class="text-blue-400 rounded" />
+                    Security audit before mainnet
+                  </label>
+                </div>
+                {/if}
+              </div>
+            </div>
+          </div>
+          {/if}
         {/if}
       </div>
     {/if}
