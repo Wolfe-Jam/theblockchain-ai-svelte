@@ -4,25 +4,25 @@
   import { Chart, registerables } from 'chart.js';
   
   export let marketData;
-  export let showProjections = false;
+  export let selectedYear = 2025;
   
   let chartCanvas;
   let chart;
   
   Chart.register(...registerables);
   
-  // Current market data (trillions)
-  const currentData = {
-    ai: 1.80,
-    blockchain: 0.12,
-    software: 0.60
-  };
-  
-  // Projected 2030 data
-  const projectedData = {
-    ai: 3.25,
-    blockchain: 1.43,
-    software: 1.47
+  // Full market progression data (trillions) - matches main invest page
+  const yearlyData = {
+    2025: { total: 2.52, ai: 1.80, blockchain: 0.12, software: 0.60 },
+    2026: { total: 3.25, ai: 2.20, blockchain: 0.30, software: 0.75 },
+    2027: { total: 4.12, ai: 2.65, blockchain: 0.52, software: 0.95 },
+    2028: { total: 4.85, ai: 2.85, blockchain: 0.75, software: 1.25 },
+    2029: { total: 5.68, ai: 3.15, blockchain: 1.08, software: 1.45 },
+    2030: { total: 6.15, ai: 3.25, blockchain: 1.43, software: 1.47 },
+    2031: { total: 7.23, ai: 3.45, blockchain: 1.98, software: 1.80 },
+    2032: { total: 8.41, ai: 3.55, blockchain: 2.86, software: 2.00 },
+    2033: { total: 9.87, ai: 3.62, blockchain: 4.15, software: 2.10 },
+    2034: { total: 11.43, ai: 3.68, blockchain: 5.85, software: 1.90 }
   };
   
   onMount(() => {
@@ -35,7 +35,7 @@
   function createChart() {
     if (chart) chart.destroy();
     
-    const data = showProjections ? projectedData : currentData;
+    const data = yearlyData[selectedYear];
     
     const ctx = chartCanvas.getContext('2d');
     chart = new Chart(ctx, {
@@ -101,17 +101,26 @@
     });
   }
   
-  // Reactive update when showProjections changes
-  $: if (chart) {
+  // Reactive update when selectedYear changes
+  $: if (chart && selectedYear) {
     createChart();
   }
   
   function calculateCAGR() {
-    const current = currentData.ai + currentData.blockchain + currentData.software;
-    const projected = projectedData.ai + projectedData.blockchain + projectedData.software;
-    const years = 5; // 2025 to 2030
+    const current = yearlyData[2025];
+    const projected = yearlyData[selectedYear];
+    const years = selectedYear - 2025;
     
-    return (Math.pow(projected / current, 1 / years) - 1) * 100;
+    if (years === 0) return 0;
+    
+    const currentTotal = current.ai + current.blockchain + current.software;
+    const projectedTotal = projected.ai + projected.blockchain + projected.software;
+    
+    return (Math.pow(projectedTotal / currentTotal, 1 / years) - 1) * 100;
+  }
+  
+  function changeYear(year) {
+    selectedYear = year;
   }
 </script>
 
@@ -119,23 +128,30 @@
   <div class="chart-header">
     <div class="chart-title">
       <h3>Market Convergence</h3>
-      <span class="chart-year">{showProjections ? '2030 Projected' : '2025 Current'}</span>
+      <span class="chart-year">{selectedYear} Projection</span>
     </div>
     
     <div class="chart-controls">
       <button 
         class="toggle-btn"
-        class:active={!showProjections}
-        on:click={() => showProjections = false}
+        class:active={selectedYear === 2025}
+        on:click={() => changeYear(2025)}
       >
-        Current
+        2025
       </button>
       <button 
         class="toggle-btn"
-        class:active={showProjections}
-        on:click={() => showProjections = true}
+        class:active={selectedYear === 2030}
+        on:click={() => changeYear(2030)}
       >
         2030
+      </button>
+      <button 
+        class="toggle-btn"
+        class:active={selectedYear === 2034}
+        on:click={() => changeYear(2034)}
+      >
+        2034
       </button>
     </div>
   </div>
@@ -146,13 +162,10 @@
     <!-- Center text showing total market -->
     <div class="center-text">
       <div class="total-value">
-        ${showProjections 
-          ? (projectedData.ai + projectedData.blockchain + projectedData.software).toFixed(2)
-          : (currentData.ai + currentData.blockchain + currentData.software).toFixed(2)
-        }T
+        ${yearlyData[selectedYear].total.toFixed(2)}T
       </div>
       <div class="total-label">Total Market</div>
-      {#if showProjections}
+      {#if selectedYear > 2025}
         <div class="cagr-display">
           {calculateCAGR().toFixed(1)}% CAGR
         </div>
@@ -195,6 +208,7 @@
     border-radius: 0.5rem;
     padding: 0.25rem;
     border: 1px solid var(--border-color);
+    gap: 0.25rem;
   }
   
   .toggle-btn {

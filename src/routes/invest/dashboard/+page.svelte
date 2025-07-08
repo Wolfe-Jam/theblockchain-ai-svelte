@@ -4,9 +4,6 @@
   import { tweened } from 'svelte/motion';
   import { cubicOut } from 'svelte/easing';
   import { page } from '$app/stores';
-  import Header from '../../../components/Header.svelte';
-  import AskAIModal from '../../../components/AskAIModal.svelte';
-  import AboutModal from '../../../components/AboutModal.svelte';
   import PortfolioChart from '../../../lib/components/PortfolioChart.svelte';
   import ConvergenceChart from '../../../lib/components/ConvergenceChart.svelte';
   import LiveCAGR from '../../../lib/components/LiveCAGR.svelte';
@@ -14,18 +11,6 @@
   
   /** @type {import('./$types').PageData} */
   export let data;
-  
-  // Modal state for Header integration
-  let showAskAI = false;
-  let showAbout = false;
-  
-  function handleOpenAskAI() {
-    showAskAI = true;
-  }
-  
-  function handleOpenAbout() {
-    showAbout = true;
-  }
   
   // Extract data with fallbacks
   $: ({ marketData, portfolioData, analyticsData, error } = data || {});
@@ -42,6 +27,7 @@
   // Dashboard state
   let selectedTimeframe = '1M';
   let selectedView = 'overview';
+  let selectedChartYear = 2025;
   let notifications = [];
   
   onMount(() => {
@@ -120,8 +106,6 @@
 </svelte:head>
 
 <div class="app-container">
-  <Header on:openAskAI={handleOpenAskAI} on:openAbout={handleOpenAbout} />
-
 {#if error}
   <div class="error-container">
     <div class="error-card">
@@ -290,7 +274,7 @@
 
       {#if selectedView === 'markets'}
         <!-- Enhanced Convergence Market Visualization -->
-        <ConvergenceChart {marketData} />
+        <ConvergenceChart {marketData} selectedYear={selectedChartYear} />
         
         <!-- Real-Time Market Data -->
         <section class="market-data-section">
@@ -444,14 +428,6 @@
 
   <!-- Footer removed - handled by main layout -->
 </div>
-
-{#if showAskAI}
-  <AskAIModal on:close={() => showAskAI = false} />
-{/if}
-
-{#if showAbout}
-  <AboutModal on:close={() => showAbout = false} />
-{/if}
 
 <style>
   .app-container {
