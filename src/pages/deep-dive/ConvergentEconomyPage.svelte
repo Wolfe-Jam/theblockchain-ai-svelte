@@ -1189,11 +1189,6 @@ const aiAgentToken = {
       padding: 1rem;
     }
     
-    .placeholder-container {
-      margin: 0.5rem;
-      padding: 0.5rem;
-    }
-    
     .btn-primary, .btn-secondary {
       padding: 0.75rem 1rem;
       font-size: 0.9rem;

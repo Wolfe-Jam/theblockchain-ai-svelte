@@ -338,9 +338,9 @@ Ready to upgrade? Contact us for early access pricing.`;
           />
           <div class="relative p-4 rounded-lg border-2 transition-all duration-300"
                class:border-cyan-400={selectedModel === 'free'}
-               class:bg-cyan-400/10={selectedModel === 'free'}
                class:border-slate-600={selectedModel !== 'free'}
-               class:bg-slate-800/50={selectedModel !== 'free'}>
+               class:bg-slate-800={selectedModel !== 'free'}
+               style="background-color: {selectedModel === 'free' ? 'rgba(6, 182, 212, 0.1)' : 'rgba(30, 41, 59, 0.5)'}">>
             <div class="flex items-center justify-between mb-2">
               <h4 class="text-lg font-bold text-white flex items-center">
                 <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold mr-2">FREE</span>
@@ -370,9 +370,9 @@ Ready to upgrade? Contact us for early access pricing.`;
           />
           <div class="relative p-4 rounded-lg border-2 transition-all duration-300"
                class:border-orange-400={selectedModel === 'premium'}
-               class:bg-orange-400/10={selectedModel === 'premium'}
                class:border-slate-600={selectedModel !== 'premium'}
-               class:bg-slate-800/50={selectedModel !== 'premium'}>
+               class:bg-slate-800={selectedModel !== 'premium'}
+               style="background-color: {selectedModel === 'premium' ? 'rgba(251, 146, 60, 0.1)' : 'rgba(30, 41, 59, 0.5)'}">>
             <div class="flex items-center justify-between mb-2">
               <h4 class="text-lg font-bold text-white flex items-center">
                 <span class="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-2 py-1 rounded text-xs font-bold mr-2">PRO</span>

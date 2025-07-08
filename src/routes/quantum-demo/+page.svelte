@@ -54,10 +54,10 @@
   <!-- Custom header for quantum demo -->
   <header class="quantum-header">
     <nav class="quantum-nav">
-      <div class="nav-brand" on:click={goToHome}>
+      <button class="nav-brand" on:click={goToHome} on:keydown={(e) => e.key === 'Enter' && goToHome()} role="button" tabindex="0">
         <img src="https://raw.githubusercontent.com/Wolfe-Jam/theblockchain-ai/main/Public/theBlockchain-ai-crop-sml.svg" alt="Logo" class="logo">
         <span class="brand-text">theBlockchain.ai</span>
-      </div>
+      </button>
       
       <div class="nav-links">
         <button on:click={goToHome} class="nav-link">Home</button>
