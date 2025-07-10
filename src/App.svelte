@@ -1,7 +1,6 @@
 <!-- my-theblockchain-ai-app/src/App.svelte -->
 <script>
   import Header from './components/Header.svelte';
-  import Footer from './components/Footer.svelte';
   import AskAIModal from './components/AskAIModal.svelte';
   import AboutModal from './components/AboutModal.svelte';
   import SerenityBoat from './components/SerenityBoat.svelte';
@@ -84,7 +83,7 @@
       </div>
     {/if}
   </main>
-  <Footer on:openAbout={handleOpenAbout} />
+  <!-- Footer removed - handled by SvelteKit layout -->
   <AskAIModal bind:isOpen={showAskAI} />
   <AboutModal bind:isOpen={showAbout} />
   {#if currentPath !== '/deep-dive/the-convergent-economy'}

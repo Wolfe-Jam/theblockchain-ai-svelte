@@ -70,6 +70,13 @@
       
       <div class="quantum-badge">
         <span>🔮 DEMO MODE</span>
+        <button 
+          on:click={goToHome} 
+          class="exit-demo-btn"
+          title="Return to Main Site"
+        >
+          ✕
+        </button>
       </div>
     </nav>
   </header>
@@ -258,6 +265,35 @@
     box-shadow: 0 2px 8px rgba(107, 70, 193, 0.3);
     animation: demoPulse 3s ease-in-out infinite;
     letter-spacing: 0.1em;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .quantum-demo-container .exit-demo-btn {
+    background: rgba(239, 68, 68, 0.8);
+    border: 1px solid rgba(239, 68, 68, 0.6);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    line-height: 1;
+  }
+  
+  .quantum-demo-container .exit-demo-btn:hover {
+    background: rgba(239, 68, 68, 1);
+    border-color: rgba(239, 68, 68, 0.8);
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
   }
   
   @keyframes demoPulse {

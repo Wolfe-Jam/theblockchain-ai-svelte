@@ -227,14 +227,29 @@
         <!-- Alternative Download -->
         <div class="alternative-download text-center mt-8">
           <p class="text-slate-400 text-sm mb-2">
-            Having trouble? You can also
+            Having trouble with the form?
           </p>
-          <button 
-            on:click={triggerPDFDownload}
-            class="text-cyan-400 hover:text-cyan-300 underline text-sm"
-          >
-            download directly here
-          </button>
+          <p class="text-slate-300 text-xs mb-3">
+            Send us your email and we'll send you the PDF directly:
+          </p>
+          <div class="alternative-form flex flex-col sm:flex-row gap-2 justify-center items-center max-w-md mx-auto">
+            <input 
+              type="email" 
+              placeholder="your.email@example.com"
+              bind:value={email}
+              class="flex-1 px-3 py-2 bg-slate-800/50 text-white rounded-lg border border-slate-600 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 outline-none text-sm"
+              required
+            />
+            <button 
+              on:click={handleDownload}
+              class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+            >
+              Email Me PDF
+            </button>
+          </div>
+          <p class="text-slate-500 text-xs mt-2">
+            We'll email you the download link immediately
+          </p>
         </div>
       </div>
     </section>
