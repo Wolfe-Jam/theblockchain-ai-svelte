@@ -189,7 +189,7 @@
           <div class="demo-info-footer">
             <p class="demo-info-tagline">
               <span class="accent-green">></span> This demo represents the future of financial interfaces
-              <span class="accent-green"><</span>
+              <span class="accent-green">&lt;</span>
             </p>
           </div>
         </div>

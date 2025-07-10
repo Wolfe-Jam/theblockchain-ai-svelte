@@ -1192,11 +1192,6 @@ const aiAgentToken = {
       padding: 0 0.5rem;
     }
     
-    .hero-subtitle {
-      font-size: 1rem;
-      padding: 0 0.5rem;
-    }
-    
     .key-insights {
       padding: 0 0.5rem;
       gap: 1rem;
