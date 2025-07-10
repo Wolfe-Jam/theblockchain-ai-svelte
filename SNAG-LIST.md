@@ -129,7 +129,7 @@ RESULT: Simplified, conversion-optimized experience
   <div class="pdf-preview">
     <img src="/pdf-preview.jpg" alt="Report Preview" />
     <div class="download-stats">
-      <span>📄 42 pages</span>
+      <span>📄 26 pages</span>
       <span>📊 $5+ Trillion analysis</span>
       <span>⬇️ 10k+ downloads</span>
     </div>

@@ -5,7 +5,7 @@
   let email = '';
   let isSubmitting = false;
   let showThankYou = false;
-  let downloadCount = 12847; // Could be dynamic from API
+  let downloadCount = 4847; // Could be dynamic from API
   
   async function handleDownload(event) {
     event.preventDefault();
@@ -72,7 +72,7 @@
   <title>Download: The Convergent Economy Report - theBlockchain.ai</title>
   <meta name="description" content="Get your free $5+ Trillion market analysis report on the convergent economy of AI and blockchain. Instant PDF download." />
   <meta property="og:title" content="Free $5+ Trillion Market Analysis Report" />
-  <meta property="og:description" content="The Convergent Economy: How AI and Blockchain are reshaping the global economy. Professional 42-page analysis." />
+  <meta property="og:description" content="The Convergent Economy: How AI and Blockchain are reshaping the global economy. Professional 26-page analysis." />
   <meta property="og:image" content="/theBlockchain-ai-landscape.webp" />
 </svelte:head>
 
@@ -121,14 +121,14 @@
                 Professional Market Analysis Report
               </h2>
               <p class="text-slate-300 mb-6 leading-relaxed">
-                42 pages of comprehensive analysis covering AI automation, blockchain integration, 
+                26 pages of comprehensive analysis covering AI automation, blockchain integration, 
                 and the $5+ trillion convergent economy opportunity.
               </p>
               
               <!-- Stats Grid -->
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="stat-item text-center">
-                  <div class="text-2xl font-bold text-cyan-400">42</div>
+                  <div class="text-2xl font-bold text-cyan-400">26</div>
                   <div class="text-sm text-slate-400">Pages</div>
                 </div>
                 <div class="stat-item text-center">

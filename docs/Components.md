@@ -76,6 +76,10 @@ A highly flexible, perfectly aligned data visualization component designed for s
 
 ## 🚀 Future Components Roadmap
 
+### **Next Commission: Opus4 Integration**
+**Status**: 🔄 Commissioned for Next Development Phase  
+**Priority**: Immediate following current DataBox/TimelineBox completion
+
 ### **Planned Components**
 - **TokenMetrics**: Real-time cryptocurrency data displays
 - **BlockchainExplorer**: Transaction and block visualization
