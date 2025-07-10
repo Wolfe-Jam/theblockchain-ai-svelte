@@ -84,14 +84,8 @@ session-analysis-*.json
 # (Previous .gitignore was too restrictive)
 
 # Strategic Planning Documents (Private)
-SVELTE-EXCELLENCE-ROADMAP.md
-TOOLS-MIGRATION-COMPLETE.md
-QUANTUM-TIMELINE-STRATEGY.md
-QUANTUM-TIMELINE-BRANCH.md
-REVENUE-MODEL.md
-MARKETPLACE-PLANNING.md
-CRYPTO-PAYMENTS-STRATEGY.md
-theHUB.md
+docs/ToDo/*.md
+!docs/ToDo/README.md
 *ROADMAP*.md
 *STRATEGIC*.md
 *STRATEGY*.md
