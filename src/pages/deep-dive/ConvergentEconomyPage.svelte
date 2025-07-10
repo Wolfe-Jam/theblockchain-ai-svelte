@@ -465,13 +465,20 @@ const aiAgentToken = {
       <h2>Ready to Build the Convergent Economy?</h2>
       <p>Experience the power of tokenized software development firsthand.</p>
       <div class="cta-buttons">
-        <a href="/tools" class="btn-primary">
+        <a href="/download" class="btn-primary">
+          📊 Download Full PDF Report
+        </a>
+        <a href="/tools" class="btn-secondary">
           Try Smart Contract Generator
         </a>
-        <a href="/deep-dive/the-convergent-economy" class="btn-secondary">
-          Explore More Deep Dives
+        <a href="/invest" class="btn-secondary">
+          Investment Opportunities
         </a>
       </div>
+      <p class="pdf-note">
+        Get the complete 42-page analysis including market projections, 
+        investment strategies, and technical deep dives.
+      </p>
     </div>
   </section>
 </div>
@@ -1029,6 +1036,16 @@ const aiAgentToken = {
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
+  }
+  
+  .pdf-note {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin-top: 1.5rem;
+    font-style: italic;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .btn-primary, .btn-secondary {

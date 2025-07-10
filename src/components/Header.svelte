@@ -267,7 +267,7 @@
               
               {#if resourceDropdownOpen}
                 <div class="dropdown-menu">
-                  <a href="/invest#professional-report" on:click={closeResourceDropdown}>📊 Download PDF Report</a>
+                  <a href="/download" on:click={closeResourceDropdown}>📊 Download PDF Report</a>
                   <button type="button" class="dropdown-about-btn" on:click={() => { closeResourceDropdown(); openAbout(); }}>About</button>
                   <a href="/glossary" on:click={closeResourceDropdown}>Glossary</a>
                   <a href="/faqs" on:click={closeResourceDropdown}>FAQs</a>
@@ -337,6 +337,7 @@
                 <!-- Resource Section -->
                 <div class="mobile-section">
                   <div class="mobile-section-title">Resource</div>
+                  <a href="/download" on:click={closeMobileMenu}>📊 Download PDF Report</a>
                   <button type="button" class="mobile-about-btn" on:click={() => { closeMobileMenu(); openAbout(); }}>About</button>
                   <a href="/glossary" on:click={closeMobileMenu}>Glossary</a>
                   <a href="/faqs" on:click={closeMobileMenu}>FAQs</a>
