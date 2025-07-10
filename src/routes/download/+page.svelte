@@ -119,33 +119,6 @@
           <p class="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
             The Convergent Economy: How AI and Blockchain are creating the largest economic transformation in history
           </p>
-          
-          <!-- Format Toggle -->
-          <div class="format-toggle mt-8 mb-4">
-            <div class="flex justify-center">
-              <div class="bg-slate-800/50 backdrop-blur-xl border border-slate-600/50 rounded-2xl p-2 inline-flex">
-                <button 
-                  class="format-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2"
-                  class:active={formatChoice === 'business'}
-                  on:click={() => formatChoice = 'business'}
-                >
-                  <span class="text-2xl">📊</span>
-                  <span>Business Report</span>
-                </button>
-                <button 
-                  class="format-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2"
-                  class:active={formatChoice === 'academic'}
-                  on:click={() => formatChoice = 'academic'}
-                >
-                  <span class="text-2xl">🎓</span>
-                  <span>Academic Paper</span>
-                </button>
-              </div>
-            </div>
-            <p class="text-center text-slate-400 text-sm mt-3">
-              {formatChoice === 'business' ? 'Executive summary with market insights and projections' : 'Scholarly research ready for academic publication'}
-            </p>
-          </div>
         </div>
         
         <!-- PDF Preview Card -->
@@ -244,6 +217,34 @@
         
         <!-- Download Form - SIMPLIFIED -->
         <div class="download-form-section">
+          
+          <!-- Format Toggle -->
+          <div class="format-toggle mb-6">
+            <div class="flex justify-center">
+              <div class="bg-slate-800/50 backdrop-blur-xl border border-slate-600/50 rounded-2xl p-2 inline-flex">
+                <button 
+                  class="format-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2"
+                  class:active={formatChoice === 'business'}
+                  on:click={() => formatChoice = 'business'}
+                >
+                  <span class="text-2xl">📊</span>
+                  <span>Business Report</span>
+                </button>
+                <button 
+                  class="format-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2"
+                  class:active={formatChoice === 'academic'}
+                  on:click={() => formatChoice = 'academic'}
+                >
+                  <span class="text-2xl">🎓</span>
+                  <span>Academic Paper</span>
+                </button>
+              </div>
+            </div>
+            <p class="text-center text-slate-400 text-sm mt-3">
+              {formatChoice === 'business' ? 'Executive summary with market insights and projections' : 'Scholarly research ready for academic publication'}
+            </p>
+          </div>
+          
           <form on:submit={handleDownload} class="download-form max-w-md mx-auto" method="POST" data-netlify="true" name="convergent-economy-download">
             <input type="hidden" name="form-name" value="convergent-economy-download">
             
