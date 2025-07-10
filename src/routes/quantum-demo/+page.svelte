@@ -136,6 +136,14 @@
         </div>
         
         <div class="demo-info-content">
+          <!-- Top Psychological Hook -->
+          <div class="demo-info-intro">
+            <p class="demo-info-question">
+              <span class="accent-green">></span> Does this demo represent the future of financial interfaces?
+              <span class="accent-green">&lt;</span>
+            </p>
+          </div>
+          
           <div class="demo-info-section">
             <h3 class="section-title">// PIONEERING ARCHITECTURE</h3>
             <ul class="feature-list">
@@ -187,8 +195,11 @@
           </div>
           
           <div class="demo-info-footer">
-            <p class="demo-info-tagline">
-              <span class="accent-green">></span> This demo represents the future of financial interfaces
+            <p class="demo-info-celebration">
+              <span class="accent-green">></span> Congrats! You made it here 🎉
+            </p>
+            <p class="demo-info-revelation">
+              <span class="accent-green">></span> Now you know about the future of AI fintech interfaces!
               <span class="accent-green">&lt;</span>
             </p>
           </div>
@@ -715,7 +726,31 @@
     border-top: 1px solid rgba(34, 197, 94, 0.2);
   }
   
-  .demo-info-tagline {
+  .demo-info-intro {
+    text-align: center;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+    margin-bottom: 2rem;
+  }
+  
+  .demo-info-question {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.1rem;
+    color: #22c55e;
+    margin: 0;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  }
+  
+  .demo-info-celebration {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.1rem;
+    color: #fbbf24;
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+  }
+  
+  .demo-info-revelation {
     font-family: 'Roboto Mono', monospace;
     font-size: 1rem;
     color: #e2e8f0;
