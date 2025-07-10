@@ -2,7 +2,28 @@
   publish = "dist"
   command = "npm run build"
 
+# Static file serving rules (PDFs, images, etc.)
+[[headers]]
+  for = "*.pdf"
+  [headers.values]
+    Content-Type = "application/pdf"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Content-Type = "image/jpeg"
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Content-Type = "image/png"
+    Cache-Control = "public, max-age=31536000"
+
+# SPA routing - ONLY for HTML routes, NOT file extensions
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false  # Don't override files that actually exist
