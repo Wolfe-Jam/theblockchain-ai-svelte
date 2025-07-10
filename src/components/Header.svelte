@@ -220,7 +220,7 @@
     <nav class="nav">
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div class="nav-brand" on:click={openAbout}>
+        <div class="nav-brand" on:click={openAbout} title="About this Version">
             <img src="https://raw.githubusercontent.com/Wolfe-Jam/theblockchain-ai/main/Public/theBlockchain-ai-crop-sml.svg" alt="Logo" class="logo">
             <span class="brand-text">theBlockchain.ai</span>
         </div>
@@ -296,7 +296,7 @@
             </div>
             
             <a href="/quantum-demo" class="quantum-demo-link" title="🔮 Quantum Timeline Demo">🧠</a>
-            <button type="button" class="ask-ai-link" on:click={openAskAI}>Ask AI 🤖</button>
+            <button type="button" class="ask-ai-link" on:click={openAskAI} title="Joke of the DAY">Ask AI 🤖</button>
         </div>
         
         <!-- Mobile Menu Button -->
@@ -351,7 +351,7 @@
                   <a href="/invest/dashboard" on:click={closeMobileMenu}>Dashboard</a>
                 </div>
                 
-                <button type="button" class="ask-ai-mobile" on:click={openAskAI}>Ask AI 🤖</button>
+                <button type="button" class="ask-ai-mobile" on:click={openAskAI} title="Joke of the DAY">Ask AI 🤖</button>
             </div>
         </div>
     {/if}
@@ -429,7 +429,7 @@
     color: #cbd5e1;
     text-decoration: none;
     margin-left: 2rem;
-    transition: all 0.3s ease;
+    transition: all 0.15s ease; /* Faster transition for quicker tooltip */
     padding: 0.5rem;
     border-radius: 0.5rem;
     position: relative;
