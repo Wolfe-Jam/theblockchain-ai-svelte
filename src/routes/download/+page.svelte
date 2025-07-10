@@ -6,6 +6,29 @@
   let isSubmitting = false;
   let showThankYou = false;
   let downloadCount = 4847; // Could be dynamic from API
+  let formatChoice = 'business'; // 'business' or 'academic'
+  
+  // Reactive format details
+  $: formatDetails = {
+    business: {
+      title: 'Professional Market Analysis Report',
+      description: '26 pages of comprehensive analysis covering AI automation, blockchain integration, and the $5+ trillion convergent economy opportunity.',
+      pages: '26',
+      focus: 'Market Analysis',
+      audience: 'Business Leaders',
+      filename: 'convergent-economy-report.pdf',
+      downloadName: 'Convergent-Economy-Business-Report-theBlockchain-ai.pdf'
+    },
+    academic: {
+      title: 'Scholarly Research Paper',
+      description: '4 pages of academic-quality research analyzing the convergent economy with proper citations and methodology.',
+      pages: '4',
+      focus: 'Academic Research', 
+      audience: 'Researchers',
+      filename: 'convergent-economy-academic.pdf',
+      downloadName: 'Convergent-Economy-Academic-Paper-theBlockchain-ai.pdf'
+    }
+  };
   
   async function handleDownload(event) {
     event.preventDefault();
@@ -20,6 +43,7 @@
     const formData = new FormData();
     formData.append('form-name', 'convergent-economy-download');
     formData.append('email', email);
+    formData.append('format', formatChoice);
     formData.append('source', 'dedicated-download-page');
     formData.append('timestamp', new Date().toISOString());
     
@@ -51,8 +75,8 @@
   
   function triggerPDFDownload() {
     const link = document.createElement('a');
-    link.href = '/convergent-economy-report.pdf';
-    link.download = 'The-Convergent-Economy-Report-theBlockchain-ai.pdf';
+    link.href = `/${formatDetails[formatChoice].filename}`;
+    link.download = formatDetails[formatChoice].downloadName;
     link.click();
   }
   
@@ -95,6 +119,33 @@
           <p class="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
             The Convergent Economy: How AI and Blockchain are creating the largest economic transformation in history
           </p>
+          
+          <!-- Format Toggle -->
+          <div class="format-toggle mt-8 mb-4">
+            <div class="flex justify-center">
+              <div class="bg-slate-800/50 backdrop-blur-xl border border-slate-600/50 rounded-2xl p-2 inline-flex">
+                <button 
+                  class="format-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2"
+                  class:active={formatChoice === 'business'}
+                  on:click={() => formatChoice = 'business'}
+                >
+                  <span class="text-2xl">📊</span>
+                  <span>Business Report</span>
+                </button>
+                <button 
+                  class="format-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2"
+                  class:active={formatChoice === 'academic'}
+                  on:click={() => formatChoice = 'academic'}
+                >
+                  <span class="text-2xl">🎓</span>
+                  <span>Academic Paper</span>
+                </button>
+              </div>
+            </div>
+            <p class="text-center text-slate-400 text-sm mt-3">
+              {formatChoice === 'business' ? 'Executive summary with market insights and projections' : 'Scholarly research ready for academic publication'}
+            </p>
+          </div>
         </div>
         
         <!-- PDF Preview Card -->
@@ -118,54 +169,74 @@
             <!-- Content & Stats -->
             <div class="flex-1 text-center lg:text-left">
               <h2 class="text-2xl font-bold text-white mb-4">
-                Professional Market Analysis Report
+                {formatDetails[formatChoice].title}
               </h2>
               <p class="text-slate-300 mb-6 leading-relaxed">
-                26 pages of comprehensive analysis covering AI automation, blockchain integration, 
-                and the $5+ trillion convergent economy opportunity.
+                {formatDetails[formatChoice].description}
               </p>
               
               <!-- Stats Grid -->
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="stat-item text-center">
-                  <div class="text-2xl font-bold text-cyan-400">26</div>
+                  <div class="text-2xl font-bold text-cyan-400">{formatDetails[formatChoice].pages}</div>
                   <div class="text-sm text-slate-400">Pages</div>
                 </div>
                 <div class="stat-item text-center">
-                  <div class="text-2xl font-bold text-cyan-400">$5T+</div>
-                  <div class="text-sm text-slate-400">Market Size</div>
+                  <div class="text-2xl font-bold text-cyan-400">{formatDetails[formatChoice].focus}</div>
+                  <div class="text-sm text-slate-400">Focus</div>
                 </div>
                 <div class="stat-item text-center">
                   <div class="text-2xl font-bold text-cyan-400">{downloadCount.toLocaleString()}</div>
                   <div class="text-sm text-slate-400">Downloads</div>
                 </div>
                 <div class="stat-item text-center">
-                  <div class="text-2xl font-bold text-cyan-400">PDF</div>
-                  <div class="text-sm text-slate-400">Format</div>
+                  <div class="text-2xl font-bold text-cyan-400">{formatDetails[formatChoice].audience}</div>
+                  <div class="text-sm text-slate-400">Audience</div>
                 </div>
               </div>
               
               <!-- What's Inside -->
               <div class="whats-inside mb-6">
                 <h3 class="text-lg font-semibold text-white mb-3">What's Inside:</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-300">
-                  <div class="flex items-center gap-2">
-                    <span class="text-cyan-400">✓</span>
-                    <span>AI Market Projections</span>
+                {#if formatChoice === 'business'}
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-300">
+                    <div class="flex items-center gap-2">
+                      <span class="text-cyan-400">✓</span>
+                      <span>AI Market Projections</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-cyan-400">✓</span>
+                      <span>Blockchain Integration Trends</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-cyan-400">✓</span>
+                      <span>Investment Opportunities</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-cyan-400">✓</span>
+                      <span>Strategic Recommendations</span>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-cyan-400">✓</span>
-                    <span>Blockchain Integration Trends</span>
+                {:else}
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-300">
+                    <div class="flex items-center gap-2">
+                      <span class="text-cyan-400">✓</span>
+                      <span>Academic Abstract</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-cyan-400">✓</span>
+                      <span>Research Methodology</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-cyan-400">✓</span>
+                      <span>Literature Citations</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-cyan-400">✓</span>
+                      <span>arXiv Ready Format</span>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-cyan-400">✓</span>
-                    <span>Investment Opportunities</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-cyan-400">✓</span>
-                    <span>Strategic Recommendations</span>
-                  </div>
-                </div>
+                {/if}
               </div>
             </div>
           </div>
@@ -332,6 +403,20 @@
   
   .success-animation {
     animation: bounceIn 0.6s ease-out;
+  }
+  
+  /* Format Toggle Styles */
+  .format-btn {
+    @apply text-slate-400 bg-transparent;
+  }
+  
+  .format-btn.active {
+    @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg;
+    transform: translateY(-1px);
+  }
+  
+  .format-btn:hover:not(.active) {
+    @apply text-slate-200 bg-slate-700/50;
   }
   
   @keyframes bounceIn {
