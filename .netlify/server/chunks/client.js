@@ -1,0 +1,1 @@
+import"@sveltejs/kit/internal";import"./exports.js";import{o as t}from"./ssr2.js";function o(s,n=JSON.parse){try{return n(sessionStorage[s])}catch{}}const r="sveltekit:snapshot",e="sveltekit:scroll",i=t.toString().includes("$$")||/function \w+\(\) \{\}/.test(t.toString());i&&new URL("https://example.com");o(e);o(r);

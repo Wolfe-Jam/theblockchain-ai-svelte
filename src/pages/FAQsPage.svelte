@@ -370,8 +370,7 @@
             bind:value={aiQuestion}
             rows="3" 
             class="w-full p-3 bg-slate-700 border border-slate-600 rounded-md text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500" 
-            placeholder="Type your question about the FAQs or anything else...">
-          </textarea>
+            placeholder="Type your question about the FAQs or anything else..."></textarea>
           <button class="mt-3 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors" 
                   on:click={submitAiQuestion}>
             Submit Question

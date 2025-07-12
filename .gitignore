@@ -2,6 +2,10 @@
 node_modules/
 .pnpm-store/
 
+# Keep lock files for faster builds
+!package-lock.json
+!netlify/functions/package-lock.json
+
 # Build dependencies changes (auto-generated)
 node_modules/.package-lock.json
 node_modules/.vite/

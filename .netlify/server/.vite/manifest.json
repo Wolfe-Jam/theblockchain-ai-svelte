@@ -1,0 +1,539 @@
+{
+  ".svelte-kit/generated/server/internal.js": {
+    "file": "internal.js",
+    "name": "internal",
+    "src": ".svelte-kit/generated/server/internal.js",
+    "isEntry": true,
+    "imports": [
+      "_internal.js"
+    ]
+  },
+  "_AskAIModal.js": {
+    "file": "chunks/AskAIModal.js",
+    "name": "AskAIModal",
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/AskAIModal.CqCmoJ8P.css"
+    ]
+  },
+  "_Header.js": {
+    "file": "chunks/Header.js",
+    "name": "Header",
+    "imports": [
+      "_ssr.js",
+      "_stores.js"
+    ],
+    "css": [
+      "_app/immutable/assets/Header.CSi2OFX1.css"
+    ]
+  },
+  "_InvestorModal.js": {
+    "file": "chunks/InvestorModal.js",
+    "name": "InvestorModal",
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/InvestorModal.DLNJgZqB.css"
+    ]
+  },
+  "_NOBSPay.svelte_svelte_type_style_lang.js": {
+    "file": "chunks/NOBSPay.svelte_svelte_type_style_lang.js",
+    "name": "NOBSPay.svelte_svelte_type_style_lang",
+    "imports": [
+      "_index.js"
+    ],
+    "css": [
+      "_app/immutable/assets/NOBSPay.Dy9yW3JK.css"
+    ]
+  },
+  "_SerenityBoat.js": {
+    "file": "chunks/SerenityBoat.js",
+    "name": "SerenityBoat",
+    "imports": [
+      "_ssr.js",
+      "_tweened.js",
+      "_spring.js",
+      "_index.js"
+    ],
+    "css": [
+      "_app/immutable/assets/SerenityBoat.CbksbSD0.css"
+    ]
+  },
+  "_client.js": {
+    "file": "chunks/client.js",
+    "name": "client",
+    "imports": [
+      "_exports.js",
+      "_ssr2.js"
+    ]
+  },
+  "_cors.js": {
+    "file": "chunks/cors.js",
+    "name": "cors"
+  },
+  "_exports.js": {
+    "file": "chunks/exports.js",
+    "name": "exports"
+  },
+  "_index.js": {
+    "file": "chunks/index.js",
+    "name": "index",
+    "imports": [
+      "_ssr.js"
+    ]
+  },
+  "_internal.js": {
+    "file": "chunks/internal.js",
+    "name": "internal",
+    "imports": [
+      "_ssr.js",
+      "_ssr2.js"
+    ]
+  },
+  "_spring.js": {
+    "file": "chunks/spring.js",
+    "name": "spring",
+    "imports": [
+      "_index.js",
+      "_utils.js"
+    ]
+  },
+  "_ssr.js": {
+    "file": "chunks/ssr.js",
+    "name": "ssr"
+  },
+  "_ssr2.js": {
+    "file": "chunks/ssr2.js",
+    "name": "ssr"
+  },
+  "_stores.js": {
+    "file": "chunks/stores.js",
+    "name": "stores",
+    "imports": [
+      "_ssr.js",
+      "_client.js"
+    ]
+  },
+  "_supabase.js": {
+    "file": "chunks/supabase.js",
+    "name": "supabase"
+  },
+  "_tweened.js": {
+    "file": "chunks/tweened.js",
+    "name": "tweened",
+    "imports": [
+      "_index.js",
+      "_ssr.js",
+      "_utils.js"
+    ]
+  },
+  "_utils.js": {
+    "file": "chunks/utils.js",
+    "name": "utils",
+    "imports": [
+      "_ssr.js"
+    ]
+  },
+  "node_modules/@sveltejs/kit/src/runtime/components/svelte-4/error.svelte": {
+    "file": "entries/fallbacks/error.svelte.js",
+    "name": "entries/fallbacks/error.svelte",
+    "src": "node_modules/@sveltejs/kit/src/runtime/components/svelte-4/error.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_stores.js"
+    ]
+  },
+  "node_modules/@sveltejs/kit/src/runtime/server/index.js": {
+    "file": "index.js",
+    "name": "index",
+    "src": "node_modules/@sveltejs/kit/src/runtime/server/index.js",
+    "isEntry": true,
+    "imports": [
+      "_internal.js",
+      "_exports.js",
+      "_index.js"
+    ]
+  },
+  "src/routes/+layout.js": {
+    "file": "entries/pages/_layout.js",
+    "name": "entries/pages/_layout",
+    "src": "src/routes/+layout.js",
+    "isEntry": true
+  },
+  "src/routes/+layout.svelte": {
+    "file": "entries/pages/_layout.svelte.js",
+    "name": "entries/pages/_layout.svelte",
+    "src": "src/routes/+layout.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_Header.js",
+      "_SerenityBoat.js",
+      "_AskAIModal.js",
+      "_index.js",
+      "_stores.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_layout.DmdcNhjr.css"
+    ]
+  },
+  "src/routes/+page.svelte": {
+    "file": "entries/pages/_page.svelte.js",
+    "name": "entries/pages/_page.svelte",
+    "src": "src/routes/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_tweened.js",
+      "_spring.js",
+      "_AskAIModal.js",
+      "_SerenityBoat.js",
+      "_stores.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.Bx3emZ2G.css"
+    ]
+  },
+  "src/routes/api/admin/security-dashboard/+server.ts": {
+    "file": "entries/endpoints/api/admin/security-dashboard/_server.ts.js",
+    "name": "entries/endpoints/api/admin/security-dashboard/_server.ts",
+    "src": "src/routes/api/admin/security-dashboard/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_cors.js"
+    ]
+  },
+  "src/routes/api/market-data/+server.js": {
+    "file": "entries/endpoints/api/market-data/_server.js",
+    "name": "entries/endpoints/api/market-data/_server",
+    "src": "src/routes/api/market-data/+server.js",
+    "isEntry": true
+  },
+  "src/routes/api/search/+server.ts": {
+    "file": "entries/endpoints/api/search/_server.ts.js",
+    "name": "entries/endpoints/api/search/_server.ts",
+    "src": "src/routes/api/search/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_cors.js"
+    ]
+  },
+  "src/routes/briefings/+page.svelte": {
+    "file": "entries/pages/briefings/_page.svelte.js",
+    "name": "entries/pages/briefings/_page.svelte",
+    "src": "src/routes/briefings/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CZ6ttc5a.css"
+    ]
+  },
+  "src/routes/deep-dive/the-convergent-economy/+page.svelte": {
+    "file": "entries/pages/deep-dive/the-convergent-economy/_page.svelte.js",
+    "name": "entries/pages/deep-dive/the-convergent-economy/_page.svelte",
+    "src": "src/routes/deep-dive/the-convergent-economy/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_tweened.js",
+      "_spring.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.BKoFUMQx.css"
+    ]
+  },
+  "src/routes/demo/+page.svelte": {
+    "file": "entries/pages/demo/_page.svelte.js",
+    "name": "entries/pages/demo/_page.svelte",
+    "src": "src/routes/demo/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ]
+  },
+  "src/routes/demo/[slug]/+page.svelte": {
+    "file": "entries/pages/demo/_slug_/_page.svelte.js",
+    "name": "entries/pages/demo/_slug_/_page.svelte",
+    "src": "src/routes/demo/[slug]/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_stores.js"
+    ]
+  },
+  "src/routes/download/+page.svelte": {
+    "file": "entries/pages/download/_page.svelte.js",
+    "name": "entries/pages/download/_page.svelte",
+    "src": "src/routes/download/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.BxKHVKXa.css"
+    ]
+  },
+  "src/routes/faqs/+page.svelte": {
+    "file": "entries/pages/faqs/_page.svelte.js",
+    "name": "entries/pages/faqs/_page.svelte",
+    "src": "src/routes/faqs/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.2_CxWeyH.css"
+    ]
+  },
+  "src/routes/founders-proof/+page.svelte": {
+    "file": "entries/pages/founders-proof/_page.svelte.js",
+    "name": "entries/pages/founders-proof/_page.svelte",
+    "src": "src/routes/founders-proof/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.C_QaIeiX.css"
+    ]
+  },
+  "src/routes/glossary/+page.svelte": {
+    "file": "entries/pages/glossary/_page.svelte.js",
+    "name": "entries/pages/glossary/_page.svelte",
+    "src": "src/routes/glossary/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_spring.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.BoI5gS6h.css"
+    ]
+  },
+  "src/routes/help/+page.svelte": {
+    "file": "entries/pages/help/_page.svelte.js",
+    "name": "entries/pages/help/_page.svelte",
+    "src": "src/routes/help/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.JgSAxVgp.css"
+    ]
+  },
+  "src/routes/interactive-guides/+page.svelte": {
+    "file": "entries/pages/interactive-guides/_page.svelte.js",
+    "name": "entries/pages/interactive-guides/_page.svelte",
+    "src": "src/routes/interactive-guides/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CZ6ttc5a.css"
+    ]
+  },
+  "src/routes/interactive/market-analysis/+page.svelte": {
+    "file": "entries/pages/interactive/market-analysis/_page.svelte.js",
+    "name": "entries/pages/interactive/market-analysis/_page.svelte",
+    "src": "src/routes/interactive/market-analysis/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_tweened.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.bbnIkuSv.css"
+    ]
+  },
+  "src/routes/invest/+layout.svelte": {
+    "file": "entries/pages/invest/_layout.svelte.js",
+    "name": "entries/pages/invest/_layout.svelte",
+    "src": "src/routes/invest/+layout.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_stores.js",
+      "_Header.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_layout.B5XUNnt8.css"
+    ]
+  },
+  "src/routes/invest/+page.svelte": {
+    "file": "entries/pages/invest/_page.svelte.js",
+    "name": "entries/pages/invest/_page.svelte",
+    "src": "src/routes/invest/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CPygUlOP.css"
+    ]
+  },
+  "src/routes/invest/dashboard/+page.js": {
+    "file": "entries/pages/invest/dashboard/_page.js",
+    "name": "entries/pages/invest/dashboard/_page",
+    "src": "src/routes/invest/dashboard/+page.js",
+    "isEntry": true
+  },
+  "src/routes/invest/dashboard/+page.svelte": {
+    "file": "entries/pages/invest/dashboard/_page.svelte.js",
+    "name": "entries/pages/invest/dashboard/_page.svelte",
+    "src": "src/routes/invest/dashboard/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_tweened.js",
+      "_client.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CSNWQaPH.css"
+    ]
+  },
+  "src/routes/invest/opportunities/+page.svelte": {
+    "file": "entries/pages/invest/opportunities/_page.svelte.js",
+    "name": "entries/pages/invest/opportunities/_page.svelte",
+    "src": "src/routes/invest/opportunities/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_InvestorModal.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.C4oIw1qK.css"
+    ]
+  },
+  "src/routes/marketplace/+page.svelte": {
+    "file": "entries/pages/marketplace/_page.svelte.js",
+    "name": "entries/pages/marketplace/_page.svelte",
+    "src": "src/routes/marketplace/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_client.js",
+      "_supabase.js",
+      "_NOBSPay.svelte_svelte_type_style_lang.js",
+      "_index.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.BnfSwv5a.css"
+    ]
+  },
+  "src/routes/marketplace/+page.ts": {
+    "file": "entries/pages/marketplace/_page.ts.js",
+    "name": "entries/pages/marketplace/_page.ts",
+    "src": "src/routes/marketplace/+page.ts",
+    "isEntry": true
+  },
+  "src/routes/marketplace/demo/nobs-pay/+page.svelte": {
+    "file": "entries/pages/marketplace/demo/nobs-pay/_page.svelte.js",
+    "name": "entries/pages/marketplace/demo/nobs-pay/_page.svelte",
+    "src": "src/routes/marketplace/demo/nobs-pay/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_NOBSPay.svelte_svelte_type_style_lang.js"
+    ]
+  },
+  "src/routes/marketplace/products/[slug]/+page.svelte": {
+    "file": "entries/pages/marketplace/products/_slug_/_page.svelte.js",
+    "name": "entries/pages/marketplace/products/_slug_/_page.svelte",
+    "src": "src/routes/marketplace/products/[slug]/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_stores.js",
+      "_supabase.js",
+      "_NOBSPay.svelte_svelte_type_style_lang.js"
+    ]
+  },
+  "src/routes/purchase-success/+page.svelte": {
+    "file": "entries/pages/purchase-success/_page.svelte.js",
+    "name": "entries/pages/purchase-success/_page.svelte",
+    "src": "src/routes/purchase-success/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_stores.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CrTqzrYL.css"
+    ]
+  },
+  "src/routes/purchase-success/+page.ts": {
+    "file": "entries/pages/purchase-success/_page.ts.js",
+    "name": "entries/pages/purchase-success/_page.ts",
+    "src": "src/routes/purchase-success/+page.ts",
+    "isEntry": true
+  },
+  "src/routes/quantum-demo/+page.svelte": {
+    "file": "entries/pages/quantum-demo/_page.svelte.js",
+    "name": "entries/pages/quantum-demo/_page.svelte",
+    "src": "src/routes/quantum-demo/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_index.js",
+      "_spring.js",
+      "_AskAIModal.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.C_B37hP0.css"
+    ]
+  },
+  "src/routes/report/+page.svelte": {
+    "file": "entries/pages/report/_page.svelte.js",
+    "name": "entries/pages/report/_page.svelte",
+    "src": "src/routes/report/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_spring.js",
+      "_tweened.js",
+      "_index.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CCyFQZlP.css"
+    ]
+  },
+  "src/routes/tools/+page.js": {
+    "file": "entries/pages/tools/_page.js",
+    "name": "entries/pages/tools/_page",
+    "src": "src/routes/tools/+page.js",
+    "isEntry": true
+  },
+  "src/routes/tools/+page.svelte": {
+    "file": "entries/pages/tools/_page.svelte.js",
+    "name": "entries/pages/tools/_page.svelte",
+    "src": "src/routes/tools/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.Q4UCSHPa.css"
+    ]
+  },
+  "src/routes/vision/+page.svelte": {
+    "file": "entries/pages/vision/_page.svelte.js",
+    "name": "entries/pages/vision/_page.svelte",
+    "src": "src/routes/vision/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_ssr.js",
+      "_InvestorModal.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CU1_ZjNe.css"
+    ]
+  }
+}

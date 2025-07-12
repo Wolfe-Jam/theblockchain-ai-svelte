@@ -152,7 +152,7 @@ export class RateLimiter {
           process.env.UPSTASH_REDIS_REST_URL && 
           process.env.UPSTASH_REDIS_REST_TOKEN) {
         
-        // Dynamic import to avoid bundling Redis in client
+        // Dynamic import to avoid bundling Redis in client - with error handling
         import('@upstash/redis').then(({ Redis }) => {
           this.redisClient = new Redis({
             url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -160,10 +160,12 @@ export class RateLimiter {
           });
         }).catch((error) => {
           console.warn('Redis initialization failed, falling back to memory store:', error);
+          this.redisClient = null;
         });
       }
     } catch (error) {
       console.warn('Redis not available, using memory store:', error);
+      this.redisClient = null;
     }
   }
   

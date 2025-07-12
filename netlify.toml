@@ -1,39 +1,13 @@
 [build]
-  command = "npm ci && npm run build"
-  publish = "dist"
+  # Install dependencies for both main app and functions
+  command = "npm install && cd netlify/functions && npm install && cd ../.. && npm run build"
+  publish = "build"
+  # Tell Netlify where functions are located
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18"
-  # Remove npm version constraint - use default for Node 18
-  # Force install devDependencies
-  NODE_ENV = "development"
-
-# =====================================================
-# API ROUTES & REDIRECTS
-# =====================================================
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/search"
-  to = "/marketplace/search"
-  status = 301
-
-# Production domain redirects
-[[redirects]]
-  from = "https://bai.vercel.app/*"
-  to = "https://theblockchain.ai/:splat"
-  status = 301
-  force = true
-
-# Catch-all SPA redirect
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  NPM_VERSION = "9"
 
 # =====================================================
 # 🔒 SECURITY HEADERS
@@ -116,20 +90,27 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 # =====================================================
-# 🔒 RATE LIMITING (EDGE FUNCTIONS)
+# 🔄 REDIRECTS
 # =====================================================
 
-[[edge_functions]]
-  function = "rate-limiter"
-  path = "/api/*"
+# API redirects to Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# SPA fallback - must be last
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 # =====================================================
 # ENVIRONMENT CONTEXT
 # =====================================================
 
 [context.production.environment]
-  # NODE_ENV removed - devDependencies needed for build process
-  # Runtime environment will be set by app code
+  # Production environment
 
 [context.deploy-preview.environment]
   NODE_ENV = "development"

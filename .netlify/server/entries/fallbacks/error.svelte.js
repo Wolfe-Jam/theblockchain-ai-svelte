@@ -1,0 +1,1 @@
+import{c as p,b as t,e as r}from"../../chunks/ssr.js";import{p as o}from"../../chunks/stores.js";const m=p(($,c,n,u)=>{let s,e;return e=t(o,a=>s=a),e(),`<h1>${r(s.status)}</h1> <p>${r(s.error?.message)}</p>`});export{m as default};
