@@ -1,12 +1,12 @@
 [build]
-  command = "npm run build"
+  command = "npm ci && npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_VERSION = "9"
-  # Install devDependencies (needed for vite build tool)
-  NPM_FLAGS = "--include=dev"
+  # Remove npm version constraint - use default for Node 18
+  # Force install devDependencies
+  NODE_ENV = "development"
 
 # =====================================================
 # API ROUTES & REDIRECTS
@@ -128,7 +128,8 @@
 # =====================================================
 
 [context.production.environment]
-  NODE_ENV = "production"
+  # NODE_ENV removed - devDependencies needed for build process
+  # Runtime environment will be set by app code
 
 [context.deploy-preview.environment]
   NODE_ENV = "development"
