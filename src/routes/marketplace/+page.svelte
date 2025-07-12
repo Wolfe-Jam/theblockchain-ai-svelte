@@ -10,7 +10,6 @@
   import { searchStore, searchResults } from '$lib/search/store';
   import { createSearchManager } from '$lib/search/manager';
   import type { SearchQuery } from '$lib/search/types';
-  import { goto } from '$app/navigation';
   
   let components: Component[] = [];
   let loading = true;
