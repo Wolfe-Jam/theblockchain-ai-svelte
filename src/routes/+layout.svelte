@@ -6,7 +6,15 @@
   import AboutModal from '../components/AboutModal.svelte';
   import AskAIModal from '../components/AskAIModal.svelte';
   import SerenityBoat from '../components/SerenityBoat.svelte';
+  import FloatingThemeToggle from '$lib/marketplace/components/FloatingThemeToggle.svelte';
   import { page } from '$app/stores';
+  import { onMount } from 'svelte';
+  import { theme } from '$lib/marketplace/stores/theme';
+  
+  // Initialize theme on mount
+  onMount(() => {
+    theme.init();
+  });
   
   // Modal state management
   let showAskAI = false;
@@ -22,6 +30,11 @@
   
   // Get current path for conditional SerenityBoat display
   $: currentPath = $page.url.pathname;
+  
+  // Initialize theme on mount
+  onMount(() => {
+    theme.init();
+  });
 </script>
 
 <!-- SvelteKit Layout with Header and Modals -->
@@ -42,6 +55,11 @@
   <!-- Serenity Boat Animation - Hide on Deep Dive page (user already at destination) -->
   {#if currentPath !== '/deep-dive/the-convergent-economy'}
     <SerenityBoat />
+  {/if}
+  
+  <!-- Floating Theme Toggle - Only on Marketplace pages -->
+  {#if currentPath.startsWith('/marketplace')}
+    <FloatingThemeToggle />
   {/if}
 </div>
 

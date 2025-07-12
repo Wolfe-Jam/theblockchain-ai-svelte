@@ -1,11 +1,11 @@
 // netlify/functions/ask-ai.js
 
 // Import necessary modules
-const { GoogleGenerativeAI } = require('@google/generative-ai'); // For interacting with Gemini API
-const fetch = require('node-fetch'); // For making HTTP requests to GitHub (Node.js doesn't have native fetch before Node 18)
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const fs = require('fs').promises;
+const path = require('path');
 
 // Initialize the Google Generative AI client
-// The API key is securely retrieved from Netlify Environment Variables
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY2); 
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -30,107 +30,87 @@ exports.handler = async (event) => {
             };
         }
 
-        // --- Fetch Knowledge Base Content from Private GitHub Repository ---
-        // Retrieve GitHub details from Netlify Environment Variables
-        const githubPat = process.env.GITHUB_PAT;
-        const repoOwner = process.env.GITHUB_REPO_OWNER;
-        const repoName = process.env.GITHUB_REPO_NAME;
-        const knowledgeBasePath = 'docs/knowledge-base'; // Path to your knowledge base within the repo
-
-        if (!githubPat || !repoOwner || !repoName) {
-            console.error("Missing GitHub environment variables");
-            return {
-                statusCode: 500,
-                body: JSON.stringify({ message: 'Server configuration error: GitHub access details missing.' }),
-            };
-        }
-
+        // --- Read Knowledge Base Content from Local Files ---
+        const knowledgeBasePath = path.join(__dirname, '../../docs/knowledge-base');
         let combinedContext = "";
         let fetchedFiles = [];
 
-        // Function to recursively fetch directory content
-        async function fetchGithubDirContent(path) {
-            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
-            const headers = {
-                'Authorization': `token ${githubPat}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': 'Netlify-Function-theBlockchainAI' // GitHub requires a User-Agent
-            };
-
-            const response = await fetch(url, { headers });
-            if (!response.ok) {
-                console.error(`Failed to fetch GitHub content from ${url}: ${response.status} ${response.statusText}`);
-                throw new Error(`GitHub API error: ${response.statusText}`);
-            }
-            const data = await response.json();
-
-            // Iterate over items in the directory
-            for (const item of data) {
-                if (item.type === 'file' && item.name.endsWith('.md')) {
-                    // If it's a Markdown file, fetch its raw content
-                    const fileContentResponse = await fetch(item.download_url, { headers: { 'Authorization': `token ${githubPat}` } });
-                    if (!fileContentResponse.ok) {
-                         console.error(`Failed to fetch raw file content from ${item.download_url}: ${fileContentResponse.status} ${fileContentResponse.statusText}`);
-                         throw new Error(`GitHub API raw file error: ${fileContentResponse.statusText}`);
-                    }
-                    const fileContent = await fileContentResponse.text();
-                    combinedContext += `\n\n--- Document: ${item.path} ---\n${fileContent}`;
-                    fetchedFiles.push(item.path);
-                } else if (item.type === 'dir') {
-                    // If it's a directory, recursively fetch its content
-                    await fetchGithubDirContent(item.path);
+        try {
+            // Read all markdown files from the knowledge base directory
+            const files = await fs.readdir(knowledgeBasePath);
+            
+            for (const file of files) {
+                if (file.endsWith('.md')) {
+                    const filePath = path.join(knowledgeBasePath, file);
+                    const fileContent = await fs.readFile(filePath, 'utf8');
+                    combinedContext += `\n\n--- Document: ${file} ---\n${fileContent}`;
+                    fetchedFiles.push(file);
                 }
             }
-        }
-
-        try {
-            await fetchGithubDirContent(knowledgeBasePath);
-            console.log(`Successfully fetched ${fetchedFiles.length} Markdown files.`);
-        } catch (githubError) {
-            console.error("Error fetching from GitHub:", githubError);
-            return {
-                statusCode: 500,
-                body: JSON.stringify({ message: `Failed to retrieve knowledge base: ${githubError.message}` }),
-            };
+            
+            console.log(`Successfully loaded ${fetchedFiles.length} knowledge base files.`);
+        } catch (error) {
+            console.error("Error reading knowledge base files:", error);
+            // Continue with empty context if files can't be read
+            combinedContext = "";
         }
         
         // --- Construct Prompt for Gemini AI ---
-        const documentTitle = "theBlockchain.ai Strategic Documents and Knowledge Base";
+        const documentTitle = "theBlockchain.ai Knowledge Base";
 
-        const prompt = `As an AI assistant for "theBlockchain.ai" (always use the full name "theBlockchain.ai", not "Blockchain.ai"), answer the following question based on the provided content from the "${documentTitle}". Focus on accuracy and direct answers derived strictly from the text provided. If the answer is not explicitly in the text, state clearly that you cannot answer based on the provided information. Do not invent information.
+        const prompt = `As an AI assistant for "theBlockchain.ai" (always use the full name "theBlockchain.ai", not "Blockchain.ai"), answer the following question based on the provided content from the "${documentTitle}". 
 
-Question: ${userQuestion}
+Key points to remember:
+- theBlockchain.ai is a revolutionary marketplace for digital assets, specifically code components and AI-powered solutions
+- The platform uses blockchain technology to enable true code ownership
+- bAI Credits are the platform's native currency
+- The "ABCs of bAI" explain the core concepts: Asset, Blockchain, The 3 C's (Company, Code, Customers), People (Devs, Designers, Decision-Makers), and e-Commerce
+- The OUTPUT Marketplace is where components are bought and sold
+- Features include advanced search (standard and AI-powered), code tokenization, and comprehensive developer tools
 
-Context:
+Focus on accuracy and direct answers. If the information isn't in the knowledge base, you can provide general helpful information about the platform based on the context provided.
+
+Context from Knowledge Base:
 ${combinedContext}
 
-Answer:`;
+User Question: ${userQuestion}
 
-        // --- Call Gemini AI ---
-        const chat = model.startChat({
-            history: [],
-            generationConfig: {
-                maxOutputTokens: 500,
-            },
-        });
+Provide a helpful, informative response:`;
 
-        const result = await chat.sendMessage(prompt);
-        const responseText = await result.response.text();
+        // --- Query Gemini AI ---
+        const generationResult = await model.generateContent(prompt);
+        const responseText = generationResult.response.text();
 
-        // --- Return AI Response ---
+        // --- Format the response ---
+        const formattedResponse = responseText
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>')
+            .replace(/\n\n/g, '</p><p>')
+            .replace(/^/, '<p>')
+            .replace(/$/, '</p>')
+            .replace(/\n- /g, '</p><ul><li>')
+            .replace(/\n\d+\. /g, '</p><ol><li>')
+            .replace(/<\/li>\n/g, '</li><li>')
+            .replace(/<li>(.*?)<\/p>/g, '<li>$1</li></ul><p>')
+            .replace(/<\/ul><p><ul>/g, '')
+            .replace(/<\/ol><p><ol>/g, '');
+
         return {
             statusCode: 200,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ answer: responseText }),
+            body: JSON.stringify({ 
+                answer: formattedResponse,
+                filesUsed: fetchedFiles 
+            }),
         };
-
     } catch (error) {
-        console.error("Error in Netlify function:", error);
+        console.error('Error in ask-ai function:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ message: `Internal server error: ${error.message}` }),
+            body: JSON.stringify({ 
+                message: 'An error occurred while processing your request.',
+                error: error.message 
+            }),
         };
     }
 };

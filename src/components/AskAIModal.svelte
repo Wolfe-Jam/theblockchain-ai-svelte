@@ -12,6 +12,23 @@
   let dailyJoke = '';
   let jokeRating = null;
   let submittedQuestion = ''; // Store the question that was submitted
+  let showExamples = true; // Show example questions
+  
+  // Example questions to help users
+  const exampleQuestions = [
+    "What is theBlockchain.ai?",
+    "How do bAI Credits work?",
+    "How can I earn money on the platform?",
+    "What are the ABCs of bAI?",
+    "How does code tokenization work?",
+    "What investment opportunities are available?",
+    "How do I get started as a seller?",
+    "What types of components can I sell?",
+    "How do I use the search features?",
+    "What is the convergent economy?",
+    "How do I purchase components?",
+    "What license types are available?"
+  ];
   
   // Joke database - mixed humor types
   const jokes = [
@@ -49,6 +66,12 @@
     userQuestion = '';
     modalContent = '';
     submittedQuestion = ''; // Clear the submitted question
+    showExamples = true; // Reset to show examples
+  }
+  
+  function useExampleQuestion(question) {
+    userQuestion = question;
+    submitQuestion();
   }
   
   function handleBackdropClick(event) {
@@ -67,6 +90,7 @@
     submittedQuestion = userQuestion.trim();
     modalContent = '';
     isLoading = true;
+    showExamples = false; // Hide examples when submitting
     
     const netlifyFunctionUrl = '/.netlify/functions/ask-ai';
     
@@ -116,12 +140,15 @@
       
       {#if !modalContent}
         <!-- Search Interface FIRST -->
-        <div class="search-container">
-          <!-- Close button (only show after joke is cleared) -->
+        <div class="modal-header">
           {#if jokeRating === 'hidden'}
             <button class="close-button" on:click={closeModal}>×</button>
           {/if}
-          
+          <h2 class="modal-title">🤖 Ask bAI Assistant</h2>
+          <p class="modal-subtitle">Get instant answers about theBlockchain.ai platform</p>
+        </div>
+        
+        <div class="search-container">
           <div class="search-box">
             <input 
               type="text"
@@ -154,6 +181,23 @@
           </div>
         </div>
         
+        <!-- Example Questions -->
+        {#if showExamples && !modalContent && jokeRating === 'hidden'}
+          <div class="example-questions">
+            <h4 class="examples-title">Popular Questions:</h4>
+            <div class="examples-grid">
+              {#each exampleQuestions as question}
+                <button 
+                  class="example-btn"
+                  on:click={() => useExampleQuestion(question)}
+                >
+                  {question}
+                </button>
+              {/each}
+            </div>
+          </div>
+        {/if}
+        
         <!-- Joke THEN Exit at bottom -->
         {#if jokeRating !== 'hidden'}
           <div class="joke-section">
@@ -182,9 +226,12 @@
       {/if}
       
       {#if isLoading}
-        <div class="loading-spinner">
-          <div class="spinner"></div>
-          <p>Thinking...</p>
+        <div class="loading-container">
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+          </div>
+          <p class="loading-text">🤔 Thinking about your question...</p>
+          <p class="loading-subtext">Searching through theBlockchain.ai knowledge base</p>
         </div>
       {/if}
       
@@ -233,18 +280,37 @@
     overflow-y: auto;
   }
 
+  /* Modal Header */
+  .modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  
+  .modal-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--brand-cyan);
+    margin-bottom: 0.5rem;
+  }
+  
+  .modal-subtitle {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+  
   /* Search Styles */
   .search-container {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     display: flex;
     justify-content: center;
     position: relative;
   }
-
+  
   .close-button {
     position: absolute;
-    top: -1rem;
-    right: -1rem;
+    top: -0.5rem;
+    right: -0.5rem;
     background: rgba(255, 255, 255, 0.1);
     border: none;
     color: #9ca3af;
@@ -325,6 +391,49 @@
     transform: scale(1.05);
   }
 
+  /* Example Questions */
+  .example-questions {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+  }
+  
+  .examples-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-cyan);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .example-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e5e7eb;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .example-btn:hover {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: var(--brand-cyan);
+    color: white;
+    transform: translateY(-2px);
+  }
+  
   /* Joke Styles */
   .joke-section {
     margin-bottom: 2rem;
@@ -416,11 +525,18 @@
   }
 
   /* Loading and Response Styles */
-  .loading-spinner {
+  .loading-container {
     text-align: center;
-    padding: 2rem;
+    padding: 3rem 1rem;
   }
-
+  
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
   .spinner {
     width: 40px;
     height: 40px;
@@ -429,6 +545,17 @@
     border-radius: 50%;
     margin: 0 auto 1rem auto;
     animation: spin 1s linear infinite;
+  }
+  
+  .loading-text {
+    font-size: 1.125rem;
+    color: var(--brand-cyan);
+    margin-bottom: 0.5rem;
+  }
+  
+  .loading-subtext {
+    font-size: 0.875rem;
+    color: #9ca3af;
   }
 
   @keyframes spin {

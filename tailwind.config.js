@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  // Enable dark mode via class strategy
+  darkMode: 'class',
   // Crucial: Tell Tailwind where your Svelte files are located
   content: ['./index.html', './src/**/*.{svelte,js,ts}'], 
   theme: {
