@@ -20,3 +20,7 @@
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Cross-Origin-Resource-Policy: same-site
+  Access-Control-Allow-Origin: https://theblockchain.ai
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type
+  Access-Control-Max-Age: 86400

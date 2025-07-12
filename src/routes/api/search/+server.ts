@@ -4,6 +4,28 @@ import { SearchEngine } from '$lib/search/engine';
 import { ClaudeSmarts } from '$lib/search/claude-smarts';
 import type { Component } from '$lib/marketplace/types';
 
+// 🔒 Simple in-memory rate limiting (replace with Redis in production)
+const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
+const RATE_LIMIT_WINDOW = 60000; // 1 minute
+const RATE_LIMIT_MAX = 10; // 10 requests per minute
+
+function isRequestAllowed(clientIP: string): boolean {
+  const now = Date.now();
+  const clientData = rateLimitMap.get(clientIP);
+  
+  if (!clientData || now - clientData.timestamp > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(clientIP, { count: 1, timestamp: now });
+    return true;
+  }
+  
+  if (clientData.count >= RATE_LIMIT_MAX) {
+    return false;
+  }
+  
+  clientData.count++;
+  return true;
+}
+
 // Mock components for now (would come from database)
 const mockComponents: Component[] = [{
   id: '1',
@@ -35,9 +57,31 @@ const mockComponents: Component[] = [{
   developer_features: ['Universal payment gateway', 'Multi-processor support', 'TypeScript definitions']
 }];
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, getClientAddress }) => {
   try {
-    const { query, mode = 'hybrid' } = await request.json();
+    // 🔒 Basic rate limiting check (in-memory for now)
+    const clientIP = getClientAddress();
+    if (!isRequestAllowed(clientIP)) {
+      return json({ error: 'Rate limit exceeded' }, { status: 429 });
+    }
+    
+    const body = await request.json();
+    const { query, mode = 'hybrid' } = body;
+    
+    // 🔒 Input validation
+    if (!query || typeof query !== 'string') {
+      return json({ error: 'Invalid query' }, { status: 400 });
+    }
+    
+    // 🔒 Size limits
+    if (query.length > 500) {
+      return json({ error: 'Query too long' }, { status: 400 });
+    }
+    
+    // 🔒 Content filtering
+    if (query.includes('<script') || query.includes('javascript:')) {
+      return json({ error: 'Invalid query content' }, { status: 400 });
+    }
     
     if (!query || query.trim().length === 0) {
       return json({ results: [], error: 'Query is required' }, { status: 400 });
@@ -91,8 +135,10 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     }
     
-    // Log search for analytics
-    console.log(`Search: "${query}" | Mode: ${mode} | Results: ${results.length}`);
+    // Log search for analytics (internal only)
+    if (typeof window === 'undefined') { // Server-side only
+      console.log(`Search: "${query.substring(0, 50)}" | Mode: ${mode} | Results: ${results.length}`);
+    }
     
     return json({ 
       results,
@@ -102,11 +148,12 @@ export const POST: RequestHandler = async ({ request }) => {
     });
     
   } catch (error) {
-    console.error('Search error:', error);
+    // 🔒 Security: Log internally but don't expose details to client
+    if (typeof window === 'undefined') {
+      console.error('Search error:', error);
+    }
     return json({ 
-      results: [], 
-      error: 'Search failed',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Search failed' // 🔒 Generic error message only
     }, { status: 500 });
   }
 };
