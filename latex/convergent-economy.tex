@@ -149,8 +149,8 @@
                 at ($(current page.north west) + (3,-3)$) {};
         }
         
-        % Enhanced network visualization with brand colors
-        \begin{scope}[shift={($(current page.center)+(0,3)$)}]
+        % Enhanced network visualization with brand colors - moved higher
+        \begin{scope}[shift={($(current page.north)+(0,-8)$)}]
             % AI node - Ocean (Blue)
             \node[circle, fill=ocean, text=white, font=\bfseries, 
                   minimum size=1.5cm, blur shadow] 
@@ -180,14 +180,25 @@
     \begin{center}
         {\Huge\bfseries\color{ocean} The Convergent Economy}\\[0.5cm]
         {\Large\color{sky} Market Analysis of \textcolor{ocean}{AI}, \textcolor{sky}{Software}, and \textcolor{sun}{Blockchain}}\\[0.3cm]
-        {\Large\color{trust} and the Unifying Role of \textcolor{sun}{Tokenization}}\\[2cm]
+        {\Large\color{trust} and the Unifying Role of \textcolor{sun}{Tokenization}}\\[3cm]
         
         % Author and Organization Attribution
-        {\large\bfseries\color{ocean} 
-         Lead Author: James Harrison}\\[0.2cm]
-        {\color{darkgray} 
-         Wolfe James LLC \& theBlockchain.ai Founding Team}\\[0.5cm]
-        {\color{darkgray} Published: July 2025}\\[1cm]
+        \begin{tcolorbox}[
+            width=0.9\textwidth,
+            colback=white!95,
+            colframe=ocean!50,
+            boxrule=1pt,
+            arc=5pt,
+            boxsep=10pt
+        ]
+            \centering
+            {\large\bfseries\color{ocean} 
+             Lead Author: James Harrison}\\[0.2cm]
+            {\color{darkgray} 
+             Wolfe James LLC \& theBlockchain.ai Founding Team}\\[0.5cm]
+            {\color{darkgray} Published: July 2025}
+        \end{tcolorbox}
+        \\[1cm]
         
         \begin{tcolorbox}[
             width=0.8\textwidth,
