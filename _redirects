@@ -1,11 +1,8 @@
 # API Routes
 /api/*  /.netlify/functions/:splat  200
 
-# Redirects
+# Custom redirects
 /search  /marketplace/search  301
 
-# Production domain redirects
+# Production domain redirects  
 https://bai.vercel.app/*  https://theblockchain.ai/:splat  301!
-
-# SPA fallback - must be last
-/*  /index.html  200
