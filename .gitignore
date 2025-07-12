@@ -90,3 +90,16 @@ docs/ToDo/*.md
 *STRATEGIC*.md
 *STRATEGY*.md
 *CONFIDENTIAL*.md
+
+# Development Implementation Notes (Temporary)
+BUG-FIX-*.md
+DARK-MODE-*.md
+FEEDBACK-*.md
+FINAL-DESIGN-*.md
+FOUNDATION-*.md
+HEADER-VISUAL-*.md
+NAVIGATION-TOGGLE-*.md
+NOBS-PAY-INTEGRATION.md
+THEME-TOGGLE-*.md
+UI-REFINEMENTS-*.md
+UNIFIED-HEADER-*.md

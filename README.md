@@ -11,6 +11,9 @@ Our mission is to build the economic backbone for the next generation of softwar
 - **Academic-Quality PDFs**: LaTeX-generated reports for executive distribution  
 - **$5+ Trillion Market Analysis**: Deep dive into AI, Software, and Blockchain convergence
 - **Brand-Compliant Design**: Harvard Business Review quality styling
+- **AI-Powered Assistant**: Instant answers about the platform with comprehensive knowledge base
+- **Help System**: ABCs of bAI and getting started guides
+- **Investment Portal**: Detailed information for potential investors
 
 ## 🏗️ Architecture
 
@@ -21,6 +24,8 @@ Our mission is to build the economic backbone for the next generation of softwar
 - **Build**: Vite + PostCSS
 - **Deployment**: Netlify
 - **PDF Generation**: LaTeX with TikZ visualizations
+- **AI Assistant**: Google Gemini AI with local knowledge base
+- **Serverless**: Netlify Functions for API endpoints
 
 ### Repository Structure
 ```
@@ -36,8 +41,11 @@ theblockchain-ai-svelte/
 ├── docs/                  # Documentation hub
 │   ├── brand/             # Color system & compliance
 │   ├── content/           # Master content sources
+│   ├── knowledge-base/    # AI assistant knowledge files
 │   ├── latex/            # LaTeX documentation
 │   └── development/       # Project archives
+├── netlify/              # Serverless functions
+│   └── functions/        # API endpoints (AI assistant)
 └── public/               # Static web assets
 ```
 
@@ -120,6 +128,30 @@ npm run brand:check:fix
 - Investment presentations  
 - Academic submission
 - Digital publishing
+
+## 🤖 AI Assistant & Knowledge Base
+
+### Ask bAI Assistant
+**Access**: Click "Ask AI" in the navigation bar
+
+**Features**:
+- **Instant Answers**: Get information about theBlockchain.ai platform
+- **Smart Suggestions**: Popular questions to get started
+- **Comprehensive Knowledge**: Covers platform features, investment, and technical details
+- **Natural Language**: Ask questions in plain English
+
+### Knowledge Base
+**Location**: `/docs/knowledge-base/`
+
+**Content Includes**:
+- **ABCs of bAI**: Core concepts explained simply
+- **Platform Overview**: Complete feature documentation
+- **FAQs**: Comprehensive answers to common questions
+- **Getting Started Guide**: Step-by-step onboarding
+- **Marketplace Features**: Search and component details
+- **Investment Opportunities**: Detailed investment information
+
+The AI assistant automatically uses this knowledge base to provide accurate, helpful responses about the platform.
 
 ## 🛠️ Development
 
