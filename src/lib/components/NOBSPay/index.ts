@@ -21,5 +21,6 @@
  */
 
 export { default } from './NOBSPay.svelte';
+export { default as NOBSPayCompact } from './NOBSPayCompact.svelte';
 export * from './types';
 export { paymentMethods, formatAmount } from './config';
