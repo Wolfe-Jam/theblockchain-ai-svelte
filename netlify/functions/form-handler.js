@@ -40,6 +40,18 @@ exports.handler = async (event, context) => {
         Submitted at: ${new Date().toISOString()}
       `;
       recipientList = process.env.INVESTOR_EMAIL || 'invest@theblockchain.ai';
+    } else if (formName === 'convergent-economy-download') {
+      emailSubject = 'New Report Download';
+      emailBody = `
+        New report download:
+        
+        Email: ${formData.email}
+        Format: ${formData.format || 'PDF'}
+        Source: ${formData.source || 'Not specified'}
+        
+        Submitted at: ${new Date().toISOString()}
+      `;
+      recipientList = process.env.DOWNLOAD_EMAIL || 'downloads@theblockchain.ai';
     } else {
       throw new Error('Unknown form type');
     }

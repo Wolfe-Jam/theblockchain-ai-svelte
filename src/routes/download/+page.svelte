@@ -48,11 +48,17 @@
     formData.append('timestamp', new Date().toISOString());
     
     try {
-      // Submit to Netlify
-      const response = await fetch('/', {
+      // Submit to Netlify Function
+      const response = await fetch('/api/form-handler', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData).toString()
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formName: 'convergent-economy-download',
+          email: email,
+          format: formatChoice,
+          source: 'dedicated-download-page',
+          timestamp: new Date().toISOString()
+        })
       });
       
       if (response.ok) {
