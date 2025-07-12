@@ -124,3 +124,20 @@ nobs-pay-v1.0/
 nobs-pay-v1.0.zip
 OPUS4/
 docs/knowledge-base/
+
+# Payment Configuration (Sensitive)
+.env.nobs-pay
+.env.payment*
+.env.stripe*
+.env.paypal*
+
+# Development Setup Scripts
+check-payment-keys.sh
+setup-nobs-pay-env.sh
+test-payment-setup.js
+
+# Third-party SDKs
+cdp-sdk/
+
+# Documentation drafts
+SETUP-PAYMENT-KEYS.md
