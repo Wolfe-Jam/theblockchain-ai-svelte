@@ -55,7 +55,7 @@
   <!-- Hero Section -->
   <div class="relative bg-gradient-to-br from-cyan-900 via-slate-800 to-slate-900">
     <div class="absolute inset-0 bg-black/20"></div>
-    <div class="relative max-w-6xl mx-auto px-6 py-24">
+    <div class="relative max-w-6xl mx-auto px-6" style="padding-top: 5rem; padding-bottom: 6rem;">
       <div class="text-center">
         <h1 class="text-5xl font-bold mb-6 text-cyan-400">
           Briefings

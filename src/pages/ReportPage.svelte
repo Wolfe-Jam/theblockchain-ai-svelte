@@ -517,7 +517,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
-    padding-top: 6rem;
+    padding-top: 5rem; /* Standard for autohide banner */
   }
 
   /* Intro Section */

@@ -106,7 +106,7 @@
       <div class="absolute bottom-20 right-20 w-80 h-80 bg-brand-orange/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
     </div>
     
-    <div class="relative max-w-6xl mx-auto px-6 py-24">
+    <div class="relative max-w-6xl mx-auto px-6" style="padding-top: 5rem; padding-bottom: 6rem;">
       <div class="text-center">
         <!-- Badge -->
         <div class="inline-flex items-center bg-slate-800/50 rounded-full px-6 py-3 border border-brand-orange/30 mb-8">

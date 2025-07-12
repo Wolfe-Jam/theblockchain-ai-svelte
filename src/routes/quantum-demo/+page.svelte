@@ -2,16 +2,19 @@
 <script>
   import QuantumTimeline from '$lib/components/quantum/QuantumTimeline.svelte';
   import AskAIModal from '../../components/AskAIModal.svelte';
+  import { fade } from 'svelte/transition';
   
   let showAskAI = false;
   let showDemoInfo = false;
+  let resourceDropdownOpen = false;
+  let dropdownTimer;
   
   function handleOpenAskAI() {
     showAskAI = true;
   }
   
   function handleOpenDemoInfo() {
-    showDemoInfo = true;
+    showDemoInfo = !showDemoInfo;
   }
   
   function handleOpenAbout() {
@@ -21,6 +24,22 @@
       // Trigger about modal on main site
       window.dispatchEvent(new CustomEvent('openAbout'));
     }, 100);
+  }
+  
+  // Dropdown handlers with delay
+  function showResourceDropdown() {
+    clearTimeout(dropdownTimer);
+    resourceDropdownOpen = true;
+  }
+  
+  function hideResourceDropdown() {
+    dropdownTimer = setTimeout(() => {
+      resourceDropdownOpen = false;
+    }, 200); // 200ms delay before hiding
+  }
+  
+  function closeResourceDropdown() {
+    resourceDropdownOpen = false;
   }
   
   // Navigation handlers to properly exit demo mode
@@ -59,35 +78,63 @@
   <!-- Custom header for quantum demo -->
   <header class="quantum-header">
     <nav class="quantum-nav">
-      <button class="nav-brand" on:click={goToHome} on:keydown={(e) => e.key === 'Enter' && goToHome()} role="button" tabindex="0" title="About this Version">
+      <button class="nav-brand" on:click={goToHome} on:keydown={(e) => e.key === 'Enter' && goToHome()} role="button" tabindex="0" title="Return to Homepage">
         <img src="https://raw.githubusercontent.com/Wolfe-Jam/theblockchain-ai/main/Public/theBlockchain-ai-crop-sml.svg" alt="Logo" class="logo">
         <span class="brand-text">theBlockchain.ai</span>
       </button>
       
-      <div class="nav-links">
-        <button on:click={goToHome} class="nav-link">Home</button>
-        <button on:click={goToVision} class="nav-link">Vision</button>
-        <button on:click={goToFoundersProof} class="nav-link founders-proof-link">Founder's Proof</button>
-        <button on:click={goToTools} class="nav-link">Tools</button>
-        <button on:click={goToInvest} class="nav-link">Invest</button>
-        <button type="button" class="ask-ai-link" on:click={handleOpenAskAI} title="Joke of the DAY">Ask AI 🤖</button>
-      </div>
-      
-      <div class="quantum-controls">
+      <div class="nav-center">
+        <div class="nav-links">
+          <button on:click={goToVision} class="nav-link" title="Explore our Vision and Pillars">Vision</button>
+          <button on:click={goToTools} class="nav-link" title="Access Analysis Tools">Tools</button>
+          <button on:click={goToFoundersProof} class="nav-link founders-proof-link" title="Founder's Reward Program">
+            <span class="reward-icon">🏆</span>
+            <span class="reward-text">Reward</span>
+          </button>
+          
+          <div class="dropdown" class:open={resourceDropdownOpen}
+               on:mouseenter={showResourceDropdown}
+               on:mouseleave={hideResourceDropdown}>
+            <span class="dropdown-trigger nav-link" style="cursor: pointer;" title="Learning Resources">
+              Resource 
+              <svg class="dropdown-arrow" class:rotated={resourceDropdownOpen} width="12" height="12" viewBox="0 0 12 12">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              </svg>
+            </span>
+            
+            {#if resourceDropdownOpen}
+              <div class="dropdown-menu"
+                   on:mouseenter={showResourceDropdown}
+                   on:mouseleave={hideResourceDropdown}
+                   transition:fade={{ duration: 200 }}>
+                <a href="/help" on:click={closeResourceDropdown}>📚 Help - ABCs of bAI</a>
+                <a href="/download" on:click={closeResourceDropdown}>📊 Download PDF Report</a>
+                <button type="button" class="dropdown-about-btn" on:click={() => { closeResourceDropdown(); handleOpenAbout(); }}>About</button>
+                <a href="/glossary" on:click={closeResourceDropdown}>Glossary</a>
+                <a href="/faqs" on:click={closeResourceDropdown}>FAQs</a>
+              </div>
+            {/if}
+          </div>
+          
+          <button on:click={goToInvest} class="nav-link" title="Investment Opportunities">Invest</button>
+        </div>
+        
         <button 
           class="demo-info-btn"
           on:click={handleOpenDemoInfo}
-          title="About this Demo"
+          title="About Quantum Timeline Demo"
         >
           ℹ️
         </button>
         
-        <div class="quantum-badge">
+        <button type="button" class="ask-ai-link" on:click={handleOpenAskAI} title="Joke of the DAY">Ask AI 🤖</button>
+        
+        <div class="quantum-badge" title="You are in Demo Mode">
           <span>🔮 DEMO MODE</span>
           <button 
             on:click={goToHome} 
             class="exit-demo-btn"
-            title="Return to Main Site"
+            title="Exit Demo - Return to Main Site"
           >
             ✕
           </button>
@@ -293,6 +340,13 @@
     letter-spacing: -0.025em;
   }
   
+  /* New nav-center container to group middle elements */
+  .quantum-demo-container .nav-center {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  
   .quantum-demo-container .nav-links {
     display: flex;
     align-items: center;
@@ -320,39 +374,54 @@
   }
   
   .quantum-demo-container .founders-proof-link {
+    font-weight: 700 !important;
+    font-family: 'Roboto Mono', monospace !important;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .quantum-demo-container .reward-icon {
+    filter: drop-shadow(0 0 4px var(--demo-gold));
+    font-size: 1.1em;
+    transition: transform 0.3s ease;
+  }
+  
+  .quantum-demo-container .reward-text {
     background: linear-gradient(135deg, var(--demo-gold), var(--demo-purple-light)) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
-    font-weight: 700 !important;
-    font-family: 'Roboto Mono', monospace !important;
-    position: relative;
   }
   
-  .quantum-demo-container .founders-proof-link::before {
-    content: '🏆';
-    margin-right: 0.5rem;
-    filter: drop-shadow(0 0 4px var(--demo-gold));
+  .quantum-demo-container .founders-proof-link:hover .reward-text {
+    filter: brightness(1.2);
+  }
+  
+  .quantum-demo-container .founders-proof-link:hover .reward-icon {
+    transform: scale(1.1) rotate(5deg);
   }
   
   .quantum-demo-container .ask-ai-link {
-    background: linear-gradient(135deg, var(--demo-purple-deep), var(--demo-gold));
-    color: var(--demo-text-white);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
+    font-family: 'Roboto Mono', monospace !important;
     font-weight: 600;
-    font-family: 'Roboto Mono', monospace;
+    color: var(--demo-text-white) !important;
+    background: none;
+    border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(107, 70, 193, 0.3);
+    margin-left: 1rem;
+    transition: color 0.3s ease;
+    padding: 0;
     letter-spacing: 0.025em;
+    white-space: nowrap;
   }
   
   .quantum-demo-container .ask-ai-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
-    background: linear-gradient(135deg, var(--demo-purple-light), var(--demo-gold-light));
+    color: var(--demo-turquoise-light);
+    transform: none;
+    box-shadow: none;
+    background: none;
   }
   
   .quantum-demo-container .quantum-badge {
@@ -375,8 +444,8 @@
   }
   
   .quantum-demo-container .exit-demo-btn {
-    background: rgba(239, 68, 68, 0.8);
-    border: 1px solid rgba(239, 68, 68, 0.6);
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
     border-radius: 50%;
     width: 24px;
@@ -384,7 +453,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -393,42 +462,126 @@
   }
   
   .quantum-demo-container .exit-demo-btn:hover {
-    background: rgba(239, 68, 68, 1);
-    border-color: rgba(239, 68, 68, 0.8);
+    background: rgba(0, 0, 0, 1);
+    border-color: rgba(255, 255, 255, 0.5);
     transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   }
   
-  /* Quantum Controls Container */
-  .quantum-demo-container .quantum-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
+  /* Demo Info Button - Positioned like brain icon */
   .quantum-demo-container .demo-info-btn {
-    background: rgba(34, 197, 94, 0.8);
-    border: 1px solid rgba(34, 197, 94, 0.6);
-    color: white;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    background: transparent;
+    border: none;
+    color: var(--demo-text-white);
+    width: auto;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 1.5rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
+    transition: all 0.15s ease;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
     line-height: 1;
-    font-family: 'Roboto Mono', monospace;
+    position: relative;
   }
   
   .quantum-demo-container .demo-info-btn:hover {
-    background: rgba(34, 197, 94, 1);
-    border-color: rgba(34, 197, 94, 0.8);
+    color: white;
     transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Dropdown styles for demo mode */
+  .quantum-demo-container .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .quantum-demo-container .dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  .quantum-demo-container .dropdown-arrow {
+    transition: transform 0.3s ease;
+  }
+  
+  .quantum-demo-container .dropdown-arrow.rotated {
+    transform: rotate(180deg);
+  }
+  
+  .quantum-demo-container .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0.75rem;
+    min-width: 220px;
+    background: linear-gradient(135deg, var(--demo-bg-darker) 0%, var(--demo-purple-dark) 100%);
+    border: 1px solid var(--demo-purple-light);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 20px rgba(107, 70, 193, 0.4);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    z-index: 1000;
+    animation: dropdownFadeIn 0.2s ease;
+  }
+  
+  @keyframes dropdownFadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+  
+  .quantum-demo-container .dropdown-menu a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: var(--demo-text-white);
+    text-decoration: none;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  }
+  
+  .quantum-demo-container .dropdown-menu a:last-child {
+    border-bottom: none;
+  }
+  
+  .quantum-demo-container .dropdown-menu a:hover {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--demo-turquoise-light);
+    padding-left: 1.5rem;
+  }
+  
+  .quantum-demo-container .dropdown-about-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    color: var(--demo-text-white);
+    background: none;
+    border: none;
+    text-align: left;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  }
+  
+  .quantum-demo-container .dropdown-about-btn:hover {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--demo-turquoise-light);
+    padding-left: 1.5rem;
   }
   
   @keyframes demoPulse {

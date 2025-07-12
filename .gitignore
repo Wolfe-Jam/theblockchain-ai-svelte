@@ -103,3 +103,15 @@ NOBS-PAY-INTEGRATION.md
 THEME-TOGGLE-*.md
 UI-REFINEMENTS-*.md
 UNIFIED-HEADER-*.md
+
+# Development artifacts and scripts
+*.backup
+*Backup.svelte
+install-deps.sh
+package-nobspay.sh
+setup-nobs-pay.sh
+test-nobs-pay.sh
+nobs-pay-v1.0/
+nobs-pay-v1.0.zip
+OPUS4/
+docs/knowledge-base/

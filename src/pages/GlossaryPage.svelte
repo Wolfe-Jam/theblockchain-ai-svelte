@@ -237,7 +237,7 @@
   <!-- Hero Section -->
   <div class="relative bg-gradient-to-br from-slate-800 via-slate-800 to-slate-900">
     <div class="absolute inset-0 bg-black/20"></div>
-    <div class="relative max-w-4xl mx-auto px-6 py-24">
+    <div class="relative max-w-4xl mx-auto px-6" style="padding-top: 5rem; padding-bottom: 4rem;">
       <div class="text-center">
         <h1 class="text-5xl font-bold mb-6 text-slate-200">
           Glossary

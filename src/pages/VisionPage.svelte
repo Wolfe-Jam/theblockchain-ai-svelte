@@ -159,12 +159,12 @@
     max-width: 1000px;
     margin: 0 auto;
     padding: 2rem;
-    padding-top: 6rem; /* Space for fixed header */
+    padding-top: 5rem; /* Standard for autohide banner */
   }
 
   .vision-hero {
     text-align: center;
-    padding: 6rem 1rem 4rem 1rem;
+    padding: 5rem 1rem 4rem 1rem; /* Standard for autohide banner */
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   }
 

@@ -61,7 +61,7 @@
   }
 </script>
 
-<main class="container mx-auto p-8 md:p-16 pt-24">
+<main class="container mx-auto p-8 md:p-16 pt-20">
   <section class="my-16">
     <h1 class="text-4xl md:text-5xl font-extrabold text-center mb-12" style="color: var(--brand-cyan);">
       Frequently Asked Questions
