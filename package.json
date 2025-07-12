@@ -9,13 +9,16 @@
     "preview": "vite preview",
     "version": "node scripts/update-version.js",
     "brand:check": "node scripts/validate-brand-colors.js",
-    "brand:check:fix": "node scripts/validate-brand-colors.js --fix"
+    "brand:check:fix": "node scripts/validate-brand-colors.js --fix",
+    "git:clean": "git rm -r --cached node_modules/ || true",
+    "git:check": "git status --porcelain | grep -E '^(A|M|D).*node_modules' && echo '⚠️  node_modules changes detected in git!' || echo '✅ Git clean - no node_modules tracked'",
+    "precommit": "npm run git:check"
   },
   "dependencies": {
     "@google/generative-ai": "^0.11.0",
     "@supabase/supabase-js": "^2.50.5",
-    "@sveltejs/adapter-static": "^3.0.8",
-    "@sveltejs/kit": "^2.22.2",
+    "@sveltejs/adapter-static": "^0.0.17",
+    "@sveltejs/kit": "^0.0.30",
     "chart.js": "^4.5.0",
     "node-fetch": "^2.6.7"
   },

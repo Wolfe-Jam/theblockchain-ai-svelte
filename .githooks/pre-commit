@@ -1,0 +1,27 @@
+#!/bin/bash
+# Pre-commit hook to prevent node_modules from being committed
+
+echo "🔍 Checking for node_modules in git staging area..."
+
+# Check if node_modules files are staged
+if git diff --cached --name-only | grep -q "node_modules/"; then
+    echo "❌ ERROR: node_modules files are staged for commit!"
+    echo ""
+    echo "This will bloat your repository and cause problems."
+    echo ""
+    echo "To fix this:"
+    echo "  git reset HEAD node_modules/"
+    echo "  git rm -r --cached node_modules/"
+    echo ""
+    echo "Make sure node_modules/ is in your .gitignore file."
+    exit 1
+fi
+
+# Check if package-lock.json has major changes (optional warning)
+if git diff --cached --name-only | grep -q "package-lock.json"; then
+    echo "⚠️  Warning: package-lock.json is being committed"
+    echo "   This is usually OK, but verify it's intentional"
+fi
+
+echo "✅ Git staging area looks clean!"
+exit 0

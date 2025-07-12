@@ -2,29 +2,11 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { SearchEngine } from '$lib/search/engine';
 import { ClaudeSmarts } from '$lib/search/claude-smarts';
+import { getCorsHeaders, createOptionsResponse } from '$lib/utils/cors';
+import { InputValidator } from '$lib/security/input-validator';
+import { SecurityMonitor } from '$lib/security/security-monitor';
+import { rateLimiter } from '$lib/security/rate-limiter';
 import type { Component } from '$lib/marketplace/types';
-
-// 🔒 Simple in-memory rate limiting (replace with Redis in production)
-const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const RATE_LIMIT_MAX = 10; // 10 requests per minute
-
-function isRequestAllowed(clientIP: string): boolean {
-  const now = Date.now();
-  const clientData = rateLimitMap.get(clientIP);
-  
-  if (!clientData || now - clientData.timestamp > RATE_LIMIT_WINDOW) {
-    rateLimitMap.set(clientIP, { count: 1, timestamp: now });
-    return true;
-  }
-  
-  if (clientData.count >= RATE_LIMIT_MAX) {
-    return false;
-  }
-  
-  clientData.count++;
-  return true;
-}
 
 // Mock components for now (would come from database)
 const mockComponents: Component[] = [{
@@ -58,116 +40,261 @@ const mockComponents: Component[] = [{
 }];
 
 export const POST: RequestHandler = async ({ request, getClientAddress }) => {
+  const clientIP = getClientAddress();
+  const origin = request.headers.get('origin');
+  const userAgent = request.headers.get('user-agent');
+  const corsHeaders = getCorsHeaders(origin);
+  
   try {
-    // 🔒 Basic rate limiting check (in-memory for now)
-    const clientIP = getClientAddress();
-    if (!isRequestAllowed(clientIP)) {
-      return json({ error: 'Rate limit exceeded' }, { status: 429 });
+    // 1. Check if IP should be blocked
+    if (SecurityMonitor.shouldBlockIP(clientIP)) {
+      SecurityMonitor.logSecurityEvent({
+        type: 'suspicious_request',
+        ip: clientIP,
+        userAgent,
+        endpoint: '/api/search',
+        details: { reason: 'blocked_ip' }
+      });
+      
+      return json({ error: 'Access denied' }, { 
+        status: 403,
+        headers: corsHeaders
+      });
     }
     
+    // 2. Rate limiting check with progressive penalties
+    const penalty = SecurityMonitor.getProgressivePenalty(clientIP);
+    const rateLimitKey = `search:${clientIP}`;
+    const rateLimit = await rateLimiter.checkLimit(rateLimitKey, 10, Math.max(60, penalty));
+    
+    if (!rateLimit.allowed) {
+      SecurityMonitor.logSecurityEvent({
+        type: 'rate_limit',
+        ip: clientIP,
+        userAgent,
+        endpoint: '/api/search',
+        details: { 
+          limit: 10, 
+          window: 60,
+          penalty: penalty,
+          retryAfter: rateLimit.retryAfter
+        }
+      });
+      
+      return json({ error: 'Rate limit exceeded' }, { 
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          'X-RateLimit-Limit': '10',
+          'X-RateLimit-Remaining': String(rateLimit.remaining),
+          'X-RateLimit-Reset': String(rateLimit.resetTime),
+          'Retry-After': String(rateLimit.retryAfter || 60)
+        }
+      });
+    }    
+    // 3. Input validation
     const body = await request.json();
     const { query, mode = 'hybrid' } = body;
     
-    // 🔒 Input validation
-    if (!query || typeof query !== 'string') {
-      return json({ error: 'Invalid query' }, { status: 400 });
+    // Validate query
+    const queryError = InputValidator.validateSearchQuery(query);
+    if (queryError) {
+      SecurityMonitor.logSecurityEvent({
+        type: 'invalid_input',
+        ip: clientIP,
+        userAgent,
+        endpoint: '/api/search',
+        details: { 
+          error: queryError, 
+          query: typeof query === 'string' ? query.substring(0, 50) : 'invalid_type',
+          queryLength: typeof query === 'string' ? query.length : 0
+        }
+      });
+      
+      return json({ error: queryError }, { 
+        status: 400,
+        headers: corsHeaders
+      });
     }
     
-    // 🔒 Size limits
-    if (query.length > 500) {
-      return json({ error: 'Query too long' }, { status: 400 });
+    // Validate mode
+    const modeError = InputValidator.validateMode(mode);
+    if (modeError) {
+      SecurityMonitor.logSecurityEvent({
+        type: 'invalid_input',
+        ip: clientIP,
+        userAgent,
+        endpoint: '/api/search',
+        details: { error: modeError, mode }
+      });
+      
+      return json({ error: modeError }, { 
+        status: 400,
+        headers: corsHeaders
+      });
     }
     
-    // 🔒 Content filtering
-    if (query.includes('<script') || query.includes('javascript:')) {
-      return json({ error: 'Invalid query content' }, { status: 400 });
+    const sanitizedQuery = InputValidator.sanitizeQuery(query);
+    
+    // 4. Check for suspicious activity patterns
+    const isSuspicious = await SecurityMonitor.checkForSuspiciousActivity(clientIP);
+    if (isSuspicious) {
+      SecurityMonitor.logSecurityEvent({
+        type: 'suspicious_request',
+        ip: clientIP,
+        userAgent,
+        endpoint: '/api/search',
+        details: { reason: 'suspicious_activity_pattern' }
+      });
+      
+      return json({ error: 'Request blocked due to suspicious activity' }, { 
+        status: 403,
+        headers: corsHeaders
+      });
     }
     
-    if (!query || query.trim().length === 0) {
-      return json({ results: [], error: 'Query is required' }, { status: 400 });
-    }
-    
-    // Initialize search engine
+    // 5. Perform search
     const searchEngine = new SearchEngine(mockComponents);
     const claudeSmarts = new ClaudeSmarts(mockComponents);
     
     let results = [];
+    let searchTime = Date.now();
     
-    // Perform search based on mode
-    if (mode === 'claude-smarts') {
-      // Pure AI search
-      results = await claudeSmarts.getSmartResults(query);
-    } else if (mode === 'traditional') {
-      // Keyword search only
-      results = searchEngine.traditionalSearch(query);
-    } else {
-      // Hybrid mode - combine both
-      const traditionalResults = searchEngine.traditionalSearch(query);
-      
-      // If query seems complex or conversational, also use Claude
-      const needsAI = query.split(' ').length > 3 || 
-                      query.includes('how') || 
-                      query.includes('need') ||
-                      query.includes('want');
-      
-      if (needsAI && traditionalResults.length < 3) {
-        const aiResults = await claudeSmarts.getSmartResults(query);
-        
-        // Merge results intelligently
-        const mergedMap = new Map();
-        traditionalResults.forEach(r => mergedMap.set(r.id, r));
-        aiResults.forEach(r => {
-          if (!mergedMap.has(r.id)) {
-            mergedMap.set(r.id, r);
-          } else {
-            // Boost score if found by both methods
-            const existing = mergedMap.get(r.id);
-            existing.relevanceScore = Math.min(1, existing.relevanceScore * 1.5);
-            existing.matchType = 'semantic';
-            if (r.explanation) existing.explanation = r.explanation;
-          }
-        });
-        
-        results = Array.from(mergedMap.values())
-          .sort((a, b) => b.relevanceScore - a.relevanceScore);
+    try {
+      if (mode === 'claude-smarts') {
+        results = await claudeSmarts.getSmartResults(sanitizedQuery);
+      } else if (mode === 'traditional') {
+        results = searchEngine.traditionalSearch(sanitizedQuery);
       } else {
-        results = traditionalResults;
+        // Hybrid mode
+        const traditionalResults = searchEngine.traditionalSearch(sanitizedQuery);
+        
+        const needsAI = sanitizedQuery.split(' ').length > 3 || 
+                        sanitizedQuery.includes('how') || 
+                        sanitizedQuery.includes('need') ||
+                        sanitizedQuery.includes('want');
+        
+        if (needsAI && traditionalResults.length < 3) {
+          const aiResults = await claudeSmarts.getSmartResults(sanitizedQuery);
+          
+          const mergedMap = new Map();
+          traditionalResults.forEach(r => mergedMap.set(r.id, r));
+          aiResults.forEach(r => {
+            if (!mergedMap.has(r.id)) {
+              mergedMap.set(r.id, r);
+            } else {
+              const existing = mergedMap.get(r.id);
+              existing.relevanceScore = Math.min(1, existing.relevanceScore * 1.5);
+              existing.matchType = 'semantic';
+              if (r.explanation) existing.explanation = r.explanation;
+            }
+          });
+          
+          results = Array.from(mergedMap.values())
+            .sort((a, b) => b.relevanceScore - a.relevanceScore);
+        } else {
+          results = traditionalResults;
+        }
       }
+      
+      searchTime = Date.now() - searchTime;
+      
+    } catch (searchError) {
+      console.error('Search execution error:', searchError);
+      
+      SecurityMonitor.logSecurityEvent({
+        type: 'suspicious_request',
+        ip: clientIP,
+        userAgent,
+        endpoint: '/api/search',
+        details: { 
+          error: 'search_execution_failed',
+          query: sanitizedQuery.substring(0, 50)
+        }
+      });
+      
+      return json({ error: 'Search failed' }, { 
+        status: 500,
+        headers: corsHeaders
+      });
     }
     
-    // Log search for analytics (internal only)
-    if (typeof window === 'undefined') { // Server-side only
-      console.log(`Search: "${query.substring(0, 50)}" | Mode: ${mode} | Results: ${results.length}`);
-    }
-    
+    // 6. Success response with security headers
     return json({ 
       results,
-      query,
+      query: sanitizedQuery,
       mode,
+      searchTime,
       timestamp: new Date().toISOString()
+    }, { 
+      headers: {
+        ...corsHeaders,
+        'X-RateLimit-Limit': '10',
+        'X-RateLimit-Remaining': String(rateLimit.remaining),
+        'X-RateLimit-Reset': String(rateLimit.resetTime),
+        'X-Response-Time': `${searchTime}ms`
+      }
     });
     
   } catch (error) {
-    // 🔒 Security: Log internally but don't expose details to client
-    if (typeof window === 'undefined') {
-      console.error('Search error:', error);
-    }
-    return json({ 
-      error: 'Search failed' // 🔒 Generic error message only
-    }, { status: 500 });
+    // 7. Error handling with security logging
+    SecurityMonitor.logSecurityEvent({
+      type: 'suspicious_request',
+      ip: clientIP,
+      userAgent,
+      endpoint: '/api/search',
+      details: { 
+        error: 'unexpected_error',
+        message: error instanceof Error ? error.message : 'unknown_error'
+      }
+    });
+    
+    return json({ error: 'Search failed' }, { 
+      status: 500,
+      headers: corsHeaders
+    });
   }
 };
 
-// GET endpoint for search suggestions
-export const GET: RequestHandler = async ({ url }) => {
+// Handle OPTIONS for CORS preflight
+export const OPTIONS: RequestHandler = async ({ request }) => {
+  return createOptionsResponse(request.headers.get('origin'));
+};
+
+// Secure GET endpoint for suggestions
+export const GET: RequestHandler = async ({ url, getClientAddress }) => {
+  const clientIP = getClientAddress();
   const query = url.searchParams.get('q') || '';
   
-  if (query.length < 2) {
+  // Rate limit suggestions too
+  const rateLimitKey = `suggestions:${clientIP}`;
+  const rateLimit = await rateLimiter.checkLimit(rateLimitKey, 20, 60); // Higher limit for suggestions
+  
+  if (!rateLimit.allowed) {
+    return json({ suggestions: [] }, { 
+      status: 429,
+      headers: {
+        'X-RateLimit-Limit': '20',
+        'X-RateLimit-Remaining': '0'
+      }
+    });
+  }
+  
+  if (query.length < 2 || query.length > 100) {
     return json({ suggestions: [] });
   }
   
+  const sanitizedQuery = InputValidator.sanitizeQuery(query);
   const claudeSmarts = new ClaudeSmarts(mockComponents);
-  const suggestions = await claudeSmarts.generateSuggestions(query);
+  const suggestions = await claudeSmarts.generateSuggestions(sanitizedQuery);
   
-  return json({ suggestions });
+  return json({ 
+    suggestions,
+    query: sanitizedQuery
+  }, {
+    headers: {
+      'X-RateLimit-Limit': '20',
+      'X-RateLimit-Remaining': String(rateLimit.remaining)
+    }
+  });
 };
