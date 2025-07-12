@@ -1,10 +1,12 @@
 [build]
   command = "npm run build"
-  publish = "build"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "9"
+  # Install devDependencies (needed for vite build tool)
+  NPM_FLAGS = "--include=dev"
 
 # =====================================================
 # API ROUTES & REDIRECTS
