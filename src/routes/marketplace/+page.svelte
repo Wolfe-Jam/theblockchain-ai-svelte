@@ -173,39 +173,8 @@
   
   <!-- Search Bar -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <SearchBar on:search={handleSearch} />
-    
-    {#if $searchStore.query && !loading}
-      <div class="search-status">
-        <div>
-          {#if $searchStore.isSearching}
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              Searching for "{$searchStore.query}"...
-            </p>
-          {:else if displayedComponents.length === 0}
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              No results found for "{$searchStore.query}". Try different keywords or use Claude Smarts mode.
-            </p>
-          {:else}
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              Found {displayedComponents.length} result{displayedComponents.length === 1 ? '' : 's'} for "{$searchStore.query}"
-              {#if $searchStore.mode === 'claude' || $searchStore.mode === 'hybrid'}
-                with Claude's help
-              {/if}
-            </p>
-          {/if}
-        </div>
-        
-        {#if $searchStore.query}
-          <button 
-            class="clear-search"
-            on:click={resetSearch}
-          >
-            Clear search
-          </button>
-        {/if}
-      </div>
-    {/if}
+    <!-- Search functionality temporarily removed for stable deployment -->
+    <!-- TODO: Re-implement search with proper SearchBar component and stores -->
   </div>
 
   <!-- Main Content -->
