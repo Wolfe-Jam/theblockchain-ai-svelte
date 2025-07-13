@@ -10,6 +10,10 @@
   let loading = true;
   let viewMode: 'flip' | 'list' = 'flip';
   
+  // FlipCard Width Control (1-8 cards per row)
+  let flipCardWidth: number = 3; // Default: 3 cards per row
+  let maxAllowedWidth: number = 8; // Changes based on screen size
+  
   // Payment state
   let showPayment = false;
   let selectedComponent: Component | null = null;
@@ -17,7 +21,78 @@
   // Load components on mount
   onMount(async () => {
     await loadComponents();
+    loadWidthPreference();
+    updateMaxAllowedWidth();
+    
+    // Listen for window resize to update max allowed width
+    const handleResize = () => updateMaxAllowedWidth();
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   });
+  
+  // Responsive width limits based on screen size
+  function updateMaxAllowedWidth() {
+    if (typeof window === 'undefined') return;
+    
+    const width = window.innerWidth;
+    if (width < 768) {
+      // Mobile: max 2 cards
+      maxAllowedWidth = 2;
+      if (flipCardWidth > 2) flipCardWidth = 2;
+    } else if (width < 1024) {
+      // Tablet: max 4 cards  
+      maxAllowedWidth = 4;
+      if (flipCardWidth > 4) flipCardWidth = 4;
+    } else {
+      // Desktop: full range 1-8
+      maxAllowedWidth = 8;
+    }
+  }
+  
+  // Load saved width preference from localStorage
+  function loadWidthPreference() {
+    if (typeof window === 'undefined') return;
+    
+    const saved = localStorage.getItem('flipcard-width');
+    if (saved) {
+      const parsedWidth = parseInt(saved);
+      if (parsedWidth >= 1 && parsedWidth <= 8) {
+        flipCardWidth = parsedWidth;
+      }
+    }
+  }
+  
+  // Save width preference to localStorage
+  function saveWidthPreference() {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('flipcard-width', flipCardWidth.toString());
+  }
+  
+  // Handle width change
+  function setFlipCardWidth(newWidth: number) {
+    if (newWidth >= 1 && newWidth <= maxAllowedWidth) {
+      flipCardWidth = newWidth;
+      saveWidthPreference();
+    }
+  }
+  
+  // Get grid class based on current width
+  function getGridClass(width: number): string {
+    const gridClasses = {
+      1: 'grid-cols-1',
+      2: 'grid-cols-2', 
+      3: 'grid-cols-3',
+      4: 'grid-cols-4',
+      5: 'grid-cols-5',
+      6: 'grid-cols-6',
+      7: 'grid-cols-7',
+      8: 'grid-cols-8'
+    };
+    return gridClasses[width] || 'grid-cols-3';
+  }
   
   async function loadComponents() {
     try {
@@ -202,38 +277,78 @@
           {/if}
         </h2>
         
-        <!-- View Mode Toggle -->
-        <div class="flex gap-2">
-          <button
-            on:click={() => viewMode = 'flip'}
-            class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'flip' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
-          >
-            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Flip Cards
-          </button>
-          <button
-            on:click={() => viewMode = 'list'}
-            class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
-          >
-            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-            </svg>
-            List View
-          </button>
+        <!-- View Mode Toggle + FlipCard Width Control -->
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <!-- View Mode Toggle -->
+          <div class="flex gap-2">
+            <button
+              on:click={() => viewMode = 'flip'}
+              class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'flip' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
+            >
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Flip Cards
+            </button>
+            <button
+              on:click={() => viewMode = 'list'}
+              class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
+            >
+              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+              List View
+            </button>
+          </div>
+          
+          <!-- FlipCard Width Control (only show when FlipCard mode is active) -->
+          {#if viewMode === 'flip'}
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Width:
+              </span>
+              <div class="flex gap-1">
+                {#each Array.from({length: maxAllowedWidth}, (_, i) => i + 1) as width}
+                  <button
+                    on:click={() => setFlipCardWidth(width)}
+                    class="w-8 h-8 rounded-md text-sm font-medium transition-all duration-200 {flipCardWidth === width 
+                      ? 'bg-blue-600 text-white shadow-md scale-105' 
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 hover:scale-105'}"
+                    title="Show {width} card{width === 1 ? '' : 's'} per row"
+                    aria-label="Set width to {width} cards per row"
+                  >
+                    {width}
+                  </button>
+                {/each}
+              </div>
+              <span class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+                cards per row
+              </span>
+            </div>
+          {/if}
         </div>
       </div>
       
       {#if viewMode === 'flip'}
-        <!-- Flip Cards View -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamic FlipCards View -->
+        <div class="grid {getGridClass(flipCardWidth)} gap-6 transition-all duration-300">
           {#each components as component (component.id)}
             <FlipCard 
               {component}
               on:buy={handleCardBuy}
             />
           {/each}
+        </div>
+        
+        <!-- FlipCard Width Info (helpful for users) -->
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Showing <span class="font-medium text-gray-700 dark:text-gray-300">{components.length}</span> 
+            products in <span class="font-medium text-blue-600 dark:text-blue-400">{flipCardWidth}</span> 
+            column{flipCardWidth === 1 ? '' : 's'} • 
+            <span class="hidden sm:inline">Use width controls above to adjust view</span>
+            <span class="sm:hidden">Tap width numbers to adjust</span>
+          </p>
         </div>
       {:else}
         <!-- Legendary List View -->
@@ -508,6 +623,54 @@
   
   :global(.dark) .clear-search:hover {
     color: #06b6d4;
+  }
+  
+  /* FlipCard Width Control Enhancements */
+  .grid {
+    /* Smooth transitions when changing grid layout */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Width control button enhancements */
+  .width-control-btn {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .width-control-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .width-control-btn:hover::before {
+    left: 100%;
+  }
+  
+  /* Responsive grid adjustments */
+  @media (max-width: 640px) {
+    .grid-cols-3,
+    .grid-cols-4,
+    .grid-cols-5,
+    .grid-cols-6,
+    .grid-cols-7,
+    .grid-cols-8 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    .grid-cols-5,
+    .grid-cols-6,
+    .grid-cols-7,
+    .grid-cols-8 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
   
   /* Legendary List Navigation */
