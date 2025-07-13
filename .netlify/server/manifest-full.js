@@ -10,7 +10,7 @@ return {
 	assets: new Set([".DS_Store","convergent-economy-academic.pdf","convergent-economy-report.pdf","favicon-old.svg","favicon.svg","forms.html","manifest.json","robots.txt","sitemap.xml","theBlockchain-ai-full-logo.svg","theBlockchain-ai-landscape.png","theBlockchain-ai-landscape.webp","theBlockchain-ai-logo.png","theBlockchain-ai-logo.svg","three-pillars-graphic.svg","vite.svg","zero-fraud-icon.svg"]),
 	mimeTypes: {".pdf":"application/pdf",".svg":"image/svg+xml",".html":"text/html",".json":"application/json",".txt":"text/plain",".xml":"text/xml",".png":"image/png",".webp":"image/webp"},
 	_: {
-		client: {start:"_app/immutable/entry/start.CUuufqKt.js",app:"_app/immutable/entry/app.BsAi67Sm.js",imports:["_app/immutable/entry/start.CUuufqKt.js","_app/immutable/chunks/DKl5Jh6K.js","_app/immutable/chunks/wGEaMokz.js","_app/immutable/chunks/Dd42kC7b.js","_app/immutable/entry/app.BsAi67Sm.js","_app/immutable/chunks/C1FmrZbK.js","_app/immutable/chunks/wGEaMokz.js","_app/immutable/chunks/IHki7fMi.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
+		client: {start:"_app/immutable/entry/start.HjgEfdY2.js",app:"_app/immutable/entry/app.C1_nYI7d.js",imports:["_app/immutable/entry/start.HjgEfdY2.js","_app/immutable/chunks/DAnga4wU.js","_app/immutable/chunks/CLAyuAVz.js","_app/immutable/chunks/cAYkZ4Pl.js","_app/immutable/entry/app.C1_nYI7d.js","_app/immutable/chunks/C1FmrZbK.js","_app/immutable/chunks/CLAyuAVz.js","_app/immutable/chunks/IHki7fMi.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
 		nodes: [
 			__memo(() => import('./nodes/0.js')),
 			__memo(() => import('./nodes/1.js')),
@@ -67,6 +67,13 @@ return {
 				params: [],
 				page: null,
 				endpoint: __memo(() => import('./entries/endpoints/api/search/_server.ts.js'))
+			},
+			{
+				id: "/api/stripe/create-payment-intent",
+				pattern: /^\/api\/stripe\/create-payment-intent\/?$/,
+				params: [],
+				page: null,
+				endpoint: __memo(() => import('./entries/endpoints/api/stripe/create-payment-intent/_server.ts.js'))
 			},
 			{
 				id: "/briefings",
