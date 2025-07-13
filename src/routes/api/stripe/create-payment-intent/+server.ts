@@ -7,7 +7,13 @@ export const GET: RequestHandler = async () => {
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { amount, currency = 'usd', productName, email, liveMode = false } = await request.json();
+    console.log('=== STRIPE DEBUG ===');
+    console.log('Request received at:', new Date().toISOString());
+    
+    const body = await request.json();
+    console.log('Request body:', body);
+    
+    const { amount, currency = 'usd', productName, email, liveMode = false } = body;
     
     // Debug logging
     console.log('API called with:', { amount, currency, productName, email, liveMode });
@@ -31,9 +37,18 @@ export const POST: RequestHandler = async ({ request }) => {
       : (process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_SECRET_KEY); // Test key fallback
     
     if (!stripeSecretKey) {
-      console.error('Stripe secret key not found in environment variables');
-      console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('STRIPE')));
-      return json({ error: 'Payment processing not configured' }, { status: 500 });
+      console.error('❌ STRIPE KEY MISSING');
+      console.error('Environment variables available:', Object.keys(process.env).filter(k => k.includes('STRIPE')));
+      console.error('Looking for:', liveMode ? 'STRIPE_SECRET_KEY' : 'STRIPE_TEST_SECRET_KEY');
+      return json({ 
+        error: 'Payment processing not configured',
+        debug: 'Stripe keys missing from environment'
+      }, { 
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     }
     
     console.log(`Creating payment intent in ${liveMode ? 'LIVE' : 'TEST'} mode`);

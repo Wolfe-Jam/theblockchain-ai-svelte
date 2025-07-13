@@ -8,12 +8,12 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		// Using Netlify adapter for proper deployment
+		// Using Netlify adapter for proper deployment v3
 		adapter: adapter({
-			// Let Netlify handle edge functions
+			// Use edge functions for better routing
 			edge: false,
-			// Split into individual functions for better routing
-			split: true
+			// Split into individual functions for better debugging
+			split: false
 		})
 	}
 };
