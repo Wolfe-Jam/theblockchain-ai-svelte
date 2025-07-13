@@ -12,8 +12,8 @@ const config = {
 		adapter: adapter({
 			// Let Netlify handle edge functions
 			edge: false,
-			// Don't split into multiple functions
-			split: false
+			// Split into individual functions for better routing
+			split: true
 		})
 	}
 };
