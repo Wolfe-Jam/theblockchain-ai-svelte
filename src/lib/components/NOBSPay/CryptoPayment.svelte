@@ -4,6 +4,7 @@
   
   export let amount: number;
   export let currency: string;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export let productName: string;
   export let email: string;
   export let testMode: boolean;

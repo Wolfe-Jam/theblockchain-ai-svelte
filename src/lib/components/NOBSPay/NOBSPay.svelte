@@ -13,6 +13,7 @@
   // Props with defaults
   export let amount: number;
   export let productName: string;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export let productId = '';
   export let currency = 'USD';
   export let methods: PaymentMethod[] = ['stripe', 'paypal', 'crypto'];
@@ -24,6 +25,7 @@
   export let onSuccess: (result: PaymentResult) => void;
   export let onError: (error: Error) => void;
   export let onCancel: (() => void) | undefined = undefined;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export let metadata: Record<string, any> = {};
   export let testMode = false;
   

@@ -90,22 +90,6 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 # =====================================================
-# REDIRECTS & FUNCTIONS (v3)
-# =====================================================
-
-# API function routing - remove force to let SvelteKit handle
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-  
-# Specific stripe routing 
-[[redirects]]
-  from = "/api/stripe/*"
-  to = "/.netlify/functions/stripe-:splat"
-  status = 200
-
-# =====================================================
 # ENVIRONMENT CONTEXT
 # =====================================================
 

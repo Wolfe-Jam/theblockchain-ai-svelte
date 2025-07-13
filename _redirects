@@ -1,6 +1,9 @@
 # API Routes
 /api/*  /.netlify/functions/:splat  200
 
+# Specific stripe routing 
+/api/stripe/*  /.netlify/functions/stripe-:splat  200
+
 # Custom redirects
 /search  /marketplace/search  301
 
