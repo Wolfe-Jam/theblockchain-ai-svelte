@@ -1,0 +1,39 @@
+# 🔒 BULLETPROOF FINTECH SECURITY CONFIGURATION
+# Zero-tolerance redirect and security setup for payment processing
+
+# =====================================================
+# 🎯 PRECISE API ROUTING (NO CONFLICTS)
+# =====================================================
+
+# Stripe payment endpoints (HIGHEST PRIORITY)
+/api/stripe/create-payment-intent/*  /.netlify/functions/create-payment-intent  200
+/api/stripe/webhooks/*              /.netlify/functions/stripe-webhooks       200
+/api/stripe/test/*                  /.netlify/functions/stripe-test          200
+
+# PayPal endpoints (if needed)
+/api/paypal/create-order/*          /.netlify/functions/paypal-create-order   200
+/api/paypal/webhooks/*              /.netlify/functions/paypal-webhooks       200
+
+# Admin endpoints (SECURED)
+/api/admin/*                        /.netlify/functions/admin-:splat          200
+
+# Search and general endpoints  
+/api/search/*                       /.netlify/functions/search               200
+/api/market-data/*                  /.netlify/functions/market-data          200
+
+# Health check (monitoring)
+/api/health/*                       /.netlify/functions/health-check         200
+
+# =====================================================
+# 🛡️ SECURITY REDIRECTS
+# =====================================================
+
+# Force HTTPS (security)
+http://theblockchain.ai/*          https://theblockchain.ai/:splat           301!
+http://www.theblockchain.ai/*      https://theblockchain.ai/:splat           301!
+
+# Legacy domain security
+https://bai.vercel.app/*           https://theblockchain.ai/:splat           301!
+
+# UI redirects (non-security)
+/search                            /marketplace/search                        301

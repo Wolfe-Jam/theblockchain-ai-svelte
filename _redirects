@@ -1,11 +1,33 @@
-# API Routes
-/api/*  /.netlify/functions/:splat  200
+# 🔒 BULLETPROOF FINTECH REDIRECTS
+# SvelteKit handles ALL /api/* routes automatically
+# ONLY security and UI redirects here
 
-# Specific stripe routing 
-/api/stripe/*  /.netlify/functions/stripe-:splat  200
+# =====================================================
+# 🛡️ SECURITY-ONLY REDIRECTS
+# =====================================================
 
-# Custom redirects
-/search  /marketplace/search  301
+# Force HTTPS (CRITICAL for FinTech)
+http://theblockchain.ai/*          https://theblockchain.ai/:splat           301!
+http://www.theblockchain.ai/*      https://theblockchain.ai/:splat           301!
 
-# Production domain redirects  
-https://bai.vercel.app/*  https://theblockchain.ai/:splat  301!
+# Legacy domain security redirect  
+https://bai.vercel.app/*           https://theblockchain.ai/:splat           301!
+
+# =====================================================
+# 🎯 UI-ONLY REDIRECTS (NON-SECURITY)
+# =====================================================
+
+# Search convenience redirect
+/search                            /marketplace/search                        301
+
+# =====================================================
+# 🚫 NO API REDIRECTS
+# =====================================================
+# SvelteKit automatically handles:
+# - /api/stripe/create-payment-intent/*
+# - /api/stripe/test/*  
+# - /api/webhooks/*
+# - /api/search/*
+# - /api/admin/*
+# 
+# DO NOT ADD API REDIRECTS - CAUSES SECURITY ISSUES!

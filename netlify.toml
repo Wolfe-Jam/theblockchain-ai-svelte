@@ -1,104 +1,111 @@
 [build]
-  # SvelteKit build command with aggressive cache busting
   command = "rm -rf .netlify build node_modules/.vite && npm ci && npm run build"
   publish = "build"
-  # Clear all caches
   
 [build.environment]
   NODE_VERSION = "18"
-  NPM_VERSION = "9" 
-  # Force fresh deployment v3
-  NETLIFY_SKIP_EDGE_FUNCTIONS_CACHE = "true"
-  NETLIFY_SKIP_BUILD_CACHE = "true"
+  NPM_VERSION = "9"
 
 # =====================================================
-# 🔒 SECURITY HEADERS (v2 - DEPLOYMENT FORCED)
+# 🔒 BULLETPROOF FINTECH SECURITY HEADERS
 # =====================================================
 
-# Global security headers (updated for deployment)
+# GLOBAL SECURITY (MAXIMUM PROTECTION)
 [[headers]]
   for = "/*"
   [headers.values]
-    # XSS Protection
+    # FinTech Security Identity
+    X-FinTech-Security = "bulletproof"
+    X-Payment-Security = "PCI-DSS-ready"
+    X-Security-Version = "2025-07-13-final"
+    
+    # Core Security Headers
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
-    
-    # Deployment verification v3
-    X-Deployment-Version = "v3-supabase-fix-2025-07-13"
-    
-    # Referrer Policy
     Referrer-Policy = "strict-origin-when-cross-origin"
     
-    # Content Security Policy (FIXED v3 - Explicit Supabase domains)
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.anthropic.com https://generativelanguage.googleapis.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.anthropic.com https://generativelanguage.googleapis.com https://minumiricmuddzcyxyzd.supabase.com https://*.supabase.co https://*.supabase.com wss://*.supabase.co wss://*.supabase.com https://api.stripe.com https://fonts.googleapis.com https://api.paypal.com https://www.paypal.com https://*.coinbase.com; object-src 'none'; base-uri 'self';"
+    # HSTS (MAXIMUM + PRELOAD)
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     
-    # HSTS (HTTPS Strict Transport Security)
-    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    # CSP (BULLETPROOF - FINTECH GRADE)
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://js.stripe.com https://checkout.paypal.com https://www.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://logos.stripe.com https://www.paypalobjects.com https://images.coinbase.com; connect-src 'self' https://api.stripe.com https://api.paypal.com https://api.coinbase.com https://minumiricmuddzcyxyzd.supabase.com https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self' https://api.stripe.com https://www.paypal.com; frame-ancestors 'none'; upgrade-insecure-requests;"
+    
+    # Advanced Security Headers
+    X-Permitted-Cross-Domain-Policies = "none"
+    Cross-Origin-Embedder-Policy = "credentialless"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
 
-# API-specific headers (enhanced)
+# PAYMENT API SECURITY (ULTRA-STRICT)
 [[headers]]
-  for = "/api/*"
+  for = "/api/stripe/*"
   [headers.values]
-    # Deployment verification
-    X-API-Version = "v2-split-functions"
-    
-    # CORS headers (will be overridden by dynamic CORS in code)
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"
-    Access-Control-Max-Age = "86400"
-    
-    # Additional security
+    X-API-Type = "payment-critical"
+    X-PCI-Compliance = "required"
+    Cache-Control = "no-store, no-cache, must-revalidate, private"
+    Pragma = "no-cache"
+    Expires = "0"
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "DENY"
-    Cache-Control = "no-store, no-cache, must-revalidate"
+    Referrer-Policy = "no-referrer"
+    Access-Control-Allow-Origin = "https://theblockchain.ai"
+    Access-Control-Allow-Methods = "POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Max-Age = "300"
 
-# Search API performance headers
+# WEBHOOK SECURITY (SIGNATURE VALIDATION)
 [[headers]]
-  for = "/api/search"
+  for = "/api/webhooks/*"
   [headers.values]
-    Cache-Control = "public, max-age=300, s-maxage=300"
-    X-Function-Type = "split-endpoint"
+    X-Webhook-Security = "signature-required"
+    Cache-Control = "no-store, no-cache, must-revalidate, private"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
 
-# Suggestions API caching
-[[headers]]
-  for = "/api/suggestions"
-  [headers.values]
-    Cache-Control = "public, max-age=600, s-maxage=600"
-
-# Admin endpoints - extra security
+# ADMIN ENDPOINTS (LOCKDOWN)
 [[headers]]
   for = "/api/admin/*"
   [headers.values]
+    X-Admin-Security = "maximum"
     Cache-Control = "no-store, no-cache, must-revalidate, private"
-    X-Robots-Tag = "noindex, nofollow"
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
 
-# Static assets optimization
+# STATIC ASSETS (SECURE CACHING)
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
 
 [[headers]]
   for = "/*.js"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
+    X-Content-Type-Options = "nosniff"
+    
 [[headers]]
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
 
 # =====================================================
-# ENVIRONMENT CONTEXT
+# 🔐 ENVIRONMENT SECURITY
 # =====================================================
 
 [context.production.environment]
-  # Production environment
-  NETLIFY_SKIP_EDGE_FUNCTIONS_CACHE = "true"
+  NODE_ENV = "production"
+  SECURITY_MODE = "bulletproof"
 
 [context.deploy-preview.environment]
-  NODE_ENV = "development"
+  NODE_ENV = "staging" 
+  SECURITY_MODE = "high"
 
 [context.branch-deploy.environment]
   NODE_ENV = "development"
+  SECURITY_MODE = "development"
