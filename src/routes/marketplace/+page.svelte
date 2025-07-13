@@ -5,6 +5,7 @@
   import NOBSPay from '$lib/components/NOBSPay';
   import type { PaymentResult } from '$lib/components/NOBSPay/types';
   import FlipCard from '$lib/components/marketplace/FlipCard.svelte';
+  import { BUYButton, ProductContainer } from '$lib/components/BUYButton';
   
   let components: Component[] = [];
   let loading = true;
@@ -13,6 +14,29 @@
   // FlipCard Width Control (1-8 cards per row)
   let flipCardWidth: number = 3; // Default: 3 cards per row
   let maxAllowedWidth: number = 8; // Changes based on screen size
+  
+  // Aspect Ratio Toggles (always at least one must be active)
+  let aspectRatios = {
+    square: true,     // 1:1 - Default ON
+    portrait: false,  // 3:4 - Default OFF  
+    postcard: false   // 4:3 - Default OFF
+  };
+  
+  // Smart BUY button sizing based on grid width
+  function getBuyButtonSize(gridWidth: number): 'compact' | 'small' | 'medium' | 'large' {
+    if (gridWidth === 1 || gridWidth === 2) return 'large';    // Sizes 1-2: Large BUY
+    if (gridWidth === 3) return 'medium';                      // Size 3: Perfect (AMAZING!)
+    if (gridWidth === 4 || gridWidth === 5) return 'small';    // Sizes 4-5: Small BUY  
+    return 'compact';                                           // Sizes 6-8: Compact BUY
+  }
+  $: filteredComponents = components.map((component, originalIndex) => ({
+    ...component,
+    originalIndex,
+    // Assign aspect ratio based on product type (not position)
+    aspectRatio: component.id.startsWith('square-') ? 'square' : 
+                component.id.startsWith('portrait-') ? 'portrait' : 
+                component.id.startsWith('postcard-') ? 'postcard' : 'square'
+  })).filter(component => aspectRatios[component.aspectRatio]);
   
   // Payment state
   let showPayment = false;
@@ -79,6 +103,19 @@
     }
   }
   
+  // Aspect Ratio Toggle Logic (ensure at least one is always active)
+  function toggleAspectRatio(ratio: 'square' | 'portrait' | 'postcard') {
+    const currentlyActive = Object.values(aspectRatios).filter(Boolean).length;
+    
+    // If trying to turn off the last active ratio, prevent it
+    if (currentlyActive === 1 && aspectRatios[ratio]) {
+      return; // Don't allow turning off the last active ratio
+    }
+    
+    // Toggle the ratio
+    aspectRatios[ratio] = !aspectRatios[ratio];
+  }
+  
   // Get grid class based on current width
   function getGridClass(width: number): string {
     const gridClasses = {
@@ -106,9 +143,12 @@
     }
   }
   
-  // Mock data for development - 8 color spectrum FlipCards
+  // Mock data for development - 24 products for aspect ratio demo
   function getMockComponents(): Component[] {
-    const colorSpectrum = [
+    const products = [];
+    
+    // 8 SQUARE products - All the same NOBS PAY style
+    const squareColors = [
       { name: 'Red', theme: 'red', bg: 'from-red-500 to-red-600' },
       { name: 'Orange', theme: 'orange', bg: 'from-orange-500 to-orange-600' },
       { name: 'Yellow', theme: 'yellow', bg: 'from-yellow-500 to-yellow-600' },
@@ -118,37 +158,131 @@
       { name: 'Purple', theme: 'purple', bg: 'from-purple-500 to-purple-600' },
       { name: 'Pink', theme: 'pink', bg: 'from-pink-500 to-pink-600' }
     ];
-
-    return colorSpectrum.map((color, index) => ({
-      id: (index + 1).toString(),
-      name: 'NOBS PAY CART',
-      slug: 'nobs-pay',
-      tagline: 'Done for You Billing system',
-      description: 'Universal payment component that handles Stripe, PayPal, and Crypto payments with a single interface.',
-      consumer_tagline: 'Done for You Billing system',
-      api_name: 'NOBS Pay',
-      formal_name: 'NOBS Pay Cart',
-      fintech_name: 'NOBS Pay',
-      price_individual: 100,  // $1.00 for testing
-      price_team: 300,        // $3.00 for testing  
-      price_enterprise: 500,  // $5.00 for testing
-      category: 'payment-processing',
-      tags: ['payment', 'stripe', 'paypal', 'crypto'],
-      keywords: ['payment gateway', 'checkout', 'e-commerce'],
-      tech_stack: ['svelte', 'typescript', 'stripe-api'],
-      flip_card_theme: color.theme,
-      flip_card_size: 'standard',
-      flip_card_color: color.bg,
-      rating: 5.0,
-      download_count: 0,
-      featured: index === 0, // Only first card is featured
-      is_api_product: true,
-      is_active: true,
-      is_published: true,
-      created_at: new Date().toISOString(),
-      demo_url: '/marketplace/demo/nobs-pay',
-      developer_features: ['Universal payment gateway', 'Multi-processor support', 'TypeScript definitions', 'Theme customization', 'Webhook handling']
-    }));
+    
+    squareColors.forEach((color, index) => {
+      products.push({
+        id: `square-${index + 1}`,
+        name: 'NOBS PAY CART',
+        slug: 'nobs-pay',
+        tagline: 'Done for You Billing system',
+        description: 'Universal payment component that handles Stripe, PayPal, and Crypto payments with a single interface.',
+        consumer_tagline: 'Done for You Billing system',
+        api_name: 'NOBS Pay',
+        formal_name: 'NOBS Pay Cart',
+        fintech_name: 'NOBS Pay',
+        price_individual: 100,
+        price_team: 300,
+        price_enterprise: 500,
+        category: 'payment-processing',
+        tags: ['payment', 'stripe', 'paypal', 'crypto'],
+        keywords: ['payment gateway', 'checkout', 'e-commerce'],
+        tech_stack: ['svelte', 'typescript', 'stripe-api'],
+        flip_card_theme: color.theme,
+        flip_card_size: 'standard',
+        flip_card_color: color.bg,
+        rating: 5.0,
+        download_count: 0,
+        featured: index === 0,
+        is_api_product: true,
+        is_active: true,
+        is_published: true,
+        created_at: new Date().toISOString(),
+        demo_url: '/marketplace/demo/nobs-pay',
+        developer_features: ['Universal payment gateway', 'Multi-processor support', 'TypeScript definitions']
+      });
+    });
+    
+    // 8 PORTRAIT products - "Portrait Cards" with gray shades
+    const grayShades = [
+      { name: 'Slate', bg: 'from-slate-400 to-slate-600' },
+      { name: 'Gray', bg: 'from-gray-400 to-gray-600' },
+      { name: 'Zinc', bg: 'from-zinc-400 to-zinc-600' },
+      { name: 'Neutral', bg: 'from-neutral-400 to-neutral-600' },
+      { name: 'Stone', bg: 'from-stone-400 to-stone-600' },
+      { name: 'Cool Gray', bg: 'from-gray-500 to-slate-700' },
+      { name: 'Warm Gray', bg: 'from-stone-500 to-neutral-700' },
+      { name: 'Blue Gray', bg: 'from-slate-500 to-gray-700' }
+    ];
+    
+    grayShades.forEach((shade, index) => {
+      products.push({
+        id: `portrait-${index + 1}`,
+        name: 'Portrait Cards',
+        slug: 'portrait-cards',
+        tagline: 'done for you cards',
+        description: 'Professional portrait-oriented card components perfect for mobile-first designs and vertical content layouts.',
+        consumer_tagline: 'done for you cards',
+        api_name: 'Portrait Cards',
+        formal_name: 'Portrait Card Components',
+        fintech_name: 'Portrait Cards',
+        price_individual: 150,
+        price_team: 400,
+        price_enterprise: 600,
+        category: 'ui-components',
+        tags: ['cards', 'mobile', 'portrait', 'ui'],
+        keywords: ['card design', 'mobile ui', 'vertical layout'],
+        tech_stack: ['svelte', 'typescript', 'tailwind'],
+        flip_card_theme: 'minimal',
+        flip_card_size: 'portrait',
+        flip_card_color: shade.bg,
+        rating: 4.8,
+        download_count: 0,
+        featured: false,
+        is_api_product: false,
+        is_active: true,
+        is_published: true,
+        created_at: new Date().toISOString(),
+        demo_url: '/marketplace/demo/portrait-cards',
+        developer_features: ['Portrait aspect ratio', 'Mobile optimized', 'Responsive design']
+      });
+    });
+    
+    // 8 POSTCARD products - "Postcards" with random gradients
+    const randomGradients = [
+      { name: 'Sunset', bg: 'from-orange-400 via-red-500 to-pink-500' },
+      { name: 'Ocean', bg: 'from-cyan-400 via-blue-500 to-indigo-600' },
+      { name: 'Forest', bg: 'from-green-400 via-emerald-500 to-teal-600' },
+      { name: 'Aurora', bg: 'from-purple-400 via-pink-500 to-red-500' },
+      { name: 'Desert', bg: 'from-yellow-400 via-orange-500 to-red-600' },
+      { name: 'Nebula', bg: 'from-indigo-400 via-purple-500 to-pink-600' },
+      { name: 'Tropical', bg: 'from-lime-400 via-green-500 to-emerald-600' },
+      { name: 'Cosmic', bg: 'from-blue-400 via-purple-500 to-indigo-700' }
+    ];
+    
+    randomGradients.forEach((gradient, index) => {
+      products.push({
+        id: `postcard-${index + 1}`,
+        name: 'Postcards',
+        slug: 'postcards',
+        tagline: 'done for you postcards',
+        description: 'Beautiful landscape-oriented postcard components with stunning gradient backgrounds perfect for hero sections and wide content.',
+        consumer_tagline: 'done for you postcards',
+        api_name: 'Postcards',
+        formal_name: 'Postcard Components',
+        fintech_name: 'Postcards',
+        price_individual: 200,
+        price_team: 500,
+        price_enterprise: 750,
+        category: 'ui-components',
+        tags: ['postcards', 'gradients', 'landscape', 'hero'],
+        keywords: ['postcard design', 'gradient backgrounds', 'wide layout'],
+        tech_stack: ['svelte', 'typescript', 'css-gradients'],
+        flip_card_theme: 'premium',
+        flip_card_size: 'postcard',
+        flip_card_color: gradient.bg,
+        rating: 4.9,
+        download_count: 0,
+        featured: false,
+        is_api_product: false,
+        is_active: true,
+        is_published: true,
+        created_at: new Date().toISOString(),
+        demo_url: '/marketplace/demo/postcards',
+        developer_features: ['Landscape aspect ratio', 'Gradient system', 'Hero sections']
+      });
+    });
+    
+    return products;
   }
   
   // Payment handling functions
@@ -290,6 +424,45 @@
               </svg>
               Flip Cards
             </button>
+            
+            <!-- Aspect Ratio Toggles (only show when FlipCard mode is active) -->
+            {#if viewMode === 'flip'}
+              <div class="flex gap-1 ml-2 border-l border-gray-300 dark:border-gray-600 pl-2">
+                <!-- Square (1:1) -->
+                <button
+                  on:click={() => toggleAspectRatio('square')}
+                  class="px-2 py-1 rounded text-xs font-medium transition-colors {aspectRatios.square ? 'bg-cyan-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'}"
+                  title="Square (1:1)"
+                >
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="6" y="6" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"/>
+                  </svg>
+                </button>
+                
+                <!-- Portrait (3:4) -->
+                <button
+                  on:click={() => toggleAspectRatio('portrait')}
+                  class="px-2 py-1 rounded text-xs font-medium transition-colors {aspectRatios.portrait ? 'bg-cyan-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'}"
+                  title="Portrait (3:4)"
+                >
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="8" y="4" width="8" height="16" stroke="currentColor" stroke-width="2" fill="none"/>
+                  </svg>
+                </button>
+                
+                <!-- Postcard/Landscape (4:3) -->
+                <button
+                  on:click={() => toggleAspectRatio('postcard')}
+                  class="px-2 py-1 rounded text-xs font-medium transition-colors {aspectRatios.postcard ? 'bg-cyan-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'}"
+                  title="Postcard (4:3)"
+                >
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="4" y="8" width="16" height="8" stroke="currentColor" stroke-width="2" fill="none"/>
+                  </svg>
+                </button>
+              </div>
+            {/if}
+            
             <button
               on:click={() => viewMode = 'list'}
               class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
@@ -330,24 +503,36 @@
       </div>
       
       {#if viewMode === 'flip'}
-        <!-- Dynamic FlipCards View -->
+        <!-- Dynamic FlipCards View with Container System -->
         <div class="grid {getGridClass(flipCardWidth)} gap-6 transition-all duration-300">
-          {#each components as component (component.id)}
-            <FlipCard 
-              {component}
-              on:buy={handleCardBuy}
-            />
+          {#each filteredComponents as component, index (component.id)}
+            <ProductContainer product={component}>
+              <FlipCard 
+                {component}
+                aspectRatio={component.aspectRatio}
+                displayOnly={true}
+                iconType={component.category === 'payment-processing' ? 'payment' : 'checkmark'}
+                slot="product"
+              />
+              <BUYButton 
+                size={flipCardWidth >= 6 ? 'compact' : 'medium'}
+                style="lightning"
+                on:purchase={handleCardBuy}
+                slot="buy"
+              />
+            </ProductContainer>
           {/each}
         </div>
         
         <!-- FlipCard Width Info (helpful for users) -->
         <div class="mt-6 text-center">
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            Showing <span class="font-medium text-gray-700 dark:text-gray-300">{components.length}</span> 
-            products in <span class="font-medium text-blue-600 dark:text-blue-400">{flipCardWidth}</span> 
+            Showing <span class="font-medium text-gray-700 dark:text-gray-300">{filteredComponents.length}</span> 
+            of <span class="font-medium text-gray-600 dark:text-gray-400">{components.length}</span> products
+            in <span class="font-medium text-blue-600 dark:text-blue-400">{flipCardWidth}</span> 
             column{flipCardWidth === 1 ? '' : 's'} • 
-            <span class="hidden sm:inline">Use width controls above to adjust view</span>
-            <span class="sm:hidden">Tap width numbers to adjust</span>
+            <span class="hidden sm:inline">Use aspect ratio and width controls above to adjust view</span>
+            <span class="sm:hidden">Use controls above to filter</span>
           </p>
         </div>
       {:else}
@@ -369,7 +554,7 @@
             
             <!-- List Items -->
             <div class="divide-y divide-gray-200 dark:divide-gray-600">
-              {#each components as component, index (component.id)}
+              {#each filteredComponents as component, index (component.id)}
                 <div 
                   class="legendary-list-row grid grid-cols-12 gap-4 items-center px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group cursor-pointer"
                   on:click={() => handleDetailsClick(component)}

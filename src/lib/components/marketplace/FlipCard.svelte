@@ -3,9 +3,13 @@
   import { createEventDispatcher } from 'svelte';
   import { goto } from '$app/navigation';
   import type { Component } from '$lib/marketplace/types';
-  
+  // Props from parent 
   export let component: Component;
   export let theme: 'wallet' | 'neon' | 'gradient' | 'solid' = 'solid';
+  export let aspectRatio: 'square' | 'portrait' | 'postcard' = 'square';
+  export let displayOnly: boolean = false; // NEW: Pure display mode (no BUY buttons)
+  export let iconType: 'checkmark' | 'custom' | 'component' = 'checkmark';
+  export let customIconSvg: string = '';
   
   const dispatch = createEventDispatcher();
   
@@ -72,6 +76,76 @@
     accent: 'text-white'
   } : getThemeForCategory(component.category);
   
+  // 🎨 Aspect ratio configurations (HEIGHT-ONLY adjustment)
+  // Width is controlled by flex grid (1-8 cards per row)
+  // These heights create different aspect ratios relative to flex width
+  const aspectRatios = {
+    square: {
+      height: 'auto', // Height = Width (perfect square)
+      aspectClass: 'aspect-square',
+      description: '1:1 Classic'
+    },
+    portrait: {
+      height: 'auto', // Height = Width * 4/3 (taller)
+      aspectClass: 'aspect-[3/4]',
+      description: '3:4 Modern'
+    },
+    postcard: {
+      height: 'auto', // Height = Width * 3/4 (wider)
+      aspectClass: 'aspect-[4/3]',
+      description: '4:3 Landscape'
+    }
+  };
+  const iconSvgs = {
+    checkmark: `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 12l2 2 4-4"></path>
+        <circle cx="12" cy="12" r="10"></circle>
+      </svg>
+    `,
+    component: `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <rect x="7" y="7" width="3" height="3"></rect>
+        <rect x="14" y="7" width="3" height="3"></rect>
+        <rect x="7" y="14" width="3" height="3"></rect>
+        <rect x="14" y="14" width="3" height="3"></rect>
+      </svg>
+    `,
+    payment: `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+        <line x1="1" y1="10" x2="23" y2="10"></line>
+      </svg>
+    `
+  };
+  
+  // Get appropriate icon based on component type
+  function getComponentIcon(): string {
+    if (customIconSvg) return customIconSvg;
+    
+    switch (iconType) {
+      case 'custom':
+        return customIconSvg || iconSvgs.checkmark;
+      case 'component':
+        return iconSvgs.component;
+      case 'checkmark':
+      default:
+        return iconSvgs.checkmark;
+    }
+  }
+  
+  // Smart icon selection based on component category
+  function getSmartIcon(): string {
+    if (customIconSvg) return customIconSvg;
+    
+    if (component.category === 'payment-processing') {
+      return iconSvgs.payment;
+    }
+    
+    return getComponentIcon();
+  }
+  
   function handleFlip() {
     isFlipped = !isFlipped;
   }
@@ -111,7 +185,7 @@
 </script>
 
 <div 
-  class="flip-card"
+  class="flip-card {aspectRatios[aspectRatio].aspectClass}"
   bind:this={cardElement}
   on:click={handleFlip}
   on:keydown={(e) => e.key === 'Enter' && handleFlip()}
@@ -122,42 +196,39 @@
   <div class="flip-card-inner" class:flipped={isFlipped}>
     <!-- Front of card -->
     <div class="flip-card-front {currentTheme.front} {currentTheme.accent}">
-      <!-- Category badge -->
-      <div class="category-badge">
-        {(component.category || 'Component').replace('-', ' ')}
-      </div>
-      
       <!-- Main content area -->
       <div class="card-content">
         <!-- Icon/Graphic area -->
         <div class="icon-area">
-          <!-- Use ✅ checkmark for all cards -->
-          <div class="checkmark-icon">✅</div>
+          <!-- Vector SVG Icon (Image) -->
+          <div class="svg-icon-container">
+            {@html getSmartIcon()}
+          </div>
         </div>
         
-        <!-- Title and tagline -->
+        <!-- Title -->
         <h3 class="card-title">{component.name}</h3>
+        
+        <!-- Tagline -->
         <p class="card-tagline">{component.consumer_tagline || component.tagline}</p>
       </div>
       
-      <!-- Action button -->
-      <div class="front-action">
-        <button 
-          class="btn-mint"
-          on:click={handleBuyNow}
-          aria-label="Buy {component.name}"
-        >
-          BUY
-        </button>
-      </div>
-      
-      <!-- Flip indicator -->
-      <div class="flip-indicator">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-      </div>
+      <!-- Flip indicator (pure display mode) -->
+      {#if !displayOnly}
+        <div class="flip-indicator">
+          <button 
+            class="flip-icon-btn"
+            on:click|stopPropagation={handleFlip}
+            aria-label="Flip card to see details"
+            title="Flip card"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
+      {/if}
     </div>
     
     <!-- Back of card -->
@@ -204,11 +275,17 @@
           <!-- Action buttons -->
           <div class="back-actions">
             <button 
-              class="btn-mint"
+              class="btn-mint btn-buy-enhanced"
               on:click={handleBuyNow}
               aria-label="Buy {component.name}"
+              title="BUY ⚡️"
             >
-              BUY
+              <span class="btn-buy-content">
+                <svg class="lightning-icon" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
+                </svg>
+                BUY
+              </span>
             </button>
             
             <div class="secondary-actions">
@@ -247,9 +324,10 @@
 <style>
   .flip-card {
     width: 100%;
-    height: 400px;
+    /* Height now controlled by aspect ratio */
     perspective: 1000px;
     cursor: pointer;
+    min-height: 300px; /* Ensure minimum height for content */
   }
   
   .flip-card:hover .flip-card-inner:not(.flipped) {
@@ -275,11 +353,12 @@
     height: 100%;
     backface-visibility: hidden;
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to ensure BUY button shows */
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    min-height: 100%; /* Ensure full height usage */
   }
   
   .flip-card-front::before,
@@ -318,21 +397,59 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Changed from center to start */
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 1.5rem 1rem 1rem 1rem; /* Reduced padding */
+    min-height: 0; /* Allow shrinking */
   }
   
   .icon-area {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     position: relative;
-    padding: 2rem;
+    padding: 1.5rem 1rem 1rem 1rem; /* Top padding modest, reduced bottom */
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 1.5rem;
     display: flex;
+    flex-direction: column;
+    align-items: center;        /* Horizontal center (keep) */
+    justify-content: flex-start; /* Top align (changed from center) */
+  }
+  
+  /* 🎨 NEW: SVG Icon Container */
+  .svg-icon-container {
+    width: 6rem;
+    height: 6rem;
+    color: white;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    animation: pulse 2s infinite;
+    display: flex;
     align-items: center;
     justify-content: center;
+  }
+  
+  .svg-icon-container svg {
+    width: 100%;
+    height: 100%;
+    stroke-width: 2.5;
+  }
+  
+  /* 🎯 NEW: Text Below Icon */
+  .icon-text {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  .icon-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    backdrop-filter: blur(10px);
   }
   
   .checkmark-icon {
@@ -399,7 +516,8 @@
   
   .front-action {
     margin-top: auto;
-    padding: 0 1rem;
+    padding: 0.5rem 1rem 0.5rem 1rem; /* Added bottom padding */
+    flex-shrink: 0; /* Prevent shrinking */
   }
   
   .btn-mint {
@@ -420,6 +538,67 @@
     background: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Enhanced BUY Button with Lightning Bolt & Feel-Good Factor */
+  .btn-buy-enhanced {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 12px; /* Rounded square - perfect for "BUY" text */
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-buy-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .btn-buy-enhanced:hover::before {
+    left: 100%;
+  }
+  
+  .btn-buy-enhanced:hover {
+    background: rgba(255, 255, 255, 0.95) !important;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .btn-buy-enhanced:active {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-buy-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .lightning-icon {
+    width: 1rem;
+    height: 1rem;
+    color: #f59e0b; /* Amber for energy */
+    filter: drop-shadow(0 1px 2px rgba(245, 158, 11, 0.3));
+    transition: all 0.2s ease;
+  }
+  
+  .btn-buy-enhanced:hover .lightning-icon {
+    color: #f97316; /* Orange on hover for more energy */
+    transform: scale(1.1);
+    filter: drop-shadow(0 2px 4px rgba(249, 115, 22, 0.4));
   }
   
   .price-section {
@@ -512,12 +691,53 @@
     bottom: 0.75rem;
     right: 0.75rem;
     opacity: 0.6;
-    animation: pulse 2s infinite;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    width: 1rem;
-    height: 1rem;
+  }
+  
+  .flip-icon-btn, .compact-buy-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+  }
+  
+  .flip-icon-btn {
+    color: rgba(255, 255, 255, 0.8);
+    animation: pulse 2s infinite;
+  }
+  
+  .compact-buy-btn {
+    background: rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .flip-icon-btn:hover, .compact-buy-btn:hover {
+    background: rgba(255, 255, 255, 0.6) !important;
+    transform: scale(1.15);
+    opacity: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .lightning-icon-compact {
+    width: 1.1rem;
+    height: 1.1rem;
+    color: #f59e0b;
+    filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.4));
+  }
+  
+  .compact-buy-btn:hover .lightning-icon-compact {
+    color: #f97316;
+    transform: scale(1.1);
   }
   
   @keyframes pulse {
@@ -706,8 +926,8 @@
     }
     
     .icon-area {
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
+      padding: 1.25rem 1rem 1rem 1rem; /* Modest top padding for mobile */
+      margin-bottom: 1.25rem;
     }
     
     .icon-placeholder {
