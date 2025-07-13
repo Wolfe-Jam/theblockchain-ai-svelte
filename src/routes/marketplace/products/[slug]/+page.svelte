@@ -11,6 +11,8 @@
   let error: string | null = null;
   let selectedLicense: 'individual' | 'team' | 'enterprise' = 'individual';
   let showPayment = false;
+  let paymentSuccess = false;
+  let paymentResult: PaymentResult | null = null;
   let testMode = false; // Default to live mode for real transactions
   
   // Get mock data for development
@@ -209,8 +211,15 @@
   
   function handlePaymentSuccess(result: PaymentResult) {
     console.log('Payment successful!', result);
-    // TODO: Handle successful payment
+    paymentResult = result;
+    paymentSuccess = true;
     showPayment = false;
+    
+    // Auto-hide success message after 10 seconds
+    setTimeout(() => {
+      paymentSuccess = false;
+      paymentResult = null;
+    }, 10000);
   }
   
   function handlePaymentError(error: Error) {
@@ -282,6 +291,43 @@
         </div>
       </div>
     </div>
+    
+    <!-- Payment Success Message -->
+    {#if paymentSuccess && paymentResult}
+      <div class="fixed top-4 right-4 z-50 max-w-md">
+        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 shadow-lg">
+          <div class="flex items-start gap-3">
+            <div class="text-green-400 text-2xl">✅</div>
+            <div>
+              <h3 class="font-semibold text-green-800 dark:text-green-200 mb-1">
+                Payment Successful!
+              </h3>
+              <p class="text-green-700 dark:text-green-300 text-sm mb-2">
+                Thank you for purchasing {component?.name}!
+              </p>
+              <div class="text-xs text-green-600 dark:text-green-400">
+                <p>Transaction ID: {paymentResult.transactionId}</p>
+                <p>Amount: ${(paymentResult.amount / 100).toFixed(2)}</p>
+                <p>Method: {paymentResult.method.toUpperCase()}</p>
+              </div>
+              <div class="mt-3">
+                <button class="text-sm bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+                  Download License
+                </button>
+              </div>
+            </div>
+            <button 
+              on:click={() => paymentSuccess = false}
+              class="text-green-400 hover:text-green-600 ml-auto"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    {/if}
     
     <div class="max-w-7xl mx-auto px-4 py-8">
       <div class="grid lg:grid-cols-3 gap-8">
@@ -488,8 +534,13 @@
             <button 
               on:click={handleBuyNow}
               class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
+              disabled={paymentSuccess}
             >
-              Buy Now - {formatPrice(getSelectedPrice())}
+              {#if paymentSuccess}
+                ✅ Purchased Successfully
+              {:else}
+                Buy Now - {formatPrice(getSelectedPrice())}
+              {/if}
             </button>
             
             <p class="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">

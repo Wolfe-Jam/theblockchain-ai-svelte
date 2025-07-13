@@ -31,26 +31,10 @@ export const POST: RequestHandler = async ({ request }) => {
       return json({ error: 'Email is required' }, { status: 400 });
     }
     
-    // Get appropriate Stripe secret key based on mode
-    const stripeSecretKey = liveMode 
-      ? process.env.STRIPE_SECRET_KEY  // Live key from Netlify environment
-      : (process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_SECRET_KEY); // Test key fallback
+    // Get Stripe secret key with fallback to your actual key
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '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';
     
-    if (!stripeSecretKey) {
-      console.error('❌ STRIPE KEY MISSING');
-      console.error('Environment variables available:', Object.keys(process.env).filter(k => k.includes('STRIPE')));
-      console.error('Looking for:', liveMode ? 'STRIPE_SECRET_KEY' : 'STRIPE_TEST_SECRET_KEY');
-      return json({ 
-        error: 'Payment processing not configured',
-        debug: 'Stripe keys missing from environment'
-      }, { 
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-    }
-    
+    console.log('Using Stripe key prefix:', stripeSecretKey.substring(0, 8));
     console.log(`Creating payment intent in ${liveMode ? 'LIVE' : 'TEST'} mode`);
     
     // Dynamically import Stripe
