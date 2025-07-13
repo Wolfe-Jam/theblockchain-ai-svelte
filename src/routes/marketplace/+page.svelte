@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import type { Component } from '$lib/marketplace/types';
   import NOBSPay from '$lib/components/NOBSPay';
   import type { PaymentResult } from '$lib/components/NOBSPay/types';
@@ -7,6 +8,7 @@
   
   let components: Component[] = [];
   let loading = true;
+  let viewMode: 'flip' | 'list' = 'flip';
   
   // Payment state
   let showPayment = false;
@@ -105,6 +107,45 @@
   function handleCardBuy(event: CustomEvent<Component>) {
     handleBuyNow(event.detail);
   }
+  
+  // Utility functions
+  function formatPrice(cents: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(cents / 100);
+  }
+  
+  function handleDemoClick(component: Component) {
+    const demoSlugMap: { [key: string]: string } = {
+      'NOBS PAY CART': 'nobs-pay',
+      'DataViz Pro': 'dataviz-pro', 
+      'Auth Shield': 'auth-shield'
+    };
+    
+    const demoSlug = demoSlugMap[component.name] || component.slug || component.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    goto(`/marketplace/demo/${demoSlug}`);
+  }
+  
+  function handleDetailsClick(component: Component) {
+    const productSlug = component.slug || component.id;
+    goto(`/marketplace/products/${productSlug}`);
+  }
+  
+  // Get tech stack display (concise, no fluff)
+  function getTechDisplay(component: Component): string {
+    const tech = component.tech_stack || ['TypeScript', 'Svelte', 'API'];
+    return tech.slice(0, 3).join(' • ');
+  }
+  
+  // Get concise description (4-5 words max)
+  function getShortDescription(component: Component): string {
+    const desc = component.consumer_tagline || component.tagline || component.description;
+    const words = desc.split(' ').slice(0, 5);
+    return words.join(' ');
+  }
 </script>
 
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors pt-20">
@@ -199,18 +240,18 @@
             class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'flip' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
           >
             <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             Flip Cards
           </button>
           <button
-            on:click={() => viewMode = 'grid'}
-            class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
+            on:click={() => viewMode = 'list'}
+            class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
           >
             <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>
-            Grid View
+            List View
           </button>
         </div>
       </div>
@@ -218,7 +259,7 @@
       {#if viewMode === 'flip'}
         <!-- Flip Cards View -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {#each displayedComponents as component (component.id)}
+          {#each components as component (component.id)}
             <FlipCard 
               {component}
               on:buy={handleCardBuy}
@@ -226,68 +267,180 @@
           {/each}
         </div>
       {:else}
-        <!-- Traditional Grid View -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {#each displayedComponents as component (component.id)}
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow p-4 border border-gray-200 dark:border-gray-700">
-              <!-- Compact card content -->
-              <div class="flex items-start justify-between mb-3">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  {component.name}
-                </h3>
-                {#if component.featured}
-                  <span class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">
-                    Featured
-                  </span>
-                {/if}
-              </div>
-              
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                {component.consumer_tagline || component.tagline || component.description}
-              </p>
-              
-              <div class="flex flex-wrap gap-1 mb-3">
-                {#each (component.tags || [component.category || 'Component', 'Featured']).slice(0, 2) as tag}
-                  <span class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded">
-                    {tag}
-                  </span>
-                {/each}
-              </div>
-              
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-xl font-bold text-gray-900 dark:text-white">
-                  {formatPrice(component.price || component.price_individual)}
-                </span>
-                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                  <span class="text-yellow-400">★</span>
-                  <span class="ml-1">{component.rating || '4.8'}</span>
-                </div>
-              </div>
-              
-              <div class="flex gap-2">
-                <button 
-                  on:click={() => handleBuyNow(component)}
-                  class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-2 px-3 rounded text-sm font-medium transition-colors"
-                >
-                  Buy
-                </button>
-                {#if component.demo_url}
-                  <button 
-                    on:click={() => handleDemoClick(component)}
-                    class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
-                  >
-                    Demo
-                  </button>
-                {/if}
-                <button 
-                  on:click={() => handleDetailsClick(component)}
-                  class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm text-gray-700 dark:text-gray-300"
-                >
-                  Details
-                </button>
+        <!-- Legendary List View -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <!-- Desktop List -->
+          <div class="legendary-list-desktop">
+            <!-- List Header -->
+            <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 border-b border-gray-200 dark:border-gray-600">
+              <div class="grid grid-cols-12 gap-4 items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                <div class="col-span-1"></div> <!-- Icon space -->
+                <div class="col-span-3">Product</div>
+                <div class="col-span-3">Description</div>
+                <div class="col-span-3">Tech Stack</div>
+                <div class="col-span-1 text-right">Price</div>
+                <div class="col-span-1"></div> <!-- Actions space -->
               </div>
             </div>
-          {/each}
+            
+            <!-- List Items -->
+            <div class="divide-y divide-gray-200 dark:divide-gray-600">
+              {#each components as component, index (component.id)}
+                <div 
+                  class="legendary-list-row grid grid-cols-12 gap-4 items-center px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group cursor-pointer"
+                  on:click={() => handleDetailsClick(component)}
+                  on:keydown={(e) => e.key === 'Enter' && handleDetailsClick(component)}
+                  role="button"
+                  tabindex="0"
+                  aria-label="View details for {component.name}"
+                >
+                  <!-- ✅ Icon -->
+                  <div class="col-span-1 flex items-center justify-center">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br {component.flip_card_color || 'from-blue-500 to-blue-600'} flex items-center justify-center">
+                      <span class="text-white text-lg">✅</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Product Name -->
+                  <div class="col-span-3">
+                    <h3 class="product-name font-semibold text-gray-900 dark:text-white transition-colors">
+                      {component.name}
+                    </h3>
+                    {#if component.featured}
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 mt-1">
+                        Featured
+                      </span>
+                    {/if}
+                  </div>
+                  
+                  <!-- 4-5 Word Description -->
+                  <div class="col-span-3">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                      {getShortDescription(component)}
+                    </p>
+                  </div>
+                  
+                  <!-- Tech Stack (No Fluff) -->
+                  <div class="col-span-3">
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                        {getTechDisplay(component)}
+                      </span>
+                      {#if component.rating}
+                        <div class="flex items-center ml-2">
+                          <span class="text-yellow-400 text-sm">★</span>
+                          <span class="text-xs text-gray-500 dark:text-gray-400 ml-0.5">
+                            {component.rating}
+                          </span>
+                        </div>
+                      {/if}
+                    </div>
+                  </div>
+                  
+                  <!-- Price -->
+                  <div class="col-span-1 text-right">
+                    <span class="font-bold text-gray-900 dark:text-white">
+                      {formatPrice(component.price || component.price_individual)}
+                    </span>
+                  </div>
+                  
+                  <!-- Actions -->
+                  <div class="col-span-1 flex items-center justify-end gap-1">
+                    {#if component.demo_url}
+                      <button 
+                        on:click={(e) => { e.stopPropagation(); handleDemoClick(component); }}
+                        class="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        title="Try Demo"
+                        aria-label="Try demo for {component.name}"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.5a2.5 2.5 0 010 5H9m4.5-5H15m0 0l3 3m-3-3l3-3" />
+                        </svg>
+                      </button>
+                    {/if}
+                    <button 
+                      on:click={(e) => { e.stopPropagation(); handleBuyNow(component); }}
+                      class="p-1.5 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors"
+                      title="Buy Now"
+                      aria-label="Buy {component.name}"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5L3 21m0 0h5.5M7 13v8a2 2 0 002 2h6a2 2 0 002-2v-8m-8 0V9a2 2 0 012-2h4a2 2 0 012 2v4.01" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+          
+          <!-- Mobile List (Compact Cards) -->
+          <div class="legendary-list-mobile divide-y divide-gray-200 dark:divide-gray-600">
+            {#each components as component (component.id)}
+              <div 
+                class="legendary-list-row p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                on:click={() => handleDetailsClick(component)}
+                on:keydown={(e) => e.key === 'Enter' && handleDetailsClick(component)}
+                role="button"
+                tabindex="0"
+                aria-label="View details for {component.name}"
+              >
+                <div class="flex items-center gap-3">
+                  <!-- ✅ Icon -->
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br {component.flip_card_color || 'from-blue-500 to-blue-600'} flex items-center justify-center flex-shrink-0">
+                    <span class="text-white text-lg">✅</span>
+                  </div>
+                  
+                  <!-- Content -->
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                      <h3 class="product-name font-semibold text-gray-900 dark:text-white transition-colors truncate">
+                        {component.name}
+                      </h3>
+                      <span class="font-bold text-gray-900 dark:text-white ml-2">
+                        {formatPrice(component.price || component.price_individual)}
+                      </span>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 truncate">
+                      {getShortDescription(component)}
+                    </p>
+                    <div class="flex items-center justify-between mt-1">
+                      <span class="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                        {getTechDisplay(component)}
+                      </span>
+                      <div class="flex items-center gap-2">
+                        {#if component.demo_url}
+                          <button 
+                            on:click={(e) => { e.stopPropagation(); handleDemoClick(component); }}
+                            class="text-xs px-2 py-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            aria-label="Try demo for {component.name}"
+                          >
+                            Demo
+                          </button>
+                        {/if}
+                        <button 
+                          on:click={(e) => { e.stopPropagation(); handleBuyNow(component); }}
+                          class="text-xs px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
+                          aria-label="Buy {component.name}"
+                        >
+                          Buy
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+          
+          <!-- List Footer -->
+          {#if components.length > 5}
+            <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 border-t border-gray-200 dark:border-gray-600">
+              <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
+                {components.length} components • Use arrow keys for navigation • Tab to interact
+              </p>
+            </div>
+          {/if}
         </div>
       {/if}
       
@@ -387,4 +540,60 @@
   :global(.dark) .clear-search:hover {
     color: #06b6d4;
   }
+  
+  /* Legendary List Navigation */
+  .legendary-list-row {
+    outline: none;
+    transition: all 0.15s ease;
+  }
+  
+  .legendary-list-row:focus {
+    background-color: #dbeafe; /* blue-100 */
+    box-shadow: inset 3px 0 0 #2563eb; /* blue-600 left border */
+  }
+  
+  :global(.dark) .legendary-list-row:focus {
+    background-color: #1e3a8a; /* blue-900 */
+    box-shadow: inset 3px 0 0 #60a5fa; /* blue-400 left border */
+  }
+  
+  /* Smooth hover states */
+  .legendary-list-row:hover .product-name {
+    color: #2563eb; /* blue-600 */
+  }
+  
+  :global(.dark) .legendary-list-row:hover .product-name {
+    color: #60a5fa; /* blue-400 */
+  }
+  
+  /* Mobile responsiveness for list */
+  @media (max-width: 768px) {
+    .legendary-list-desktop {
+      display: none;
+    }
+    
+    .legendary-list-mobile {
+      display: block;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .legendary-list-desktop {
+      display: block;
+    }
+    
+    .legendary-list-mobile {
+      display: none;
+    }
+  }
+  
+  /* Icon gradients matching FlipCard themes */
+  .icon-red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .icon-orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+  .icon-yellow { background: linear-gradient(135deg, #eab308, #ca8a04); }
+  .icon-green { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .icon-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+  .icon-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+  .icon-purple { background: linear-gradient(135deg, #a855f7, #9333ea); }
+  .icon-pink { background: linear-gradient(135deg, #ec4899, #db2777); }
 </style>
