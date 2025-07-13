@@ -1,9 +1,8 @@
 [build]
-  # Install dependencies for both main app and functions
-  command = "npm install && cd netlify/functions && npm install && cd ../.. && npm run build"
+  # SvelteKit build command
+  command = "npm run build"
   publish = "build"
-  # Tell Netlify where functions are located
-  functions = "netlify/functions"
+  # Let SvelteKit adapter handle functions
 
 [build.environment]
   NODE_VERSION = "18"

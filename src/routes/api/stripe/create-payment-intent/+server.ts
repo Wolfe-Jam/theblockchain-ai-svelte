@@ -1,9 +1,20 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
+export const GET: RequestHandler = async () => {
+  return json({ message: 'API route is working!', timestamp: new Date().toISOString() });
+};
+
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const { amount, currency = 'usd', productName, email, liveMode = false } = await request.json();
+    
+    // Debug logging
+    console.log('API called with:', { amount, currency, productName, email, liveMode });
+    console.log('Environment variables available:', {
+      hasStripeSecret: !!process.env.STRIPE_SECRET_KEY,
+      nodeEnv: process.env.NODE_ENV
+    });
     
     // Validate required fields
     if (!amount || amount < 50) { // Stripe minimum is $0.50
@@ -21,6 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
     
     if (!stripeSecretKey) {
       console.error('Stripe secret key not found in environment variables');
+      console.error('Available env vars:', Object.keys(process.env).filter(k => k.includes('STRIPE')));
       return json({ error: 'Payment processing not configured' }, { status: 500 });
     }
     
@@ -62,7 +74,8 @@ export const POST: RequestHandler = async ({ request }) => {
     }
     
     return json({ 
-      error: 'Payment processing failed. Please try again.' 
+      error: 'Payment processing failed. Please try again.',
+      details: error.message 
     }, { status: 500 });
   }
 };
