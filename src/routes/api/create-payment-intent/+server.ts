@@ -11,8 +11,13 @@ export const POST: RequestHandler = async ({ request }) => {
       nodeEnv: process.env.NODE_ENV
     });
 
-    // Initialize Stripe with fallback to your actual key
-    const stripeKey = process.env.STRIPE_SECRET_KEY || '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';
+    // Initialize Stripe - MUST use environment variable
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    
+    if (!stripeKey) {
+      console.error('STRIPE_SECRET_KEY environment variable not set');
+      throw error(500, 'Payment system configuration error');
+    }
     
     console.log('Using Stripe key prefix:', stripeKey.substring(0, 8));
     

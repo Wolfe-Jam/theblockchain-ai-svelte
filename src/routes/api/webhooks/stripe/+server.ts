@@ -14,22 +14,34 @@ export const POST: RequestHandler = async ({ request }) => {
       throw error(400, 'Missing webhook signature');
     }
     
-    // Initialize Stripe (same pattern as PaymentIntent)
-    const stripeKey = process.env.STRIPE_SECRET_KEY || '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';
+    // Initialize Stripe - MUST use environment variable
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    
+    if (!stripeKey) {
+      console.error('STRIPE_SECRET_KEY environment variable not set');
+      throw error(500, 'Payment system configuration error');
+    }
     const stripe = new Stripe(stripeKey, {
-      apiVersion: '2025-06-30.basil',
+      apiVersion: '2024-06-20'
     });
     
-    // For now, we'll skip signature verification in development
-    // In production, you'd use: stripe.webhooks.constructEvent(body, signature, webhookSecret)
+    // Get webhook secret - REQUIRED for signature verification
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    
+    if (!webhookSecret) {
+      console.error('STRIPE_WEBHOOK_SECRET environment variable not set');
+      throw error(500, 'Webhook configuration error');
+    }
+    
+    // Verify webhook signature for security
     let event: Stripe.Event;
     
     try {
-      event = JSON.parse(body) as Stripe.Event;
-      console.log('Webhook event type:', event.type);
-    } catch (parseErr) {
-      console.error('Failed to parse webhook body:', parseErr);
-      throw error(400, 'Invalid webhook body');
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      console.log('✅ Webhook signature verified:', event.type);
+    } catch (webhookErr: any) {
+      console.error('❌ Webhook signature verification failed:', webhookErr.message);
+      throw error(400, 'Invalid webhook signature');
     }
     
     // Handle different event types

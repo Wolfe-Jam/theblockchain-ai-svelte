@@ -31,8 +31,13 @@ export const POST: RequestHandler = async ({ request }) => {
       return json({ error: 'Email is required' }, { status: 400 });
     }
     
-    // Get Stripe secret key with fallback to your actual key
-    const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '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';
+    // Get Stripe secret key - MUST be set in environment variables
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+    
+    if (!stripeSecretKey) {
+      console.error('STRIPE_SECRET_KEY environment variable not set');
+      return json({ error: 'Payment system configuration error' }, { status: 500 });
+    }
     
     console.log('Using Stripe key prefix:', stripeSecretKey.substring(0, 8));
     console.log(`Creating payment intent in ${liveMode ? 'LIVE' : 'TEST'} mode`);
