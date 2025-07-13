@@ -255,15 +255,17 @@
               
               <!-- Investment Focus Areas -->
               <div class="form-group focus-section">
-                <label class="checkbox-group-label">Investment Focus Areas <span class="helper-text">(Select all that apply)</span></label>
-                <div class="checkbox-group">
-                  {#each investmentFocusOptions as option}
-                    <label class="checkbox-item">
-                      <input type="checkbox" name="investmentFocus" value={option.value}>
-                      <span>{option.label}</span>
-                    </label>
-                  {/each}
-                </div>
+                <fieldset>
+                  <legend class="checkbox-group-label">Investment Focus Areas <span class="helper-text">(Select all that apply)</span></legend>
+                  <div class="checkbox-group">
+                    {#each investmentFocusOptions as option}
+                      <label class="checkbox-item">
+                        <input type="checkbox" name="investmentFocus" value={option.value}>
+                        <span>{option.label}</span>
+                      </label>
+                    {/each}
+                  </div>
+                </fieldset>
               </div>
               
               <!-- Separator Line -->
@@ -271,11 +273,12 @@
               
               <!-- Investment Interest Specific to theBlockchain.ai -->
               <div class="form-group interest-section">
-                <label class="checkbox-group-label">Specific Interest <span class="helper-text">(Select all that apply)</span></label>
-                <div class="checkbox-group">
-                  <label class="checkbox-item">
-                    <input type="checkbox" name="interest" value="seed-funding">
-                    <span>Seed Round Participation</span>
+                <fieldset>
+                  <legend class="checkbox-group-label">Specific Interest <span class="helper-text">(Select all that apply)</span></legend>
+                  <div class="checkbox-group">
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="interest" value="seed-funding">
+                      <span>Seed Round Participation</span>
                   </label>
                   <label class="checkbox-item">
                     <input type="checkbox" name="interest" value="series-a">
@@ -298,6 +301,7 @@
                     <span>Advisory Board Opportunity</span>
                   </label>
                 </div>
+                </fieldset>
               </div>
               
               <!-- Separator Line -->
@@ -305,10 +309,11 @@
               
               <!-- Investment Range -->
               <div class="form-group range-section">
-                <label class="checkbox-group-label">Typical Investment Range</label>
-                <div class="radio-group">
-                  <label class="radio-item">
-                    <input type="radio" name="investment-range" value="10m-plus">
+                <fieldset>
+                  <legend class="checkbox-group-label">Typical Investment Range</legend>
+                  <div class="radio-group">
+                    <label class="radio-item">
+                      <input type="radio" name="investment-range" value="10m-plus">
                     <span>$10M+</span>
                   </label>
                   <label class="radio-item">
@@ -332,6 +337,7 @@
                     <span>Angel/Individual Investor</span>
                   </label>
                 </div>
+                </fieldset>
               </div>
             </div>
             

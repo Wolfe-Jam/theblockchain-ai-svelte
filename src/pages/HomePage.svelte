@@ -554,13 +554,15 @@
               <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" required>
             </div>
             <div class="form-group">
-              <label class="role-label">I am a... (Tick all that apply)</label>
-              <div class="checkbox-group">
-                <label class="checkbox-label"><input type="checkbox" name="role" value="developer"><span>Developer</span></label>
-                <label class="checkbox-label"><input type="checkbox" name="role" value="business"><span>Business / Enterprise</span></label>
-                <label class="checkbox-label"><input type="checkbox" name="role" value="data-research"><span>Data Owner / Researcher</span></label>
-                <label class="checkbox-label"><input type="checkbox" name="role" value="other"><span>Other</span></label>
-              </div>
+              <fieldset>
+                <legend class="role-label">I am a... (Tick all that apply)</legend>
+                <div class="checkbox-group">
+                  <label class="checkbox-label"><input type="checkbox" name="role" value="developer"><span>Developer</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="role" value="business"><span>Business / Enterprise</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="role" value="data-research"><span>Data Owner / Researcher</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="role" value="other"><span>Other</span></label>
+                </div>
+              </fieldset>
             </div>
             
             <button type="submit" class="submit-btn">Claim My Spot</button>

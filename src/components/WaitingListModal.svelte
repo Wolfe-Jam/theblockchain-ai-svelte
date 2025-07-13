@@ -140,14 +140,15 @@
             
             <!-- Interest Level -->
             <div class="form-group">
-              <label class="checkbox-group-label">I'm interested in... (Optional)</label>
-              <div class="checkbox-group">
-                <label class="checkbox-item">
-                  <input type="checkbox" name="interest" value="early-access">
-                  <span>Early access notifications</span>
-                </label>
-                <label class="checkbox-item">
-                  <input type="checkbox" name="interest" value="founder-benefits">
+              <fieldset>
+                <legend class="checkbox-group-label">I'm interested in... (Optional)</legend>
+                <div class="checkbox-group">
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="interest" value="early-access">
+                    <span>Early access notifications</span>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="interest" value="founder-benefits">
                   <span>Founder program benefits</span>
                 </label>
                 <label class="checkbox-item">
@@ -159,6 +160,7 @@
                   <span>Project updates & insights</span>
                 </label>
               </div>
+              </fieldset>
             </div>
             
             <button type="submit" class="submit-btn" disabled={isSubmitting}>
