@@ -43,11 +43,11 @@
       
       dispatch('success', result);
       
-      // Reset after 2 seconds
+      // Reset after 3 seconds (longer to see the success)
       setTimeout(() => {
         showSuccess = false;
         selectedMethod = null;
-      }, 2000);
+      }, 3000);
     }, 1500);
   };
   

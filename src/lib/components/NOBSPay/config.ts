@@ -11,8 +11,8 @@ export const paymentMethods: Record<string, PaymentMethodConfig> = {
     color: 'var(--brand-blue)',
     description: 'Secure card payment via Stripe',
     enabled: true,
-    testKey: import.meta.env.PUBLIC_STRIPE_TEST_KEY || '',
-    liveKey: import.meta.env.PUBLIC_STRIPE_LIVE_KEY || ''
+    testKey: import.meta.env.VITE_STRIPE_TEST_KEY || import.meta.env.PUBLIC_STRIPE_TEST_KEY || '',
+    liveKey: import.meta.env.VITE_STRIPE_LIVE_KEY || import.meta.env.PUBLIC_STRIPE_LIVE_KEY || ''
   },
   paypal: {
     id: 'paypal',
@@ -21,7 +21,7 @@ export const paymentMethods: Record<string, PaymentMethodConfig> = {
     color: 'var(--brand-orange)',
     description: 'Fast checkout with PayPal',
     enabled: true,
-    testKey: import.meta.env.PUBLIC_PAYPAL_CLIENT_ID || ''
+    testKey: import.meta.env.VITE_PAYPAL_CLIENT_ID || import.meta.env.PUBLIC_PAYPAL_CLIENT_ID || ''
   },
   crypto: {
     id: 'crypto',
@@ -30,7 +30,7 @@ export const paymentMethods: Record<string, PaymentMethodConfig> = {
     color: 'var(--brand-cyan)',
     description: 'Pay with Bitcoin, Ethereum, or USDC',
     enabled: true,
-    testKey: import.meta.env.PUBLIC_COINBASE_API_KEY || ''
+    testKey: import.meta.env.VITE_COINBASE_API_KEY || import.meta.env.PUBLIC_COINBASE_API_KEY || ''
   }
 };
 

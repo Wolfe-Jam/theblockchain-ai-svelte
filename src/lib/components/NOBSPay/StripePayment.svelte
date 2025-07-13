@@ -25,8 +25,8 @@
     // Check if Stripe is available
     if (typeof window !== 'undefined' && window.Stripe) {
       const stripeKey = testMode 
-        ? import.meta.env.PUBLIC_STRIPE_TEST_KEY 
-        : import.meta.env.PUBLIC_STRIPE_LIVE_KEY;
+        ? (import.meta.env.VITE_STRIPE_TEST_KEY || import.meta.env.PUBLIC_STRIPE_TEST_KEY) 
+        : (import.meta.env.VITE_STRIPE_LIVE_KEY || import.meta.env.PUBLIC_STRIPE_LIVE_KEY);
       
       if (!stripeKey) {
         cardError = 'Stripe is not configured. Please add your API keys.';

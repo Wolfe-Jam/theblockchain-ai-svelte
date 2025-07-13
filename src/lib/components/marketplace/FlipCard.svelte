@@ -80,14 +80,13 @@
     e.stopPropagation();
     // Map component names to demo slugs
     const demoSlugMap: { [key: string]: string } = {
-      'bAI-Pay Universal Payment Component': 'bai-pay',
-      'NOBS Pay - No BS Payment Processing': 'nobs-pay', 
-      'DataViz Pro - Advanced Chart Library': 'dataviz-pro',
-      'Auth Shield - Complete Authentication': 'auth-shield'
+      'NOBS Pay': 'nobs-pay',
+      'DataViz Pro': 'dataviz-pro', 
+      'Auth Shield': 'auth-shield'
     };
     
-    const demoSlug = demoSlugMap[component.name] || component.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-    goto(`/demo/${demoSlug}`);
+    const demoSlug = demoSlugMap[component.name] || component.slug || component.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    goto(`/marketplace/demo/${demoSlug}`);
   }
   
   function handleDetails(e: Event) {
@@ -128,8 +127,8 @@
         <!-- Icon/Graphic placeholder -->
         <div class="icon-area">
           {#if component.name === 'NOBS Pay'}
-            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
                     d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
           {:else}
@@ -139,38 +138,23 @@
         
         <!-- Title and tagline -->
         <h3 class="card-title">{component.name}</h3>
-        <p class="card-tagline">{component.consumer_tagline || component.tagline || component.description}</p>
-        
-        <!-- Price -->
-        <div class="price-section">
-          <span class="price">{formatPrice(component.price || component.price_individual)}</span>
-          <span class="price-label">Individual</span>
-        </div>
+        <p class="card-tagline">{component.consumer_tagline || component.tagline}</p>
       </div>
       
-      <!-- Action buttons -->
-      <div class="action-buttons">
+      <!-- Action button -->
+      <div class="front-action">
         <button 
-          class="btn-primary"
+          class="btn-mint"
           on:click={handleBuyNow}
-          aria-label="Buy {component.name}"
+          aria-label="Mint {component.name}"
         >
-          Buy Now
+          Mint
         </button>
-        {#if component.demo_url}
-          <button 
-            class="btn-secondary"
-            on:click={handleDemo}
-            aria-label="Try demo"
-          >
-            Demo
-          </button>
-        {/if}
       </div>
       
       <!-- Flip indicator -->
       <div class="flip-indicator">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
@@ -202,33 +186,56 @@
           {/each}
         </div>
         
-        <!-- All pricing tiers -->
-        <div class="pricing-tiers">
-          <div class="tier">
-            <span class="tier-name">Individual</span>
-            <span class="tier-price">{formatPrice(component.price || component.price_individual)}</span>
-          </div>
-          {#if component.price_team}
-            <div class="tier">
-              <span class="tier-name">Team</span>
-              <span class="tier-price">{formatPrice(component.price_team)}</span>
+        <!-- Pricing and Action Section -->
+        <div class="pricing-section">
+          <!-- All pricing tiers -->
+          <div class="pricing-tiers">
+            <div class="tier tier-primary">
+              <span class="tier-name">Individual</span>
+              <span class="tier-price">{formatPrice(component.price || component.price_individual)}</span>
             </div>
-          {/if}
-        </div>
-        
-        <!-- Back action buttons -->
-        <div class="back-actions">
-          <button 
-            class="btn-details"
-            on:click={handleDetails}
-          >
-            View Details
-          </button>
+            {#if component.price_team}
+              <div class="tier">
+                <span class="tier-name">Team</span>
+                <span class="tier-price">{formatPrice(component.price_team)}</span>
+              </div>
+            {/if}
+          </div>
+          
+          <!-- Action buttons -->
+          <div class="back-actions">
+            <button 
+              class="btn-mint"
+              on:click={handleBuyNow}
+              aria-label="Mint {component.name}"
+            >
+              Mint
+            </button>
+            
+            <div class="secondary-actions">
+              {#if component.demo_url}
+                <button 
+                  class="btn-demo"
+                  on:click={handleDemo}
+                  aria-label="Try demo"
+                >
+                  Demo
+                </button>
+              {/if}
+              <button 
+                class="btn-details"
+                on:click={handleDetails}
+                aria-label="View details"
+              >
+                Explore
+              </button>
+            </div>
+          </div>
         </div>
         
         <!-- Flip indicator (back) -->
         <div class="flip-indicator">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
@@ -314,26 +321,26 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 2rem 0;
+    padding: 3rem 1rem;
   }
   
   .icon-area {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     position: relative;
-    padding: 1.5rem;
+    padding: 2rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    border-radius: 1rem;
+    border-radius: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   
   .icon-placeholder {
-    width: 4rem;
-    height: 4rem;
+    width: 6rem;
+    height: 6rem;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
-    border-radius: 0.75rem;
+    border-radius: 1.25rem;
     position: relative;
     overflow: hidden;
   }
@@ -346,7 +353,7 @@
     width: 200%;
     height: 200%;
     background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
-    animation: shimmer 2s infinite;
+    animation: shimmer 3s infinite;
   }
   
   @keyframes shimmer {
@@ -354,17 +361,48 @@
     100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
   }
   
+  @keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+  
   .card-title {
-    font-size: 1.875rem;
+    font-size: 2.25rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
   }
   
   .card-tagline {
-    font-size: 1rem;
+    font-size: 1.125rem;
     opacity: 0.9;
-    margin-bottom: 2rem;
-    max-width: 80%;
+    max-width: 90%;
+    line-height: 1.4;
+  }
+  
+  .front-action {
+    margin-top: auto;
+    padding: 0 1rem;
+  }
+  
+  .btn-mint {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    color: #1f2937;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+    backdrop-filter: blur(10px);
+  }
+  
+  .btn-mint:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   
   .price-section {
@@ -403,11 +441,43 @@
   .btn-primary {
     background: rgba(255, 255, 255, 0.9);
     color: #1f2937;
+    position: relative;
+    overflow: hidden;
   }
   
   .btn-primary:hover {
     background: white;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .buy-button {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white !important;
+    font-weight: 700;
+    letter-spacing: 0.025em;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+  
+  .buy-button:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  }
+  
+  .buy-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  .buy-button:hover::before {
+    left: 100%;
   }
   
   .btn-secondary {
@@ -422,10 +492,15 @@
   
   .flip-indicator {
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 0.75rem;
+    right: 0.75rem;
     opacity: 0.6;
     animation: pulse 2s infinite;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 1rem;
+    height: 1rem;
   }
   
   @keyframes pulse {
@@ -499,9 +574,13 @@
     backdrop-filter: blur(10px);
   }
   
+  .pricing-section {
+    margin-top: auto;
+  }
+  
   .pricing-tiers {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     margin-bottom: 1.5rem;
   }
   
@@ -511,6 +590,11 @@
     padding: 0.75rem;
     border-radius: 0.5rem;
     text-align: center;
+  }
+  
+  .tier-primary {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
   .tier-name {
@@ -527,24 +611,54 @@
   }
   
   .back-actions {
-    margin-top: auto;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto;
   }
   
-  .btn-details {
+  .back-actions .btn-mint {
     background: rgba(255, 255, 255, 0.9);
     color: #1f2937;
-    padding: 0.75rem 2rem;
-    border-radius: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.75rem;
     font-weight: 600;
     border: none;
     cursor: pointer;
     transition: all 0.2s;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .btn-details:hover {
+  .back-actions .btn-mint:hover {
     background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .secondary-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .btn-demo,
+  .btn-details {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.625rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+    backdrop-filter: blur(10px);
+  }
+  
+  .btn-demo:hover,
+  .btn-details:hover {
+    background: rgba(255, 255, 255, 0.3);
     transform: translateY(-1px);
   }
   
@@ -563,26 +677,43 @@
   /* Mobile responsive */
   @media (max-width: 640px) {
     .flip-card {
-      height: 450px;
+      height: 400px;
     }
     
     .card-title {
       font-size: 1.5rem;
     }
     
-    .price {
-      font-size: 1.875rem;
+    .card-tagline {
+      font-size: 1rem;
     }
     
-    .action-buttons {
+    .icon-area {
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .icon-placeholder {
+      width: 5rem;
+      height: 5rem;
+    }
+    
+    .card-content {
+      padding: 2rem 1rem;
+    }
+    
+    .back-actions {
+      gap: 0.5rem;
+    }
+    
+    .secondary-actions {
       flex-direction: column;
-      width: 100%;
-      padding: 0 1rem;
+      gap: 0.5rem;
     }
     
-    .btn-primary,
-    .btn-secondary {
-      width: 100%;
+    .btn-mint {
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
     }
   }
 </style>

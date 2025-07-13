@@ -79,9 +79,9 @@
         api_name: 'Next Open Billing Software',
         formal_name: 'Neural Omni Balance System',
         fintech_name: 'Next Open Billing Stack',
-        price_individual: 19900,
-        price_team: 49900,
-        price_enterprise: 149900,
+        price_individual: 100,  // $1.00 for testing
+        price_team: 300,        // $3.00 for testing  
+        price_enterprise: 500,  // $5.00 for testing
         category: 'payment-processing',
         tags: ['payment', 'stripe', 'paypal', 'crypto'],
         keywords: ['payment gateway', 'checkout', 'e-commerce'],
@@ -197,7 +197,6 @@
   function handleDemoClick(component: Component) {
     // Map component names to demo slugs
     const demoSlugMap: { [key: string]: string } = {
-      'bAI-Pay Universal Payment Component': 'bai-pay',
       'NOBS Pay - No BS Payment Processing': 'nobs-pay', 
       'DataViz Pro - Advanced Chart Library': 'dataviz-pro',
       'Auth Shield - Complete Authentication': 'auth-shield'
@@ -400,7 +399,6 @@
             <FlipCard 
               {component}
               on:buy={handleCardBuy}
-            />
             />
           {/each}
         </div>

@@ -10,7 +10,7 @@
   // Demo component configurations
   const demoConfigs = {
     'bai-pay': {
-      name: 'bAI-Pay Universal Payment Component',
+      name: 'NOBS Pay - Universal Payment Component',
       description: 'Experience the revolutionary 3-in-1 payment solution',
       features: ['Stripe Integration', 'PayPal Support', 'Crypto Payments', 'Mobile Optimized'],
       demoType: 'interactive'

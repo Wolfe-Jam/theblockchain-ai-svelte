@@ -1,5 +1,8 @@
 # theBlockchain.ai Project Overview 🚀
 
+> **📋 For live updates**: See `CURRENT_STATUS.md` for real-time project status
+> **🗂️ One-word commands**: Say "PROGRESS", "COMPLETE", "BUG", or "PLAN" for instant updates
+
 ## 🎯 **Mission & Current Status**
 **Building the economic backbone for the next generation of software** - transforming open-source contributions into revenue-generating capital through an AI-powered component marketplace.
 
@@ -16,7 +19,7 @@
 - **Performance**: 60fps, mobile responsive, zero errors
 
 ### **Phase 2: Component Marketplace 🔥 IN PROGRESS**
-- **Strategy**: bAI-Pay as inaugural product (payment component)
+- **Strategy**: NOBS Pay as inaugural product (payment component)
 - **Pipeline**: DataBox, TimelineBox, AI Tools ready for packaging
 - **Revenue Model**: Component sales + marketplace fees + licensing
 - **Target**: $10K first month, $500K annually
@@ -67,7 +70,7 @@
 - **TimelineBox.svelte**: Investment urgency tracking
 - **AI Tools**: Smart contract generator with dual API architecture
 
-### **bAI-Pay Launch Strategy** 
+### **NOBS Pay Launch Strategy** 
 ```
 Week 1-2: Component development (universal payment interface)
 Week 3: Marketplace integration (dogfooding strategy)
@@ -85,7 +88,7 @@ Target: 50+ sales, $10K+ revenue first month
 ## 🔄 **Current Development Focus**
 
 ### **Immediate Priorities**
-1. **bAI-Pay Component**: Universal payment interface (Stripe + PayPal + Crypto)
+1. **NOBS Pay Component**: Universal payment interface (Stripe + PayPal + Crypto)
 2. **Marketplace Infrastructure**: Product listings, demos, downloads
 3. **Production Deployment**: Monitoring, analytics, health checks
 
@@ -146,7 +149,7 @@ Foundational layer of verifiable trust ensuring IP protection and transparent mo
 
 ## 🔮 **Next 90 Days Roadmap**
 
-### **Month 1: bAI-Pay Launch**
+### **Month 1: NOBS Pay Launch**
 - Week 1-2: Component development + testing
 - Week 3: Marketplace integration + beta testing
 - Week 4: Public launch + marketing campaign

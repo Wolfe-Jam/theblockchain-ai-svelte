@@ -4,7 +4,7 @@
   let availableDemos = [
     {
       slug: 'bai-pay',
-      name: 'bAI-Pay Universal Payment Component',
+      name: 'NOBS Pay - Universal Payment Component',
       description: 'Revolutionary 3-in-1 payment solution',
       type: 'Interactive Demo'
     },

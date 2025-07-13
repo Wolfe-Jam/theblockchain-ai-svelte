@@ -25,7 +25,7 @@
         api_name: 'Next Open Billing Software',
         formal_name: 'Neural Omni Balance System',
         fintech_name: 'Next Open Billing Stack',
-        price_individual: 19900,
+        price_individual: 100,  // $1.00 for testing
         price_team: 49900,
         price_enterprise: 149900,
         category: 'payment-processing',
@@ -287,7 +287,7 @@
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-8">
           <!-- Description -->
-          <section>
+          <section id="overview">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Overview
             </h2>
@@ -298,7 +298,7 @@
           
           <!-- Features -->
           {#if component.developer_features && component.developer_features.length > 0}
-            <section>
+            <section id="features">
               <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                 Features
               </h2>
@@ -316,7 +316,7 @@
           {/if}
           
           <!-- Tech Stack -->
-          <section>
+          <section id="tech-stack">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               Tech Stack
             </h2>

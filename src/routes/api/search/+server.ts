@@ -19,9 +19,9 @@ const mockComponents: Component[] = [{
   api_name: 'Next Open Billing Software',
   formal_name: 'Neural Omni Balance System',
   fintech_name: 'Next Open Billing Stack',
-  price_individual: 19900,
-  price_team: 49900,
-  price_enterprise: 149900,
+  price_individual: 100,  // $1.00 for testing
+  price_team: 300,        // $3.00 for testing  
+  price_enterprise: 500,  // $5.00 for testing
   category: 'payment-processing',
   tags: ['payment', 'stripe', 'paypal', 'crypto', 'checkout', 'e-commerce'],
   keywords: ['payment gateway', 'checkout', 'e-commerce', 'billing', 'transactions'],

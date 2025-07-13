@@ -12,6 +12,7 @@
   // Demo states
   let demoResult: PaymentResult | null = null;
   let customAmount = '1.00';
+  let showNotification = false;
   
   function updateAmount() {
     const value = customAmount.replace(/[^\d.]/g, '');
@@ -25,10 +26,16 @@
     console.log('Payment successful!', event.detail);
     demoResult = event.detail;
     
-    // Show success feedback
+    // Show notification
+    showNotification = true;
+    setTimeout(() => {
+      showNotification = false;
+    }, 4000);
+    
+    // Show success feedback for longer to make it more visible
     setTimeout(() => {
       demoResult = null;
-    }, 5000);
+    }, 8000); // Extended from 5 to 8 seconds
   }
   
   // Product variations for demo
@@ -47,6 +54,16 @@
   }
 </script>
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20">
+  <!-- Success Notification -->
+  {#if showNotification}
+    <div class="fixed top-4 right-4 z-50 animate-pulse">
+      <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+        <span class="text-xl">✅</span>
+        <span class="font-medium">Demo Payment Successful!</span>
+      </div>
+    </div>
+  {/if}
+  
   <div class="max-w-6xl mx-auto px-4 py-12">
     <!-- Compact Header -->
     <div class="text-center mb-8">
@@ -137,27 +154,45 @@
         <!-- Test Instructions -->
         <div class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>This is a demo - no real charges</p>
-          <p class="mt-1">Just click any payment method to see the flow</p>
+          <p class="mt-1">Click any payment method to see the success flow</p>
+          {#if demoResult}
+            <p class="mt-2 text-green-600 dark:text-green-400 font-medium">
+              ✨ Success! Check the detailed result below ↓
+            </p>
+          {/if}
         </div>
         
         <!-- Success Result Display -->
         {#if demoResult}
-          <div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg max-w-sm">
-            <h4 class="font-semibold text-green-800 dark:text-green-300 mb-2">Payment Successful!</h4>
-            <dl class="text-sm space-y-1">
+          <div class="mt-6 p-6 bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-xl max-w-sm mx-auto shadow-lg animate-bounce-gentle">
+            <div class="text-center mb-4">
+              <div class="text-4xl mb-2">🎉</div>
+              <h4 class="font-bold text-green-800 dark:text-green-300 text-lg">Payment Successful!</h4>
+              <p class="text-green-600 dark:text-green-400 text-sm">Demo transaction completed</p>
+            </div>
+            <dl class="text-sm space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg">
               <div class="flex justify-between">
-                <dt class="text-green-600 dark:text-green-400">Method:</dt>
-                <dd class="font-mono">{demoResult.method}</dd>
+                <dt class="text-green-600 dark:text-green-400 font-medium">Method:</dt>
+                <dd class="font-mono text-gray-900 dark:text-gray-100 capitalize">{demoResult.method}</dd>
               </div>
               <div class="flex justify-between">
-                <dt class="text-green-600 dark:text-green-400">Transaction:</dt>
-                <dd class="font-mono text-xs">{demoResult.transactionId}</dd>
+                <dt class="text-green-600 dark:text-green-400 font-medium">Transaction ID:</dt>
+                <dd class="font-mono text-xs text-gray-900 dark:text-gray-100">{demoResult.transactionId}</dd>
               </div>
               <div class="flex justify-between">
-                <dt class="text-green-600 dark:text-green-400">Amount:</dt>
-                <dd class="font-mono">${(demoResult.amount / 100).toFixed(2)}</dd>
+                <dt class="text-green-600 dark:text-green-400 font-medium">Amount:</dt>
+                <dd class="font-mono text-gray-900 dark:text-gray-100 font-semibold">${(demoResult.amount / 100).toFixed(2)}</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-green-600 dark:text-green-400 font-medium">Status:</dt>
+                <dd class="text-green-600 dark:text-green-400 font-semibold">✅ Complete</dd>
               </div>
             </dl>
+            <div class="mt-4 text-center">
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                This was a demo transaction - no real charges were made
+              </p>
+            </div>
           </div>
         {/if}
       </div>
@@ -192,16 +227,16 @@
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a
-          href="/marketplace/nobs-pay"
+          href="/marketplace/products/nobs-pay"
           class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
         >
-          Get NOBS Pay - $199
+          Buy NOBS Pay - From $1.00
         </a>
         <a
-          href="/docs/nobs-pay"
+          href="/marketplace/products/nobs-pay#features"
           class="px-8 py-3 border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 font-semibold rounded-lg transition-colors"
         >
-          View Documentation
+          View Features & Pricing
         </a>
       </div>
     </div>
@@ -212,5 +247,24 @@
   /* Custom styles for the demo page */
   :global(.language-svelte) {
     font-family: 'Fira Code', 'Consolas', monospace;
+  }
+  
+  .animate-bounce-gentle {
+    animation: gentle-bounce 1s ease-out;
+  }
+  
+  @keyframes gentle-bounce {
+    0% { 
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    60% { 
+      transform: translateY(-5px);
+      opacity: 1;
+    }
+    100% { 
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 </style>
