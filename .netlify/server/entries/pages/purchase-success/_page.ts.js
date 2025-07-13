@@ -1,1 +1,0 @@
-const c=async({url:a})=>{const t=a.searchParams.get("product")||"",r=a.searchParams.get("transaction")||"",s=a.searchParams.get("order_id")||"";return{productId:t,transactionId:r||s}};export{c as load};
