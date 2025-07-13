@@ -65,7 +65,12 @@
     }
   }
   
-  $: currentTheme = getThemeForCategory(component.category);
+  // Use dynamic colors from component data or theme fallback
+  $: currentTheme = component.flip_card_color ? {
+    front: `bg-gradient-to-br ${component.flip_card_color}`,
+    back: `bg-gradient-to-br ${component.flip_card_color}`,
+    accent: 'text-white'
+  } : getThemeForCategory(component.category);
   
   function handleFlip() {
     isFlipped = !isFlipped;
@@ -124,16 +129,10 @@
       
       <!-- Main content area -->
       <div class="card-content">
-        <!-- Icon/Graphic placeholder -->
+        <!-- Icon/Graphic area -->
         <div class="icon-area">
-          {#if component.name === 'NOBS Pay'}
-            <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
-                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-            </svg>
-          {:else}
-            <div class="icon-placeholder"></div>
-          {/if}
+          <!-- Use ✅ checkmark for all cards -->
+          <div class="checkmark-icon">✅</div>
         </div>
         
         <!-- Title and tagline -->
@@ -146,9 +145,9 @@
         <button 
           class="btn-mint"
           on:click={handleBuyNow}
-          aria-label="Mint {component.name}"
+          aria-label="Buy {component.name}"
         >
-          Mint
+          BUY
         </button>
       </div>
       
@@ -207,9 +206,9 @@
             <button 
               class="btn-mint"
               on:click={handleBuyNow}
-              aria-label="Mint {component.name}"
+              aria-label="Buy {component.name}"
             >
-              Mint
+              BUY
             </button>
             
             <div class="secondary-actions">
@@ -334,6 +333,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  
+  .checkmark-icon {
+    font-size: 6rem;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { 
+      opacity: 0.9;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 1;
+      transform: scale(1.05);
+    }
   }
   
   .icon-placeholder {

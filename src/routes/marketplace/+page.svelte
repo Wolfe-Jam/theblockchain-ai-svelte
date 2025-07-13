@@ -1,28 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
-  import { supabase, isSupabaseConfigured } from '$lib/database/supabase';
   import type { Component } from '$lib/marketplace/types';
   import NOBSPay from '$lib/components/NOBSPay';
   import type { PaymentResult } from '$lib/components/NOBSPay/types';
-  import SearchBar from '$lib/components/SearchBar.svelte';
   import FlipCard from '$lib/components/marketplace/FlipCard.svelte';
-  import { searchStore, searchResults } from '$lib/search/store';
-  import { createSearchManager } from '$lib/search/manager';
-  import type { SearchQuery } from '$lib/search/types';
   
   let components: Component[] = [];
   let loading = true;
-  let viewMode: 'flip' | 'grid' = 'flip'; // Toggle between flip cards and grid view
   
   // Payment state
   let showPayment = false;
   let selectedComponent: Component | null = null;
-  let purchaseComplete = false;
-  
-  // Search state
-  let searchManager: ReturnType<typeof createSearchManager>;
-  let displayedComponents: Component[] = [];
   
   // Load components on mount
   onMount(async () => {
@@ -32,140 +20,58 @@
   async function loadComponents() {
     try {
       loading = true;
-      
-      // Check if Supabase is properly configured
-      if (!isSupabaseConfigured) {
-        console.log('Using mock data - Supabase not configured');
-        components = getMockComponents();
-      } else {
-        // Try to load from Supabase
-        const { data, error: supabaseError } = await supabase
-          .from('components')
-          .select('*')
-          .eq('is_published', true)
-          .eq('is_active', true)
-          .order('featured', { ascending: false })
-          .order('download_count', { ascending: false });
-        
-        if (supabaseError) {
-          console.log('Falling back to mock data:', supabaseError.message);
-          components = getMockComponents();
-        } else {
-          components = data || getMockComponents();
-        }
-      }
+      components = getMockComponents();
     } catch (err) {
       console.log('Using mock data due to error');
       components = getMockComponents();
     } finally {
       loading = false;
-      
-      // Initialize search manager with components
-      searchManager = createSearchManager(components);
-      displayedComponents = components;
     }
   }
   
-  // Mock data for development before Supabase is configured
+  // Mock data for development - 8 color spectrum FlipCards
   function getMockComponents(): Component[] {
-    return [
-      {
-        id: '1',
-        name: 'NOBS Pay',
-        slug: 'nobs-pay',
-        tagline: 'Universal payment component for modern apps',
-        description: 'The only payment component that gives your users maximum choice while giving you minimum complexity.',
-        consumer_tagline: 'No BS pay less',
-        api_name: 'Next Open Billing Software',
-        formal_name: 'Neural Omni Balance System',
-        fintech_name: 'Next Open Billing Stack',
-        price_individual: 100,  // $1.00 for testing
-        price_team: 300,        // $3.00 for testing  
-        price_enterprise: 500,  // $5.00 for testing
-        category: 'payment-processing',
-        tags: ['payment', 'stripe', 'paypal', 'crypto'],
-        keywords: ['payment gateway', 'checkout', 'e-commerce'],
-        tech_stack: ['svelte', 'typescript', 'stripe-api'],
-        flip_card_theme: 'wallet',
-        flip_card_size: 'standard',
-        rating: 5.0,
-        download_count: 0,
-        featured: true,
-        is_api_product: true,
-        is_active: true,
-        is_published: true,
-        created_at: new Date().toISOString(),
-        demo_url: '/marketplace/demo/nobs-pay',
-        developer_features: ['Universal payment gateway', 'Multi-processor support', 'TypeScript definitions', 'Theme customization', 'Webhook handling']
-      },
-      {
-        id: '2',
-        name: 'DataViz Pro',
-        slug: 'dataviz-pro',
-        tagline: 'Beautiful charts and graphs for your data',
-        description: 'Professional data visualization components with D3.js integration and real-time updates.',
-        consumer_tagline: 'Visualize everything',
-        api_name: 'DataViz Professional',
-        formal_name: 'Data Visualization Suite',
-        fintech_name: 'Analytics Display Engine',
-        price_individual: 14900,
-        price_team: 34900,
-        price_enterprise: 99900,
-        category: 'data-visualization',
-        tags: ['charts', 'd3js', 'analytics', 'dashboard'],
-        keywords: ['data viz', 'graphs', 'charts', 'analytics'],
-        tech_stack: ['svelte', 'd3js', 'typescript'],
-        flip_card_theme: 'neon',
-        flip_card_size: 'standard',
-        rating: 4.8,
-        download_count: 42,
-        featured: false,
-        is_api_product: false,
-        is_active: true,
-        is_published: true,
-        created_at: new Date().toISOString(),
-        demo_url: '/marketplace/demo/dataviz-pro',
-        developer_features: ['20+ chart types', 'Real-time updates', 'Responsive design', 'Export to PNG/SVG', 'Custom themes']
-      },
-      {
-        id: '3',
-        name: 'Auth Shield',
-        slug: 'auth-shield',
-        tagline: 'Complete authentication solution',
-        description: 'Secure, customizable authentication components with social login, MFA, and passwordless options.',
-        consumer_tagline: 'Login made simple',
-        api_name: 'Authentication Shield',
-        formal_name: 'Security Authentication Framework',
-        fintech_name: 'Identity Verification System',
-        price_individual: 24900,
-        price_team: 59900,
-        price_enterprise: 179900,
-        category: 'authentication',
-        tags: ['auth', 'security', 'oauth', 'mfa'],
-        keywords: ['authentication', 'login', 'security', 'oauth'],
-        tech_stack: ['svelte', 'supabase', 'oauth2'],
-        flip_card_theme: 'gradient',
-        flip_card_size: 'standard',
-        rating: 4.9,
-        download_count: 128,
-        featured: true,
-        is_api_product: true,
-        is_active: true,
-        is_published: true,
-        created_at: new Date().toISOString(),
-        demo_url: '/marketplace/demo/auth-shield',
-        developer_features: ['Social login', 'Multi-factor auth', 'Passwordless', 'Session management', 'Role-based access']
-      }
+    const colorSpectrum = [
+      { name: 'Red', theme: 'red', bg: 'from-red-500 to-red-600' },
+      { name: 'Orange', theme: 'orange', bg: 'from-orange-500 to-orange-600' },
+      { name: 'Yellow', theme: 'yellow', bg: 'from-yellow-500 to-yellow-600' },
+      { name: 'Green', theme: 'green', bg: 'from-green-500 to-green-600' },
+      { name: 'Blue', theme: 'blue', bg: 'from-blue-500 to-blue-600' },
+      { name: 'Indigo', theme: 'indigo', bg: 'from-indigo-500 to-indigo-600' },
+      { name: 'Purple', theme: 'purple', bg: 'from-purple-500 to-purple-600' },
+      { name: 'Pink', theme: 'pink', bg: 'from-pink-500 to-pink-600' }
     ];
-  }
-  
-  function formatPrice(cents: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(cents / 100);
+
+    return colorSpectrum.map((color, index) => ({
+      id: (index + 1).toString(),
+      name: 'NOBS PAY CART',
+      slug: 'nobs-pay',
+      tagline: 'Done for You Billing system',
+      description: 'Universal payment component that handles Stripe, PayPal, and Crypto payments with a single interface.',
+      consumer_tagline: 'Done for You Billing system',
+      api_name: 'NOBS Pay',
+      formal_name: 'NOBS Pay Cart',
+      fintech_name: 'NOBS Pay',
+      price_individual: 100,  // $1.00 for testing
+      price_team: 300,        // $3.00 for testing  
+      price_enterprise: 500,  // $5.00 for testing
+      category: 'payment-processing',
+      tags: ['payment', 'stripe', 'paypal', 'crypto'],
+      keywords: ['payment gateway', 'checkout', 'e-commerce'],
+      tech_stack: ['svelte', 'typescript', 'stripe-api'],
+      flip_card_theme: color.theme,
+      flip_card_size: 'standard',
+      flip_card_color: color.bg,
+      rating: 5.0,
+      download_count: 0,
+      featured: index === 0, // Only first card is featured
+      is_api_product: true,
+      is_active: true,
+      is_published: true,
+      created_at: new Date().toISOString(),
+      demo_url: '/marketplace/demo/nobs-pay',
+      developer_features: ['Universal payment gateway', 'Multi-processor support', 'TypeScript definitions', 'Theme customization', 'Webhook handling']
+    }));
   }
   
   // Payment handling functions
@@ -176,41 +82,13 @@
   
   function handlePaymentSuccess(result: PaymentResult) {
     console.log('Payment successful!', result);
-    purchaseComplete = true;
     showPayment = false;
     
-    // Here you would typically:
-    // 1. Save the order to database
-    // 2. Grant access to the component
-    // 3. Send confirmation email
-    // 4. Redirect to download page
-    
-    // For now, show success message
+    // Show success message
     setTimeout(() => {
       alert(`Success! You've purchased ${selectedComponent?.name}. Transaction ID: ${result.transactionId}`);
-      purchaseComplete = false;
       selectedComponent = null;
     }, 100);
-  }
-  
-  // Demo handling function
-  function handleDemoClick(component: Component) {
-    // Map component names to demo slugs
-    const demoSlugMap: { [key: string]: string } = {
-      'NOBS Pay - No BS Payment Processing': 'nobs-pay', 
-      'DataViz Pro - Advanced Chart Library': 'dataviz-pro',
-      'Auth Shield - Complete Authentication': 'auth-shield'
-    };
-    
-    const demoSlug = demoSlugMap[component.name] || component.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-    goto(`/demo/${demoSlug}`);
-  }
-  
-  // Details handling function  
-  function handleDetailsClick(component: Component) {
-    // Navigate to product details page (Shopify-style)
-    const productSlug = component.slug || component.id;
-    goto(`/marketplace/products/${productSlug}`);
   }
   
   function handlePaymentError(error: Error) {
@@ -223,64 +101,9 @@
     selectedComponent = null;
   }
   
-  // Handle search
-  async function handleSearch(event: CustomEvent<{ query: string; mode: string }>) {
-    const { query, mode } = event.detail;
-    
-    if (!searchManager) return;
-    
-    searchStore.setSearching(true);
-    
-    try {
-      const searchQuery: SearchQuery = {
-        query,
-        mode: mode as any,
-        limit: 20
-      };
-      
-      const results = await searchManager.search(searchQuery);
-      
-      // Update search results in store
-      searchStore.setResults(results.combined, results.claude);
-      
-      // Update displayed components based on search results
-      if (results.combined.length > 0) {
-        displayedComponents = results.combined.map(result => 
-          components.find(c => c.id === result.id)!
-        ).filter(Boolean);
-      } else {
-        displayedComponents = [];
-      }
-    } catch (error) {
-      console.error('Search failed:', error);
-      searchStore.setError('Search failed. Please try again.');
-    } finally {
-      searchStore.setSearching(false);
-    }
-  }
-  
-  // Reset search and show all components
-  function resetSearch() {
-    searchStore.reset();
-    displayedComponents = components;
-  }
-  
   // Handle FlipCard events
   function handleCardBuy(event: CustomEvent<Component>) {
     handleBuyNow(event.detail);
-  }
-  
-  function handleCardDemo(event: CustomEvent<Component>) {
-    handleDemoClick(event.detail);
-  }
-  
-  function handleCardDetails(event: CustomEvent<Component>) {
-    handleDetailsClick(event.detail);
-  }
-  
-  // Subscribe to search results
-  $: if ($searchResults.length === 0 && !$searchStore.query) {
-    displayedComponents = components;
   }
 </script>
 
