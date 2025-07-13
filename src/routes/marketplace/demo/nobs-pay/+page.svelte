@@ -7,7 +7,7 @@
   let amount = 100; // $1.00 for testing
   let productName = 'NOBS Pay License';
   let selectedTheme: 'default' | 'brand' = 'brand';
-  let testMode = true;
+  let testMode = false; // Live mode for real testing
   
   // Demo states
   let demoResult: PaymentResult | null = null;
@@ -40,6 +40,7 @@
   
   // Product variations for demo
   const productVariations = [
+    { name: 'NOBS Pay Test ($1)', amount: 100 },
     { name: 'NOBS Pay License', amount: 19900 },
     { name: 'Pro Bundle', amount: 49900 },
     { name: 'Enterprise', amount: 99900 }
@@ -100,7 +101,7 @@
           </div>
           
           <!-- Theme Toggle -->
-          <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+          <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg mb-3">
             <span class="text-sm font-medium">Theme</span>
             <button
               class="px-3 py-1 text-xs font-medium rounded-md
@@ -110,6 +111,20 @@
               on:click={() => selectedTheme = selectedTheme === 'brand' ? 'default' : 'brand'}
             >
               {selectedTheme === 'brand' ? 'Brand' : 'Default'}
+            </button>
+          </div>
+          
+          <!-- Mode Toggle -->
+          <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <span class="text-sm font-medium">Payment Mode</span>
+            <button
+              class="px-3 py-1 text-xs font-medium rounded-md
+                {testMode 
+                  ? 'bg-yellow-500 text-white' 
+                  : 'bg-red-500 text-white'}"
+              on:click={() => testMode = !testMode}
+            >
+              {testMode ? 'Test' : 'LIVE'}
             </button>
           </div>
         </div>
@@ -138,9 +153,15 @@
       <!-- Payment Component Demo -->
       <div class="lg:col-span-2 flex flex-col items-center">
         <!-- Live Demo Label -->
-        <div class="mb-4 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full text-sm font-medium">
-          🟢 Live Demo - Click any payment method
-        </div>
+        {#if testMode}
+          <div class="mb-4 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-full text-sm font-medium">
+            🧪 Test Mode - Use card 4242 4242 4242 4242
+          </div>
+        {:else}
+          <div class="mb-4 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-full text-sm font-medium">
+            🔴 LIVE MODE - Real charges will occur
+          </div>
+        {/if}
         
         <!-- The Actual Component -->
         <NOBSPayCompact
@@ -153,8 +174,13 @@
         
         <!-- Test Instructions -->
         <div class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>This is a demo - no real charges</p>
-          <p class="mt-1">Click any payment method to see the success flow</p>
+          {#if testMode}
+            <p>Test Mode - Use card 4242 4242 4242 4242</p>
+            <p class="mt-1">No real charges - data appears in Stripe test dashboard</p>
+          {:else}
+            <p class="text-red-600 dark:text-red-400 font-medium">⚠️ LIVE MODE - Real charges will be made</p>
+            <p class="mt-1">$1 test selected - Use your own card for safe live testing</p>
+          {/if}
           {#if demoResult}
             <p class="mt-2 text-green-600 dark:text-green-400 font-medium">
               ✨ Success! Check the detailed result below ↓
@@ -196,25 +222,6 @@
           </div>
         {/if}
       </div>
-    </div>
-    
-    <!-- Code Example -->
-    <div class="mt-16 bg-gray-900 rounded-xl p-6 overflow-x-auto">
-      <h3 class="text-white font-semibold mb-4">Integration Example</h3>
-      <pre class="text-sm"><code class="language-svelte text-gray-300">{`<script>
-  import NOBSPay from 'nobs-pay';
-  
-  function handlePayment(result) {
-    console.log('Payment complete!', result);
-  }
-</script>
-
-<NOBSPay 
-  amount={19900}
-  productName="Your Product"
-  theme="brand"
-  on:success={handlePayment}
-/>`}</code></pre>
     </div>
     
     <!-- Bottom CTA -->

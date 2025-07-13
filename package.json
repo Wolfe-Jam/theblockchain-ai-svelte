@@ -21,7 +21,8 @@
     "@sveltejs/kit": "^2.0.0",
     "@upstash/redis": "^1.35.1",
     "chart.js": "^4.5.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "stripe": "^18.3.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.0",

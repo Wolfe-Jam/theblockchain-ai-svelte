@@ -11,6 +11,7 @@
   let error: string | null = null;
   let selectedLicense: 'individual' | 'team' | 'enterprise' = 'individual';
   let showPayment = false;
+  let testMode = false; // Default to live mode for real transactions
   
   // Get mock data for development
   function getMockComponent(slug: string): Component | null {
@@ -421,6 +422,38 @@
               {/if}
             </div>
             
+            <!-- Payment Mode Toggle -->
+            <div class="border-t border-gray-200 dark:border-gray-600 pt-6 mb-6">
+              <h4 class="font-medium text-gray-900 dark:text-white mb-3">Payment Mode:</h4>
+              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <span class="text-sm font-medium">
+                  {#if testMode}
+                    🧪 Test Mode
+                  {:else}
+                    🔴 LIVE Mode
+                  {/if}
+                </span>
+                <button
+                  class="px-3 py-1 text-xs font-medium rounded-md transition-colors
+                    {testMode 
+                      ? 'bg-yellow-500 text-white' 
+                      : 'bg-red-500 text-white'}"
+                  on:click={() => testMode = !testMode}
+                >
+                  {testMode ? 'Test' : 'LIVE'}
+                </button>
+              </div>
+              {#if !testMode}
+                <p class="text-xs text-red-600 dark:text-red-400 mt-2">
+                  ⚠️ Real charges will be made to your card
+                </p>
+              {:else}
+                <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
+                  🧪 Use card 4242 4242 4242 4242 for testing
+                </p>
+              {/if}
+            </div>
+            
             <!-- What's Included -->
             <div class="border-t border-gray-200 dark:border-gray-600 pt-6 mb-6">
               <h4 class="font-medium text-gray-900 dark:text-white mb-3">What's included:</h4>
@@ -504,7 +537,7 @@
             productName={`${component.name} - ${selectedLicense} License`}
             productId={component.id}
             theme="brand"
-            testMode={true}
+            testMode={testMode}
             onSuccess={handlePaymentSuccess}
             onError={handlePaymentError}
             onCancel={handlePaymentCancel}

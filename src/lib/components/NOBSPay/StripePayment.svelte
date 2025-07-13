@@ -78,35 +78,46 @@
     cardError = '';
     
     try {
-      // In production, you would call your backend to create a payment intent
-      // For demo purposes, we'll simulate the payment
-      if (testMode) {
-        // Simulate payment processing
-        await new Promise(resolve => setTimeout(resolve, 2000));
+      // Create payment intent via backend API
+      const response = await fetch('/api/stripe/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount,
+          currency: currency.toLowerCase(),
+          productName,
+          email,
+          liveMode: !testMode
+        })
+      });
         
-        // Simulate success
-        const mockTransactionId = `pi_demo_${Date.now()}`;
-        dispatch('success', mockTransactionId);
-      } else {
-        // Real Stripe integration would go here
-        const { error, paymentIntent } = await stripe.confirmCardPayment(
-          'CLIENT_SECRET_FROM_BACKEND',
-          {
-            payment_method: {
-              card: cardElement,
-              billing_details: {
-                email: email
-              }
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create payment intent');
+      }
+      
+      // Confirm payment with Stripe
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        data.clientSecret,
+        {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              email: email
             }
           }
-        );
-        
-        if (error) {
-          throw new Error(error.message);
         }
-        
-        dispatch('success', paymentIntent.id);
+      );
+      
+      if (error) {
+        throw new Error(error.message);
       }
+      
+      console.log('Payment successful!', paymentIntent);
+      dispatch('success', paymentIntent.id);
     } catch (error: any) {
       cardError = error.message || 'Payment failed. Please try again.';
       dispatch('error', error);
@@ -164,7 +175,13 @@
     
     {#if testMode}
       <div class="test-mode-notice">
-        🧪 Test Mode - Use card 4242 4242 4242 4242
+        🧪 <strong>Test Mode</strong> - Use card 4242 4242 4242 4242, any future date, any CVC
+        <br><small>Payments will appear in your Stripe Dashboard under Test Data</small>
+      </div>
+    {:else}
+      <div class="live-mode-notice">
+        🔴 <strong>LIVE MODE</strong> - Real charges will be made to cards
+        <br><small>Use your own card for testing - actual charges will occur</small>
       </div>
     {/if}
   </div>
@@ -311,5 +328,17 @@
     font-size: 0.875rem;
     text-align: center;
     margin-top: 1rem;
+  }
+  
+  .live-mode-notice {
+    padding: 0.75rem;
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: 0.5rem;
+    color: #dc2626;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 500;
   }
 </style>
