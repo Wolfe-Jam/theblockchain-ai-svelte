@@ -1,7 +1,7 @@
 # 🔐 Netlify Environment Variables Setup
 
 ## 🚨 **Security Note**
-I temporarily hardcoded your secret key for development testing, but **removed it now**. Here's how to properly configure Netlify for production.
+All API keys must be configured as environment variables in Netlify - never hardcoded in files.
 
 ---
 
@@ -20,29 +20,29 @@ I temporarily hardcoded your secret key for development testing, but **removed i
 ### **Stripe Configuration**
 ```bash
 # Stripe Live Keys (for production payments)
-STRIPE_SECRET_KEY=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
+STRIPE_SECRET_KEY=sk_live_[YOUR_STRIPE_SECRET_KEY]
 
-STRIPE_PUBLISHABLE_KEY=pk_live_51OxX4j2KJ00ahaMqWECu3jRiWJQMWfndR34Iig8Cr48FhVcgifUDxwnSPOzr0Z4peYvN5UCRaZTFNjLj3fWoWEp9005MEHCqoK
+STRIPE_PUBLISHABLE_KEY=pk_live_[YOUR_STRIPE_PUBLISHABLE_KEY]
 
-VITE_STRIPE_LIVE_KEY=pk_live_51OxX4j2KJ00ahaMqWECu3jRiWJQMWfndR34Iig8Cr48FhVcgifUDxwnSPOzr0Z4peYvN5UCRaZTFNjLj3fWoWEp9005MEHCqoK
+VITE_STRIPE_LIVE_KEY=pk_live_[YOUR_STRIPE_PUBLISHABLE_KEY]
 
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+STRIPE_WEBHOOK_SECRET=whsec_[YOUR_WEBHOOK_SECRET]
 ```
 
 ### **PayPal Configuration (Optional)**
 ```bash
-PAYPAL_CLIENT_ID=AVkwk7Nk__2i7EAoxZ9fondZQ5RLQ6m0qxdhLY63KK1mzFPpa6mL6r0-pK1KzKRzEjQdupa2HV-WwZcd
+PAYPAL_CLIENT_ID=[YOUR_PAYPAL_CLIENT_ID]
 
-PAYPAL_CLIENT_SECRET=EBtJz_c8cQWZ9P5V_WselBKRbpV6uHRcZX-0pLzSh71n7eqaCQ5GqDsCQIhWaQO2DNoudWHc3_7ZSmgG
+PAYPAL_CLIENT_SECRET=[YOUR_PAYPAL_CLIENT_SECRET]
 
 PAYPAL_MODE=live
 ```
 
 ### **Supabase Configuration**
 ```bash
-VITE_SUPABASE_URL=https://minumiricmuddzcyxyzd.supabase.co
+VITE_SUPABASE_URL=[YOUR_SUPABASE_URL]
 
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pbnVtaXJpY211ZGR6Y3l4eXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyOTEwMTIsImV4cCI6MjA2Nzg2NzAxMn0.GosygE-lgQVqfEpeVERpE-VHqnY9yZ-sdz6duyEYtUI
+VITE_SUPABASE_ANON_KEY=[YOUR_SUPABASE_ANON_KEY]
 ```
 
 ---
@@ -53,7 +53,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 For each environment variable above:
 
 1. **Variable name**: Copy the name (e.g., `STRIPE_SECRET_KEY`)
-2. **Variable value**: Copy the value (e.g., `sk_live_51OxX4j2KJ...`)  
+2. **Variable value**: Get from your local `.env` file  
 3. **Scopes**: Select **All deploy contexts** (Build time + Runtime)
 4. **Click**: "Create variable"
 
@@ -116,14 +116,14 @@ For each environment variable above:
 ## ⚠️ **Important Notes**
 
 ### **Secret Key Sources**
-- **Got from**: Your existing `.env` file in the project
+- **Get from**: Your existing `.env` file in the project
 - **Security**: Never share or commit secret keys to git
 - **Production**: Only stored in Netlify environment variables
 
 ### **Webhook Secret**
-- **Current**: Placeholder value (`whsec_your_webhook_secret_here`)
-- **Next step**: Get real webhook secret from Stripe dashboard
-- **Location**: Stripe Dashboard → Developers → Webhooks
+- **Get from**: Stripe Dashboard → Developers → Webhooks
+- **Format**: Starts with `whsec_`
+- **Purpose**: Webhook verification
 
 ---
 
@@ -136,7 +136,7 @@ For each environment variable above:
 - ✅ **Customer receipts** via email
 
 ### **Week 3 Launch Ready**
-- 🚀 **NOBS Pay sales** at $1.00 individual license
+- 🚀 **NOBS Pay sales** at component pricing
 - 💰 **Real revenue** generation
 - 📊 **Analytics** from actual transactions
 - 🎯 **Marketplace** ready for customers
@@ -149,4 +149,4 @@ For each environment variable above:
 3. **Test live payments** on production site
 4. **Launch Week 3** marketplace with confidence!
 
-The secret key came from your existing `.env` file - now it's properly secured in Netlify! 🔐
+Get API keys from your local `.env` file and add them securely to Netlify! 🔐

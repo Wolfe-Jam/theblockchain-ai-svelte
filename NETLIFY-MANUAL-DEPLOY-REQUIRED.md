@@ -11,7 +11,7 @@ Adding environment variables to Netlify **does NOT** automatically trigger a red
 1. Go to: [https://app.netlify.com](https://app.netlify.com) 
 2. Click your **theBlockchain.ai** site
 3. **Site settings** → **Environment variables**
-4. Add each variable (as listed in previous guide)
+4. Add each variable (get values from your local `.env` file)
 
 ### **Step 2: MANUALLY Trigger Deploy**
 After adding all variables, you MUST manually redeploy:
@@ -66,22 +66,24 @@ git push origin main
 
 ---
 
-## 📋 **Complete Variable List (Copy-Paste Ready)**
+## 📋 **Required Variables (Get from .env file)**
 
 ```bash
 # Stripe Configuration
-STRIPE_SECRET_KEY=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
+STRIPE_SECRET_KEY=[FROM_YOUR_ENV_FILE]
 
-VITE_STRIPE_LIVE_KEY=pk_live_51OxX4j2KJ00ahaMqWECu3jRiWJQMWfndR34Iig8Cr48FhVcgifUDxwnSPOzr0Z4peYvN5UCRaZTFNjLj3fWoWEp9005MEHCqoK
+VITE_STRIPE_LIVE_KEY=[FROM_YOUR_ENV_FILE]
 
 # Supabase Configuration  
-VITE_SUPABASE_URL=https://minumiricmuddzcyxyzd.supabase.co
+VITE_SUPABASE_URL=[FROM_YOUR_ENV_FILE]
 
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pbnVtaXJpY211ZGR6Y3l4eXpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyOTEwMTIsImV4cCI6MjA2Nzg2NzAxMn0.GosygE-lgQVqfEpeVERpE-VHqnY9yZ-sdz6duyEYtUI
+VITE_SUPABASE_ANON_KEY=[FROM_YOUR_ENV_FILE]
 
 # PayPal (Optional)
-PAYPAL_CLIENT_ID=AVkwk7Nk__2i7EAoxZ9fondZQ5RLQ6m0qxdhLY63KK1mzFPpa6mL6r0-pK1KzKRzEjQdupa2HV-WwZcd
+PAYPAL_CLIENT_ID=[FROM_YOUR_ENV_FILE]
 ```
+
+**Security Note**: Never paste actual API keys in documentation files. Always get them from your secure `.env` file.
 
 ---
 

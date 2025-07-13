@@ -12,9 +12,11 @@ You correctly pointed out that your keys were **live keys**, not test keys, and 
 ### **1. Live Keys in Environment**
 ```bash
 # .env file now uses your LIVE Stripe keys
-STRIPE_SECRET_KEY=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
-VITE_STRIPE_LIVE_KEY=pk_live_51OxX4j2KJ00ahaMqWECu3jRiWJQMWfndR34Iig8Cr48FhVcgifUDxwnSPOzr0Z4peYvN5UCRaZTFNjLj3fWoWEp9005MEHCqoK
+STRIPE_SECRET_KEY=[YOUR_LIVE_SECRET_KEY]
+VITE_STRIPE_LIVE_KEY=[YOUR_LIVE_PUBLISHABLE_KEY]
 ```
+
+**Security Note**: Actual keys are in your `.env` file (never committed to git).
 
 ### **2. Live/Test Mode Toggle**
 - **Demo page**: Now defaults to LIVE mode
@@ -81,7 +83,7 @@ VITE_STRIPE_LIVE_KEY=pk_live_51OxX4j2KJ00ahaMqWECu3jRiWJQMWfndR34Iig8Cr48FhVcgif
 - 🔄 **Refund test transactions immediately**
 
 ### **Production Security**
-- 🔒 **Live keys are now in your .env**
+- 🔒 **Live keys are in your .env file**
 - 📁 **Never commit .env to git**
 - 🚫 **Don't share live keys**
 - ✅ **Keys are properly configured for frontend/backend**
