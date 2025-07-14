@@ -133,6 +133,7 @@
 - 📦 **Payment Integration** - NOBS Pay modal perfection for seamless purchasing  
 - 🎯 **Dogfooding Strategy** - Use NOBS Pay to sell NOBS Pay (inception marketing)
 - 📊 **Product Hunt Preparation** - Enterprise-grade marketplace ready for launch
+- ⚡ **Svelte 5 Experimental Branch** - Future-proof architecture ready for next-gen components
 
 ### **Naming Updates**
 - **OLD**: bAI-Pay (deprecated)
