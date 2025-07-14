@@ -37,7 +37,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const response = await fetch(`${COINBASE_API_BASE}/charges`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${COINBASE_API_KEY}`,
+        'X-CC-Api-Key': COINBASE_API_KEY,
         'Content-Type': 'application/json',
         'X-CC-Api-Version': '2018-03-22'
       },
