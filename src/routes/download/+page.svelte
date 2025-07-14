@@ -1,6 +1,6 @@
 <!-- PROPOSED: src/routes/download/+page.svelte -->
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   
   let email = '';
   let isSubmitting = false;
@@ -48,8 +48,13 @@
     formData.append('timestamp', new Date().toISOString());
     
     try {
-      // Submit to Netlify Function
-      const response = await fetch('/api/form-handler', {
+      // Submit to Netlify Function (with development fallback)
+      const isDevelopment = window.location.hostname === 'localhost';
+      const endpoint = isDevelopment 
+        ? '/api/dev-form-handler' // Development fallback
+        : '/.netlify/functions/form-handler'; // Production Netlify Function
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -79,11 +84,23 @@
     }
   }
   
-  function triggerPDFDownload() {
+  async function triggerPDFDownload() {
+    await tick(); // Wait for DOM updates in Svelte 5
+    
     const link = document.createElement('a');
     link.href = `/${formatDetails[formatChoice].filename}`;
     link.download = formatDetails[formatChoice].downloadName;
+    
+    // Ensure element is properly attached for Svelte 5
+    document.body.appendChild(link);
     link.click();
+    
+    // Clean up after download
+    setTimeout(() => {
+      if (link.parentNode) {
+        document.body.removeChild(link);
+      }
+    }, 100);
   }
   
   // Track page visits
