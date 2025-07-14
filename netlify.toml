@@ -1,5 +1,5 @@
 [build]
-  command = "rm -rf .netlify build node_modules/.vite && npm ci && npm run build"
+  command = "rm -rf .netlify build node_modules/.vite && npm install --frozen-lockfile --prefer-offline && npm run build"
   publish = "build"
   
 [build.environment]
