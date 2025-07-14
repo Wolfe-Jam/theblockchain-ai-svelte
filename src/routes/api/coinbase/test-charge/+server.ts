@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 const COINBASE_API_KEY = process.env.COINBASE_API_KEY;
-const COINBASE_API_BASE = 'https://api.commerce.coinbase.com';
+const COINBASE_API_BASE = 'https://api.beta.commerce.coinbase.com';
 
 export const GET: RequestHandler = async ({ url }) => {
   try {
