@@ -19,9 +19,22 @@
     </div>
     <div class="footer-center">
       <p class="main-text">&copy; 2025 theBlockchain.ai - Building the Future of Trusted AI</p>
-      <p class="contact-text">Contact: <a href="mailto:invest@theblockchain.ai?subject=Ready to own a piece of %22theBlockchain.ai%22&body=I bet you are, talk to us.%0D%0A%0D%0A">invest@theblockchain.ai</a></p>
+      <p class="contact-text">Contact: <a href="mailto:invest@theblockchain.ai?subject=theBlockchain.ai%20Business%20Inquiry">invest@theblockchain.ai</a> | <a href="mailto:support@theblockchain.ai?subject=theBlockchain.ai%20Support">support@theblockchain.ai</a></p>
     </div>
-    <div class="footer-right"></div>
+    <div class="footer-right">
+      <div class="legal-links">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <span class="separator">•</span>
+        <a href="/terms-of-service">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Business Information Row -->
+  <div class="business-info">
+    <p class="business-text">
+      Wolfe James LLC • 722 Ridgecrest Road, Lagrange, GA 30240 • Georgia LLC #23200618
+    </p>
   </div>
 </footer>
 
@@ -55,6 +68,43 @@
 
   .footer-right {
     justify-self: end;
+  }
+
+  .legal-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .legal-links a {
+    color: #94A3B8;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .legal-links a:hover {
+    color: var(--brand-cyan);
+    text-decoration: underline;
+  }
+
+  .separator {
+    color: #64748b;
+    font-size: 0.7rem;
+  }
+
+  .business-info {
+    text-align: center;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid #1e293b;
+  }
+
+  .business-text {
+    color: #64748b;
+    font-size: 0.6rem;
+    margin: 0;
+    font-family: 'Roboto Mono', monospace;
   }
 
   .about-link {
@@ -101,6 +151,21 @@
     .footer-center,
     .footer-right {
       justify-self: center;
+    }
+
+    .legal-links {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .business-info {
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .business-text {
+      font-size: 0.55rem;
+      line-height: 1.4;
     }
   }
 </style>
