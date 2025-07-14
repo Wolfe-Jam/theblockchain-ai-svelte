@@ -137,21 +137,15 @@
       </button>
     {/if}
   </div>
-  
-  {#if testMode}
-    <div class="test-mode-notice">
-      🧪 Test Mode - Coinbase Commerce Sandbox
-    </div>
-  {/if}
 </div>
 
 <style>
   .crypto-payment {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    max-width: 500px;
+    gap: 1rem;
+    padding: 1rem;
+    max-width: 400px;
     margin: 0 auto;
   }
 
@@ -355,16 +349,6 @@
   .crypto-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  .test-mode-notice {
-    padding: 0.75rem;
-    background: #fef3c7;
-    border: 1px solid #fbbf24;
-    border-radius: 0.5rem;
-    color: #92400e;
-    font-size: 0.875rem;
-    text-align: center;
   }
 
   /* Dark mode support */

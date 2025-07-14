@@ -7,7 +7,7 @@ export const paymentMethods: Record<string, PaymentMethodConfig> = {
   stripe: {
     id: 'stripe',
     name: 'Credit/Debit Card',
-    icon: '💳',
+    icon: '/stripe-logo.svg',
     color: 'var(--brand-blue)',
     description: 'Secure card payment via Stripe',
     enabled: true,
@@ -17,7 +17,7 @@ export const paymentMethods: Record<string, PaymentMethodConfig> = {
   paypal: {
     id: 'paypal',
     name: 'PayPal',
-    icon: '🅿️',
+    icon: '/paypal-logo.svg',
     color: 'var(--brand-orange)',
     description: 'Fast checkout with PayPal',
     enabled: true,
@@ -27,7 +27,7 @@ export const paymentMethods: Record<string, PaymentMethodConfig> = {
   crypto: {
     id: 'crypto',
     name: 'Cryptocurrency',
-    icon: '🔗',
+    icon: '/coinbase-logo.svg',
     color: 'var(--brand-cyan)',
     description: 'Pay with Bitcoin, Ethereum, or USDC',
     enabled: true,

@@ -28,7 +28,7 @@
           transition:fade
         >
           {#if showMethodIcons}
-            <span class="method-icon">{config.icon}</span>
+            <img src={config.icon} alt="{config.name} logo" class="method-icon" />
           {/if}
           <span class="method-name">{config.name}</span>
           <span class="method-description">{config.description}</span>
@@ -63,10 +63,10 @@
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    padding: 1.5rem;
+    padding: 1rem;
     background: var(--bai-bg-light, #ffffff);
     border: 2px solid var(--bai-border, #e5e7eb);
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.2s;
     text-align: center;
@@ -83,7 +83,9 @@
   }
   
   .method-icon {
-    font-size: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: contain;
   }
   
   .method-name {
