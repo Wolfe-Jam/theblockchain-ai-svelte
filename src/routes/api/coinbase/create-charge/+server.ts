@@ -70,7 +70,6 @@ export const POST: RequestHandler = async ({ request }) => {
       chargeId: charge.data.id,
       hostedUrl: charge.data.hosted_url,
       status: charge.data.timeline[0]?.status || 'NEW',
-      addresses: charge.data.addresses,
       pricing: charge.data.pricing
     });
 
