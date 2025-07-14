@@ -15,21 +15,35 @@
   let loading = false;
   let error = '';
   let paypalLoaded = false;
+  let paypalClientId = '';
   
-  // PayPal configuration
-  const paypalClientId = dev 
-    ? 'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R' // Sandbox
-    : import.meta.env.VITE_PUBLIC_PAYPAL_CLIENT_ID || import.meta.env.PUBLIC_PAYPAL_CLIENT_ID || 'LIVE_CLIENT_ID_NEEDED'; // Live
-
   const handleBack = () => {
     dispatch('back');
   };
 
   onMount(() => {
-    loadPayPalSDK();
+    loadPayPalConfig();
   });
 
+  async function loadPayPalConfig() {
+    try {
+      const response = await fetch('/api/paypal/config');
+      const config = await response.json();
+      paypalClientId = config.paypalClientId;
+      loadPayPalSDK();
+    } catch (err) {
+      console.error('Failed to load PayPal config:', err);
+      error = 'Failed to load PayPal configuration';
+    }
+  }
+
   async function loadPayPalSDK() {
+    // Make sure we have the client ID first
+    if (!paypalClientId) {
+      error = 'PayPal client ID not available';
+      return;
+    }
+
     // Check if PayPal is already loaded
     if (typeof window !== 'undefined' && window.paypal) {
       paypalLoaded = true;
