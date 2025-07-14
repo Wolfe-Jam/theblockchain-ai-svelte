@@ -2,66 +2,43 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => {
-  const results = [];
+  const apiKey = process.env.COINBASE_API_KEY;
   
-  // Test 1: Basic connectivity
   try {
-    const response = await fetch('https://api.commerce.coinbase.com/ping', {
-      method: 'GET',
-      headers: { 'User-Agent': 'NOBS-Pay-Test' }
+    // Simple test: Try to reach Coinbase API
+    const response = await fetch('https://api.commerce.coinbase.com/charges', {
+      method: 'POST',
+      headers: {
+        'X-CC-Api-Key': apiKey || 'test',
+        'Content-Type': 'application/json',
+        'X-CC-Api-Version': '2018-03-22'
+      },
+      body: JSON.stringify({
+        name: 'Network Test',
+        description: 'Testing network connectivity',
+        pricing_type: 'fixed_price',
+        local_price: { amount: '1.00', currency: 'USD' }
+      })
     });
-    results.push({
-      test: 'Coinbase Ping',
+
+    const result = await response.json();
+
+    return json({
       success: true,
+      canReachCoinbase: true,
       status: response.status,
-      statusText: response.statusText
+      apiKeyPresent: !!apiKey,
+      coinbaseResponse: result,
+      timestamp: new Date().toISOString()
     });
+
   } catch (error) {
-    results.push({
-      test: 'Coinbase Ping',
+    return json({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      canReachCoinbase: false,
+      error: error instanceof Error ? error.message : 'Unknown network error',
+      apiKeyPresent: !!apiKey,
+      timestamp: new Date().toISOString()
     });
   }
-
-  // Test 2: Basic HTTP test
-  try {
-    const response = await fetch('https://httpbin.org/get');
-    results.push({
-      test: 'Basic HTTP',
-      success: response.ok,
-      status: response.status
-    });
-  } catch (error) {
-    results.push({
-      test: 'Basic HTTP',
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-
-  // Test 3: DNS resolution
-  try {
-    const response = await fetch('https://api.commerce.coinbase.com', {
-      method: 'HEAD'
-    });
-    results.push({
-      test: 'Coinbase DNS/SSL',
-      success: true,
-      status: response.status
-    });
-  } catch (error) {
-    results.push({
-      test: 'Coinbase DNS/SSL',
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-
-  return json({
-    timestamp: new Date().toISOString(),
-    netlifyRegion: process.env.AWS_REGION || 'unknown',
-    results,
-    environment: process.env.NODE_ENV || 'unknown'
-  });
 };
