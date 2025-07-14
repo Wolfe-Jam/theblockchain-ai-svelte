@@ -8,13 +8,19 @@ export const POST: RequestHandler = async ({ request }) => {
   try {
     const { amount, currency = 'USD', productName, email } = await request.json();
 
+    console.log('Coinbase charge request:', { amount, currency, productName, email });
+
     if (!amount || amount <= 0) {
       return json({ error: 'Invalid amount' }, { status: 400 });
     }
 
     if (!COINBASE_API_KEY) {
+      console.error('COINBASE_API_KEY not found in environment variables');
       return json({ error: 'Coinbase configuration missing' }, { status: 500 });
     }
+
+    console.log('COINBASE_API_KEY present:', COINBASE_API_KEY ? 'Yes' : 'No');
+    console.log('API Key starts with:', COINBASE_API_KEY ? COINBASE_API_KEY.substring(0, 8) + '...' : 'No key');
 
     const chargeData = {
       name: productName || 'NOBS Pay Purchase',
@@ -34,6 +40,8 @@ export const POST: RequestHandler = async ({ request }) => {
       cancel_url: `${new URL(request.url).origin}/marketplace`
     };
 
+    console.log('Sending to Coinbase:', JSON.stringify(chargeData, null, 2));
+
     const response = await fetch(`${COINBASE_API_BASE}/charges`, {
       method: 'POST',
       headers: {
@@ -45,10 +53,17 @@ export const POST: RequestHandler = async ({ request }) => {
     });
 
     const charge = await response.json();
+    
+    console.log('Coinbase response status:', response.status);
+    console.log('Coinbase response:', JSON.stringify(charge, null, 2));
 
     if (!response.ok) {
       console.error('Coinbase charge creation failed:', charge);
-      return json({ error: 'Failed to create Coinbase charge' }, { status: 500 });
+      return json({ 
+        error: 'Failed to create Coinbase charge', 
+        details: charge,
+        status: response.status 
+      }, { status: 500 });
     }
 
     return json({
@@ -61,6 +76,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
   } catch (error) {
     console.error('Coinbase charge creation error:', error);
-    return json({ error: 'Failed to create Coinbase charge' }, { status: 500 });
+    return json({ 
+      error: 'Failed to create Coinbase charge', 
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 };

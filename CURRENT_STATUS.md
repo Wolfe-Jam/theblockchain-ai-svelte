@@ -97,12 +97,12 @@
 ## 📋 **RECENT HISTORY & CONTEXT**
 
 ### **Major Completions**
+- ✅ **COINBASE DEBUG TOOLS**: Enhanced error logging + debug endpoint for API key verification (`COINBASE-500-ERROR-DEBUG.md`)
 - ✅ **PAYPAL SDK FIX**: Resolved environment variable access with server endpoint (`PAYPAL-SDK-FIX.md`)
-- ✅ **UNIVERSAL PAYMENTS READY**: PayPal + crypto both configured and fixed for deployment
+- ✅ **ENHANCED ERROR HANDLING**: Detailed logging for both PayPal and Coinbase API issues
+- ✅ **DEBUG ENDPOINTS**: Created tools to verify environment variable configuration
 - ✅ **ENVIRONMENT VARIABLES SET**: All 5 payment API keys properly configured in Netlify
-- ✅ **COINBASE COMMERCE LIVE**: Developer account + API key complete - crypto payments ready (`COINBASE-COMMERCE-LIVE-COMPLETE.md`)
-- ✅ **CRYPTO AUTHENTICATION FIX**: Updated API headers to match Coinbase Commerce documentation (`X-CC-Api-Key`)
-- ✅ **PAYPAL LIVE INTEGRATION**: Complete frontend + backend update for live payments (`PAYPAL-LIVE-INTEGRATION-COMPLETE.md`)
+- ✅ **COINBASE COMMERCE LIVE**: Developer account + API key complete - debugging integration (`COINBASE-COMMERCE-LIVE-COMPLETE.md`)
 - ✅ **REVENUE STREAM ACTIVATED**: First $1 sale successfully completed + Cart issues completely resolved
 - ✅ **NOBS PAY CORE COMPLETE**: Ready to scale from test pricing ($1) to real pricing ($199/$499/$1,499)
 - ✅ **TWO-COMPONENT SYSTEM** - Standalone BUY button + Pure display cards with container linking (MASTERY!)
@@ -141,12 +141,12 @@
 - ✅ **TECHNOLOGY LEADERSHIP** - First Svelte 5 component marketplace established globally
 
 ### **Active Development** 
-- 🚨 **PAYPAL SDK FIX** - Resolved environment variable access issue with server endpoint
-- 🔧 **DEPLOY NEEDED** - PayPal configuration fix ready for deployment
-- 💰 **CRYPTO PAYMENTS READY** - Coinbase Commerce should work (no environment variable issues)
-- ⚡ **UNIVERSAL PAYMENTS 67%** - PayPal fix + crypto working = both methods ready
-- 🧪 **TESTING READY** - Fixed PayPal SDK loading, ready to test both payment methods
-- 📊 **ENVIRONMENT VARIABLES SET** - All 5 payment API keys configured in Netlify
+- 🚨 **COINBASE 500 ERROR DEBUG** - Added enhanced logging to identify API key/request issues
+- 🔧 **PAYPAL SDK FIXED** - PayPal configuration fix ready for deployment  
+- 💰 **DEBUG ENDPOINTS ADDED** - Created debug tools to check environment variables
+- ⚡ **ENHANCED ERROR LOGGING** - Detailed Coinbase API response logging for troubleshooting
+- 🧪 **TESTING STRATEGY** - Deploy debug fixes, check endpoints, then test payments
+- 📊 **ENVIRONMENT VARIABLES SET** - All 5 payment API keys configured in Netlify (verifying Coinbase)
 - 🚀 **STRATEGIC POSITION** - Premium technology foundation justifies higher component pricing
 - 🎯 **COMPETITIVE ADVANTAGE** - "Built with Svelte 5" unique market differentiator established
 - 📊 **DOCUMENTATION EXCELLENCE** - Every achievement tracked, strategic impact analyzed
@@ -239,15 +239,15 @@
 
 ## 🎯 **NEXT ACTIONS**
 
-### **Immediate (Next 15 minutes) - PAYPAL FIX + LIVE TESTING! 🚨🚀**
-- [ ] **DEPLOY PAYPAL FIX**: Push PayPal SDK configuration endpoint fix
-- [ ] **TEST CRYPTO FIRST**: Try $0.50 crypto payment (should work immediately)
-- [ ] **TEST PAYPAL AFTER FIX**: $0.50 PayPal payment with resolved SDK loading
-- [ ] **VERIFY PAYMENTS**: Check PayPal business + Coinbase Commerce dashboards
-- [ ] **CHECK SUCCESS FLOW**: Confirm customer redirects and receipts work
-- [ ] **MONITOR FOR ERRORS**: Watch console for any remaining issues
-- [ ] **CELEBRATE SUCCESS**: First live universal payments working! 🎉
-- [ ] **SCALE PRICING**: Update from $1 test → $199 real revenue pricing
+### **Immediate (Next 15 minutes) - DEBUG DEPLOY + FIX TESTING! 🚨🔧**
+- [ ] **DEPLOY DEBUG FIXES**: Push enhanced Coinbase logging + PayPal SDK fix
+- [ ] **CHECK DEBUG ENDPOINT**: Visit `/api/coinbase/debug` to verify API key
+- [ ] **TEST PAYPAL FIRST**: Try $0.50 PayPal payment (should work with SDK fix)
+- [ ] **DEBUG COINBASE**: Try crypto payment again, check detailed error logs
+- [ ] **IDENTIFY ROOT CAUSE**: Use enhanced logging to pinpoint Coinbase issue
+- [ ] **FIX COINBASE ISSUE**: Address API key/environment/request format problem
+- [ ] **VERIFY BOTH PAYMENTS**: Confirm PayPal + crypto both working
+- [ ] **CELEBRATE SUCCESS**: Universal payments operational! 🎉
 
 ### **Week 3 Completion (Next 7 Days) - MARKETPLACE INTEGRATION**
 - [ ] Complete marketplace product listing (NOBS Pay as first product)
@@ -266,10 +266,10 @@
 ---
 
 **Last Updated**: July 14, 2025  
-**Status**: 🚨 PAYPAL SDK FIXED + CRYPTO READY - Universal payments ready for deployment!  
-**Achievement**: Resolved PayPal environment variable issue + all payment methods configured  
-**Result**: Both PayPal + crypto ready for live testing after quick deploy! 💰🚀  
-**Documentation**: See `PAYPAL-SDK-FIX.md` for resolution details
+**Status**: 🚨 PAYMENT DEBUGGING - PayPal SDK fixed + Coinbase 500 error enhanced logging  
+**Achievement**: Added debug tools to identify root cause of Coinbase API issues  
+**Result**: Ready to deploy debug fixes and systematically resolve payment issues! 🔧🚀  
+**Documentation**: See `COINBASE-500-ERROR-DEBUG.md` for troubleshooting approach
 
 ---
 
