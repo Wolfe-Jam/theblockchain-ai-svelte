@@ -434,10 +434,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: 0.375rem 1rem; /* Reduced from 0.5rem for more compact */
     max-width: 1280px;
     margin: 0 auto;
     position: relative;
+    min-height: 44px; /* Optimal touch target + minimal size */
   }
 
   .nav-brand {

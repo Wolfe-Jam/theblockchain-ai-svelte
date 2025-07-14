@@ -128,6 +128,8 @@
 - ✅ **UNIVERSAL PAYMENT PROCESSING** - Complete PayPal + Coinbase Commerce integration
 - ✅ **Payment Security Design** - Removed box, 2.5x larger logos, clean professional layout
 - ✅ **Triangle Payment Layout** - Zero-fraud round logo as centerpiece with payment processors in triangle formation
+- ✅ **Dark Mode Consistency** - Fixed box appearance in dark mode, clean layout in both themes
+- ✅ **Banner Height Optimization** - Reduced header padding for more compact, minimal banner size
 - ✅ **SVELTE 5 UPGRADE** - 🚀 HISTORIC MIGRATION COMPLETE - Now running cutting-edge Svelte 5.0.0
 - ✅ **VERSION 1.5.0** - 🎉 CELEBRATION EDITION with "Powered by Svelte 5" showcase in About Modal
 - ✅ **BUG RESOLUTION** - PDF downloads + form submissions completely fixed, zero console errors

@@ -43,9 +43,10 @@
     align-items: center;
     gap: 1rem;
     padding: 2rem 1rem;
-    /* REMOVED: Box styling for clean appearance */
-    background: transparent;
-    border: none;
+    /* ENSURE: Clean appearance in all modes */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     text-align: center;
     margin: 1.5rem 0;
   }
@@ -60,14 +61,14 @@
 
   .security-text-line1 {
     font-weight: 600;
-    color: white;
+    color: #22d3ee; /* Cyan for light mode */
     font-size: 1rem;
     margin: 0;
   }
 
   .security-text-line2 {
     font-weight: 500;
-    color: white;
+    color: #0891b2; /* Darker cyan for light mode */
     font-size: 0.9rem;
     margin: 0;
   }
@@ -144,12 +145,17 @@
 
   /* Dark mode support */
   :global(.dark) .payment-security {
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1));
-    border-color: rgba(6, 182, 212, 0.3);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  :global(.dark) .security-text {
-    color: #22d3ee;
+  :global(.dark) .security-text-line1 {
+    color: #f8fafc;
+  }
+
+  :global(.dark) .security-text-line2 {
+    color: #e2e8f0;
   }
 
   :global(.dark) .developer-note {
