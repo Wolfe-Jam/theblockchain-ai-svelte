@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { formatAmount } from './config';
   
   export let amount: number;
@@ -10,16 +10,87 @@
   
   const dispatch = createEventDispatcher();
   
+  let paypalButtonContainer: HTMLElement;
+  let loading = false;
+  let error = '';
+  
   const handleBack = () => {
     dispatch('back');
   };
-  
-  // Placeholder for now
-  const handlePayPal = () => {
-    // In production, this would integrate with PayPal SDK
-    alert('PayPal integration coming soon! This would open PayPal checkout.');
-    dispatch('success', 'paypal_demo_' + Date.now());
-  };
+
+  onMount(() => {
+    if (typeof window !== 'undefined' && window.paypal) {
+      initializePayPal();
+    } else {
+      error = 'PayPal SDK not loaded';
+    }
+  });
+
+  async function initializePayPal() {
+    try {
+      await window.paypal.Buttons({
+        createOrder: async () => {
+          loading = true;
+          error = '';
+          
+          const response = await fetch('/api/paypal/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount,
+              currency,
+              productName,
+              email
+            })
+          });
+
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to create PayPal order');
+          }
+          
+          return data.orderID;
+        },
+        
+        onApprove: async (data: any) => {
+          try {
+            const response = await fetch('/api/paypal/capture-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderID: data.orderID })
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(result.error || 'Failed to capture payment');
+            }
+            
+            dispatch('success', result.transactionId);
+          } catch (err) {
+            error = err instanceof Error ? err.message : 'Payment capture failed';
+            loading = false;
+          }
+        },
+        
+        onError: (err: any) => {
+          console.error('PayPal error:', err);
+          error = 'PayPal payment failed. Please try again.';
+          loading = false;
+        },
+        
+        onCancel: () => {
+          loading = false;
+          dispatch('back');
+        }
+      }).render(paypalButtonContainer);
+      
+    } catch (err) {
+      console.error('PayPal initialization error:', err);
+      error = 'Failed to initialize PayPal. Please try again.';
+    }
+  }
 </script>
 
 <div class="paypal-payment">
@@ -27,16 +98,28 @@
   <p class="payment-amount">{formatAmount(amount, currency)}</p>
   
   <div class="paypal-info">
-    <p>You'll be redirected to PayPal to complete your purchase.</p>
+    <p>Complete your payment securely with PayPal.</p>
     <p class="email-info">Receipt will be sent to: <strong>{email}</strong></p>
   </div>
+
+  {#if error}
+    <div class="error-message">
+      <p>{error}</p>
+    </div>
+  {/if}
+
+  {#if loading}
+    <div class="loading-state">
+      <p>Processing payment...</p>
+    </div>
+  {/if}
+
+  <!-- PayPal Buttons Container -->
+  <div class="paypal-buttons-container" bind:this={paypalButtonContainer}></div>
   
   <div class="form-actions">
-    <button class="back-button" on:click={handleBack}>
+    <button class="back-button" on:click={handleBack} disabled={loading}>
       ← Back
-    </button>
-    <button class="paypal-button" on:click={handlePayPal}>
-      Continue to PayPal
     </button>
   </div>
   
@@ -51,88 +134,111 @@
   .paypal-payment {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    max-width: 400px;
+    margin: 0 auto;
   }
-  
+
   .payment-title {
-    font-size: 1.125rem;
-    font-weight: 500;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    color: #1f2937;
     margin: 0;
-    color: var(--bai-text-primary);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
   }
-  
+
   .payment-title::before {
     content: '🅿️';
     font-size: 1.5rem;
   }
-  
+
   .payment-amount {
     font-size: 2rem;
     font-weight: 700;
+    text-align: center;
+    color: #059669;
     margin: 0;
-    color: var(--brand-orange-text);
-    text-align: center;
   }
-  
+
   .paypal-info {
-    padding: 1rem;
-    background: var(--bai-bg-hover, #f3f4f6);
-    border-radius: 0.5rem;
     text-align: center;
+    color: #6b7280;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
   }
-  
+
   .paypal-info p {
     margin: 0.5rem 0;
-    color: var(--bai-text-secondary);
   }
-  
-  .email-info strong {
-    color: var(--bai-text-primary);
+
+  .email-info {
+    font-size: 0.875rem;
+    color: #374151;
   }
-  
+
+  .error-message {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .error-message p {
+    color: #dc2626;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .loading-state {
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .loading-state p {
+    color: #6b7280;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .paypal-buttons-container {
+    min-height: 50px;
+    margin: 1rem 0;
+  }
+
   .form-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 1rem;
+    justify-content: center;
   }
-  
-  .back-button,
-  .paypal-button {
-    flex: 1;
+
+  .back-button {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
     padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 500;
     border-radius: 0.5rem;
     cursor: pointer;
+    font-weight: 500;
     transition: all 0.2s;
   }
-  
-  .back-button {
-    background: transparent;
-    border: 2px solid var(--bai-border);
-    color: var(--bai-text-secondary);
+
+  .back-button:hover:not(:disabled) {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
   }
-  
-  .back-button:hover {
-    background: var(--bai-bg-hover);
-    color: var(--bai-text-primary);
+
+  .back-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
-  
-  .paypal-button {
-    background: var(--brand-orange-text);
-    border: 2px solid var(--brand-orange-text);
-    color: white;
-  }
-  
-  .paypal-button:hover {
-    background: var(--brand-orange);
-    border-color: var(--brand-orange);
-    transform: translateY(-1px);
-  }
-  
+
   .test-mode-notice {
     padding: 0.75rem;
     background: #fef3c7;
@@ -141,5 +247,30 @@
     color: #92400e;
     font-size: 0.875rem;
     text-align: center;
+  }
+
+  /* Dark mode support */
+  :global(.dark) .payment-title {
+    color: #f9fafb;
+  }
+
+  :global(.dark) .paypal-info {
+    color: #9ca3af;
+    background: #374151;
+  }
+
+  :global(.dark) .email-info {
+    color: #d1d5db;
+  }
+
+  :global(.dark) .back-button {
+    background-color: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+  }
+
+  :global(.dark) .back-button:hover:not(:disabled) {
+    background-color: #4b5563;
+    border-color: #6b7280;
   }
 </style>

@@ -2,6 +2,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { version } from '../lib/version.js';
+  import PaymentSecurity from './PaymentSecurity.svelte';
   
   const dispatch = createEventDispatcher();
   
@@ -28,6 +29,11 @@
         <a href="/terms-of-service">Terms of Service</a>
       </div>
     </div>
+  </div>
+  
+  <!-- Payment Security Section -->
+  <div class="payment-security-wrapper">
+    <PaymentSecurity />
   </div>
   
   <!-- Business Information Row -->
@@ -98,6 +104,12 @@
     padding-top: 1rem;
     margin-top: 1rem;
     border-top: 1px solid #1e293b;
+  }
+
+  .payment-security-wrapper {
+    max-width: 600px;
+    margin: 2rem auto 1rem auto;
+    padding: 0 1rem;
   }
 
   .business-text {

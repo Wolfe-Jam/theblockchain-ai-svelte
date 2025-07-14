@@ -52,7 +52,7 @@
           <h3 class="text-lg font-semibold text-white mb-3">What we collect:</h3>
           <ul class="space-y-2 ml-4">
             <li>• Your email when you sign up or buy something</li>
-            <li>• Payment info (but Stripe handles that, not us)</li>
+            <li>• Payment info (Stripe, PayPal, and Coinbase handle that securely)</li>
             <li>• Which components you look at (to make better recommendations)</li>
           </ul>
         </div>
@@ -124,7 +124,7 @@
               <div>
                 <h4 class="text-base font-semibold text-orange-400 mb-3">Data Collection & Processing</h4>
                 <ul class="space-y-1 ml-4">
-                  <li>• <strong>Personal Data:</strong> Email, name, billing address, payment details (processed via Stripe)</li>
+                  <li>• <strong>Personal Data:</strong> Email, name, billing address, payment details (processed via Stripe, PayPal, Coinbase)</li>
                   <li>• <strong>Usage Data:</strong> Page views, component interactions, purchase history</li>
                   <li>• <strong>Technical Data:</strong> IP address, browser type, device info (minimal logging)</li>
                   <li>• <strong>Legal Basis:</strong> Contract performance (purchases), legitimate interest (service improvement), consent (marketing)</li>
@@ -135,6 +135,8 @@
                 <h4 class="text-base font-semibold text-orange-400 mb-3">Third-Party Processors</h4>
                 <ul class="space-y-1 ml-4">
                   <li>• <strong>Stripe:</strong> Payment processing (PCI DSS compliant, data processor agreement in place)</li>
+                  <li>• <strong>PayPal:</strong> Payment processing (industry-standard security, privacy policy applies)</li>
+                  <li>• <strong>Coinbase:</strong> Digital currency payment processing (registered developer partnership)</li>
                   <li>• <strong>Supabase:</strong> Database hosting (GDPR compliant, EU data residency available)</li>
                   <li>• <strong>Netlify:</strong> Website hosting (SOC 2 compliant, privacy shield certified)</li>
                   <li>• <strong>Analytics:</strong> Minimal, privacy-focused tracking (no third-party cookies)</li>

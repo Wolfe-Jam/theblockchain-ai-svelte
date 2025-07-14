@@ -4,22 +4,65 @@
   
   export let amount: number;
   export let currency: string;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export let productName: string;
   export let email: string;
   export let testMode: boolean;
   
   const dispatch = createEventDispatcher();
   
+  let loading = false;
+  let error = '';
+  let chargeData: any = null;
+  let showAddresses = false;
+  
   const handleBack = () => {
     dispatch('back');
   };
-  
-  // Placeholder for now
-  const handleCrypto = () => {
-    // In production, this would integrate with Coinbase Commerce
-    alert('Crypto payment integration coming soon! This would open Coinbase Commerce.');
-    dispatch('success', 'crypto_demo_' + Date.now());
+
+  const handleCoinbaseCommerce = async () => {
+    loading = true;
+    error = '';
+    
+    try {
+      const response = await fetch('/api/coinbase/create-charge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount,
+          currency,
+          productName,
+          email
+        })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create crypto charge');
+      }
+      
+      chargeData = data;
+      showAddresses = true;
+      
+      // Open Coinbase Commerce hosted checkout
+      if (data.hostedUrl) {
+        window.open(data.hostedUrl, '_blank');
+      }
+      
+    } catch (err) {
+      error = err instanceof Error ? err.message : 'Failed to create crypto payment';
+    } finally {
+      loading = false;
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // You could add a toast notification here
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 </script>
 
@@ -31,34 +74,73 @@
     <p>Pay with Bitcoin, Ethereum, or USDC</p>
     <p class="email-info">Receipt will be sent to: <strong>{email}</strong></p>
   </div>
-  
-  <div class="crypto-options">
-    <div class="crypto-option">
-      <span class="crypto-icon">₿</span>
-      <span>Bitcoin</span>
+
+  {#if error}
+    <div class="error-message">
+      <p>{error}</p>
     </div>
-    <div class="crypto-option">
-      <span class="crypto-icon">Ξ</span>
-      <span>Ethereum</span>
+  {/if}
+
+  {#if !chargeData}
+    <div class="crypto-options">
+      <div class="crypto-option">
+        <span class="crypto-icon">₿</span>
+        <span>Bitcoin</span>
+      </div>
+      <div class="crypto-option">
+        <span class="crypto-icon">Ξ</span>
+        <span>Ethereum</span>
+      </div>
+      <div class="crypto-option">
+        <span class="crypto-icon">💲</span>
+        <span>USDC</span>
+      </div>
     </div>
-    <div class="crypto-option">
-      <span class="crypto-icon">$</span>
-      <span>USDC</span>
+  {/if}
+
+  {#if chargeData && showAddresses}
+    <div class="payment-addresses">
+      <h4>Payment Addresses:</h4>
+      {#each Object.entries(chargeData.addresses || {}) as [currency, address]}
+        <div class="address-item">
+          <div class="address-header">
+            <span class="currency-name">{currency.toUpperCase()}</span>
+          </div>
+          <div class="address-display">
+            <code class="address-code">{address}</code>
+            <button class="copy-button" on:click={() => copyToClipboard(address)}>
+              📋
+            </button>
+          </div>
+        </div>
+      {/each}
+      
+      <div class="checkout-notice">
+        <p>💡 A new window opened with Coinbase Commerce checkout</p>
+        <p>You can also send crypto directly to the addresses above</p>
+      </div>
     </div>
-  </div>
+  {/if}
   
   <div class="form-actions">
-    <button class="back-button" on:click={handleBack}>
+    <button class="back-button" on:click={handleBack} disabled={loading}>
       ← Back
     </button>
-    <button class="crypto-button" on:click={handleCrypto}>
-      Pay with Crypto
-    </button>
+    
+    {#if !chargeData}
+      <button class="crypto-button" on:click={handleCoinbaseCommerce} disabled={loading}>
+        {#if loading}
+          Processing...
+        {:else}
+          Continue with Crypto
+        {/if}
+      </button>
+    {/if}
   </div>
   
   {#if testMode}
     <div class="test-mode-notice">
-      🧪 Test Mode - Testnet Payments
+      🧪 Test Mode - Coinbase Commerce Sandbox
     </div>
   {/if}
 </div>
@@ -67,113 +149,214 @@
   .crypto-payment {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    max-width: 500px;
+    margin: 0 auto;
   }
-  
+
   .payment-title {
-    font-size: 1.125rem;
-    font-weight: 500;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    color: #1f2937;
     margin: 0;
-    color: var(--bai-text-primary);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
   }
-  
+
   .payment-title::before {
-    content: '🔗';
+    content: '🪙';
     font-size: 1.5rem;
   }
-  
+
   .payment-amount {
     font-size: 2rem;
     font-weight: 700;
+    text-align: center;
+    color: #059669;
     margin: 0;
-    color: var(--brand-cyan-text);
-    text-align: center;
   }
-  
+
   .crypto-info {
-    padding: 1rem;
-    background: var(--bai-bg-hover, #f3f4f6);
-    border-radius: 0.5rem;
     text-align: center;
+    color: #6b7280;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
   }
-  
+
   .crypto-info p {
     margin: 0.5rem 0;
-    color: var(--bai-text-secondary);
   }
-  
-  .email-info strong {
-    color: var(--bai-text-primary);
+
+  .email-info {
+    font-size: 0.875rem;
+    color: #374151;
   }
-  
+
+  .error-message {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .error-message p {
+    color: #dc2626;
+    margin: 0;
+    font-weight: 500;
+  }
+
   .crypto-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
   }
-  
+
   .crypto-option {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
     padding: 1rem;
-    background: var(--bai-bg-light);
-    border: 1px solid var(--bai-border);
+    background: #f3f4f6;
     border-radius: 0.5rem;
-    font-size: 0.875rem;
-    color: var(--bai-text-secondary);
+    min-width: 80px;
   }
-  
+
   .crypto-icon {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--brand-cyan-text);
+    font-size: 2rem;
   }
-  
+
+  .payment-addresses {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .payment-addresses h4 {
+    margin: 0 0 1rem 0;
+    color: #374151;
+    font-size: 1.125rem;
+  }
+
+  .address-item {
+    margin-bottom: 1rem;
+  }
+
+  .address-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .currency-name {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+  }
+
+  .address-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+  }
+
+  .address-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+    color: #374151;
+  }
+
+  .copy-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    font-size: 1rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .copy-button:hover {
+    opacity: 1;
+  }
+
+  .checkout-notice {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 0.5rem;
+    text-align: center;
+  }
+
+  .checkout-notice p {
+    margin: 0.25rem 0;
+    color: #1e40af;
+    font-size: 0.875rem;
+  }
+
   .form-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 1rem;
+    justify-content: center;
   }
-  
-  .back-button,
-  .crypto-button {
-    flex: 1;
+
+  .back-button, .crypto-button {
     padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 500;
     border-radius: 0.5rem;
     cursor: pointer;
+    font-weight: 500;
     transition: all 0.2s;
+    border: 1px solid;
   }
-  
+
   .back-button {
-    background: transparent;
-    border: 2px solid var(--bai-border);
-    color: var(--bai-text-secondary);
+    background-color: #f3f4f6;
+    color: #374151;
+    border-color: #d1d5db;
   }
-  
-  .back-button:hover {
-    background: var(--bai-bg-hover);
-    color: var(--bai-text-primary);
+
+  .back-button:hover:not(:disabled) {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
   }
-  
+
+  .back-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   .crypto-button {
-    background: var(--brand-cyan-text);
-    border: 2px solid var(--brand-cyan-text);
+    background-color: #f59e0b;
     color: white;
+    border-color: #f59e0b;
+    min-width: 160px;
   }
-  
-  .crypto-button:hover {
-    background: var(--brand-cyan);
-    border-color: var(--brand-cyan);
-    transform: translateY(-1px);
+
+  .crypto-button:hover:not(:disabled) {
+    background-color: #d97706;
+    border-color: #d97706;
   }
-  
+
+  .crypto-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   .test-mode-notice {
     padding: 0.75rem;
     background: #fef3c7;
@@ -182,5 +365,57 @@
     color: #92400e;
     font-size: 0.875rem;
     text-align: center;
+  }
+
+  /* Dark mode support */
+  :global(.dark) .payment-title {
+    color: #f9fafb;
+  }
+
+  :global(.dark) .crypto-info {
+    color: #9ca3af;
+    background: #374151;
+  }
+
+  :global(.dark) .email-info {
+    color: #d1d5db;
+  }
+
+  :global(.dark) .crypto-option {
+    background: #374151;
+    color: #f9fafb;
+  }
+
+  :global(.dark) .payment-addresses {
+    background: #374151;
+    border-color: #4b5563;
+  }
+
+  :global(.dark) .payment-addresses h4 {
+    color: #f9fafb;
+  }
+
+  :global(.dark) .currency-name {
+    color: #f9fafb;
+  }
+
+  :global(.dark) .address-display {
+    background: #1f2937;
+    border-color: #4b5563;
+  }
+
+  :global(.dark) .address-code {
+    color: #e5e7eb;
+  }
+
+  :global(.dark) .back-button {
+    background-color: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+  }
+
+  :global(.dark) .back-button:hover:not(:disabled) {
+    background-color: #4b5563;
+    border-color: #6b7280;
   }
 </style>

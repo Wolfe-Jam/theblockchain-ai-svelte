@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 50" width="120" height="50">
+  <defs>
+    <style>
+      .coinbase-text { fill: #0052ff; font-family: system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 14px; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="120" height="50" fill="transparent"/>
+  <text x="60" y="32" text-anchor="middle" class="coinbase-text">Coinbase</text>
+</svg>

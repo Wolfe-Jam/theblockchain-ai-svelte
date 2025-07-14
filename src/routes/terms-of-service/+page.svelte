@@ -52,7 +52,7 @@
           <h3 class="text-lg font-semibold text-white mb-3">What we offer:</h3>
           <ul class="space-y-2 ml-4">
             <li>• Digital components that actually work</li>
-            <li>• Secure payment processing (Stripe handles the money stuff)</li>
+            <li>• Secure payment processing (Stripe, PayPal, and Coinbase)</li>
             <li>• AI tools for smart contract generation</li>
             <li>• Professional developer resources</li>
           </ul>
@@ -73,7 +73,7 @@
           <ul class="space-y-2 ml-4">
             <li>• All sales final (unless the component is broken)</li>
             <li>• Refunds within 30 days if something's actually wrong</li>
-            <li>• We process payments through Stripe (they're the pros)</li>
+            <li>• Multiple payment options: Stripe, PayPal, and Coinbase</li>
             <li>• Prices in USD, taxes calculated at checkout</li>
           </ul>
         </div>
@@ -158,7 +158,7 @@
                 <h4 class="text-base font-semibold text-cyan-400 mb-3">Platform Services</h4>
                 <ul class="space-y-1 ml-4">
                   <li>• <strong>Digital Marketplace:</strong> Component sales, licensing, distribution platform</li>
-                  <li>• <strong>Payment Processing:</strong> Third-party integration (Stripe, PayPal, Coinbase Commerce)</li>
+                  <li>• <strong>Payment Processing:</strong> Third-party integration (Stripe, PayPal, Coinbase)</li>
                   <li>• <strong>AI Services:</strong> Smart contract generation, code analysis tools</li>
                   <li>• <strong>User Accounts:</strong> Profile management, purchase history, download access</li>
                 </ul>
