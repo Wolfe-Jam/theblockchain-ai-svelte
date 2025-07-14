@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
   import { formatAmount } from './config';
+  import { dev } from '$app/environment';
   
   export let amount: number;
   export let currency: string;
@@ -13,22 +14,52 @@
   let paypalButtonContainer: HTMLElement;
   let loading = false;
   let error = '';
+  let paypalLoaded = false;
   
+  // PayPal configuration
+  const paypalClientId = dev 
+    ? 'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R' // Sandbox
+    : import.meta.env.VITE_PUBLIC_PAYPAL_CLIENT_ID || import.meta.env.PUBLIC_PAYPAL_CLIENT_ID || 'LIVE_CLIENT_ID_NEEDED'; // Live
+
   const handleBack = () => {
     dispatch('back');
   };
 
   onMount(() => {
-    if (typeof window !== 'undefined' && window.paypal) {
-      initializePayPal();
-    } else {
-      error = 'PayPal SDK not loaded';
-    }
+    loadPayPalSDK();
   });
+
+  async function loadPayPalSDK() {
+    // Check if PayPal is already loaded
+    if (typeof window !== 'undefined' && window.paypal) {
+      paypalLoaded = true;
+      initializePayPal();
+      return;
+    }
+
+    // Load PayPal SDK dynamically
+    const script = document.createElement('script');
+    script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=USD`;
+    script.onload = () => {
+      paypalLoaded = true;
+      initializePayPal();
+    };
+    script.onerror = () => {
+      error = 'Failed to load PayPal SDK';
+    };
+    document.head.appendChild(script);
+  }
 
   async function initializePayPal() {
     try {
       await window.paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          color: 'gold',
+          shape: 'rect',
+          label: 'paypal',
+          height: 40
+        },
         createOrder: async () => {
           loading = true;
           error = '';
@@ -210,6 +241,13 @@
   .paypal-buttons-container {
     min-height: 50px;
     margin: 1rem 0;
+    /* Ensure PayPal buttons render properly */
+    background: transparent;
+  }
+
+  /* Ensure PayPal button styling */
+  :global(.paypal-buttons-container div) {
+    background: transparent !important;
   }
 
   .form-actions {

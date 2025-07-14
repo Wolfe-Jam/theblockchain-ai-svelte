@@ -21,7 +21,8 @@ export const paymentMethods: Record<string, PaymentMethodConfig> = {
     color: 'var(--brand-orange)',
     description: 'Fast checkout with PayPal',
     enabled: true,
-    testKey: import.meta.env.VITE_PAYPAL_CLIENT_ID || import.meta.env.PUBLIC_PAYPAL_CLIENT_ID || ''
+    testKey: 'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R',
+    liveKey: import.meta.env.VITE_PUBLIC_PAYPAL_CLIENT_ID || import.meta.env.PUBLIC_PAYPAL_CLIENT_ID || ''
   },
   crypto: {
     id: 'crypto',
