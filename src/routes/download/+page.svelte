@@ -48,8 +48,13 @@
     formData.append('timestamp', new Date().toISOString());
     
     try {
-      // Submit to Netlify Function
-      const response = await fetch('/api/form-handler', {
+      // Submit to Netlify Function (with development fallback)
+      const isDevelopment = window.location.hostname === 'localhost';
+      const endpoint = isDevelopment 
+        ? '/api/dev-form-handler' // Development fallback
+        : '/.netlify/functions/form-handler'; // Production Netlify Function
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
