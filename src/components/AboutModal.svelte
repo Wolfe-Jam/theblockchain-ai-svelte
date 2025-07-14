@@ -175,6 +175,16 @@
           <span class="version-number">{version}</span>
         </div>
         
+        <!-- 🚀 SVELTE 5 CELEBRATION BADGE -->
+        <div class="svelte5-celebration">
+          <div class="svelte5-badge">
+            <span class="svelte5-icon">⚡️</span>
+            <span class="svelte5-text">Powered by Svelte 5</span>
+            <span class="svelte5-sparkle">✨</span>
+          </div>
+          <p class="svelte5-subtitle">Cutting-edge technology foundation</p>
+        </div>
+        
         <div class="about-description">
           <p class="economic-layer">The Economic Layer for Open-Source</p>
           
@@ -340,6 +350,63 @@
     font-size: 1.125rem;
     font-weight: 700;
     color: var(--brand-orange-text);  /* Readable orange text */
+  }
+
+  /* 🚀 SVELTE 5 CELEBRATION STYLES */
+  .svelte5-celebration {
+    margin-bottom: 2rem;
+  }
+
+  .svelte5-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #FF3E00 0%, #FF6B35 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1.5rem;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 
+      0 4px 12px rgba(255, 62, 0, 0.3),
+      0 0 20px rgba(255, 62, 0, 0.2);
+    animation: svelte5Glow 2s ease-in-out infinite alternate;
+  }
+
+  .svelte5-icon,
+  .svelte5-sparkle {
+    font-size: 1rem;
+    animation: svelte5Pulse 1.5s ease-in-out infinite;
+  }
+
+  .svelte5-text {
+    letter-spacing: 0.025em;
+  }
+
+  .svelte5-subtitle {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    margin: 0.5rem 0 0 0;
+    font-style: italic;
+  }
+
+  @keyframes svelte5Glow {
+    0% { 
+      box-shadow: 
+        0 4px 12px rgba(255, 62, 0, 0.3),
+        0 0 20px rgba(255, 62, 0, 0.2);
+    }
+    100% { 
+      box-shadow: 
+        0 6px 20px rgba(255, 62, 0, 0.4),
+        0 0 30px rgba(255, 62, 0, 0.3);
+    }
+  }
+
+  @keyframes svelte5Pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
   }
 
   .about-description {

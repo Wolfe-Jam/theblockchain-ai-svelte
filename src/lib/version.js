@@ -1,7 +1,7 @@
 // src/lib/version.js
 // Static version info (auto-updated by scripts/update-version.js)
 const packageInfo = {
-  version: "1.3.0",
+  version: "1.5.0",
   name: "my-theblockchain-ai-app"
 };
 
