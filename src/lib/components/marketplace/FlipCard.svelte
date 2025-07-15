@@ -1,23 +1,63 @@
-<!-- FlipCard.svelte -->
+<!-- Enhanced FlipCard.svelte with Mathematical Sizing System -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { goto } from '$app/navigation';
   import type { Component } from '$lib/marketplace/types';
+  
   // Props from parent 
   export let component: Component;
-  export let theme: 'wallet' | 'neon' | 'gradient' | 'solid' = 'solid';
-  export let aspectRatio: 'square' | 'portrait' | 'postcard' = 'square';
-  export let displayOnly: boolean = false; // NEW: Pure display mode (no BUY buttons)
+  export let theme: 'professional' | 'wallet' | 'neon' | 'gradient' | 'solid' = 'professional';
+  export let displayOnly: boolean = false; // Pure display mode (no BUY buttons)
   export let iconType: 'checkmark' | 'custom' | 'component' = 'checkmark';
   export let customIconSvg: string = '';
+  export let size: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 = 5; // Mathematical SIZE system
+  export let showComponents = {
+    colorPalette: true,
+    tags: true,
+    toolbar: true,
+    buyComponent: true
+  };
   
   const dispatch = createEventDispatcher();
   
   let isFlipped = false;
   let cardElement: HTMLDivElement;
   
+  // 📐 MATHEMATICAL SIZE SYSTEM ⭐ CRITICAL
+  const MASTER_SIZE = 333; // SIZE-5 baseline
+  const SIZES = {
+    1: 88,   // 333 ÷ 4 = Micro Badge
+    2: 111,  // 333 ÷ 3 = Tiny Perfect  
+    3: 166,  // 333 ÷ 2 = Small Grid
+    4: 222,  // 333 × 2/3 = Compact
+    5: 333,  // 333 × 1 = Master Baseline ⭐
+    6: 444,  // 333 × 4/3 = Large Display
+    7: 555,  // 333 × 5/3 = Feature Hero
+    8: 777,  // 333 × 7/3 = Showcase
+    9: 999   // 333 × 3 = Mega Hero
+  };
+  
+  const GRAPHICS_RATIO = 2/3; // 66.6% of FlipCard size
+  
+  // Smart flip sizing logic
+  $: currentSize = isFlipped ? Math.max(size, 5) : size; // Back side minimum SIZE-5
+  $: cardWidth = SIZES[currentSize];
+  $: cardHeight = SIZES[currentSize];
+  $: graphicsSize = Math.round(cardWidth * GRAPHICS_RATIO);
+  
+  // Scale text based on card size
+  $: titleFontSize = Math.round(36 * cardWidth / MASTER_SIZE);
+  $: taglineFontSize = Math.round(18 * cardWidth / MASTER_SIZE);
+  $: padding = Math.round(20 * cardWidth / MASTER_SIZE);
+  $: borderRadius = Math.round(16 * cardWidth / MASTER_SIZE);
+  
   // Theme configurations
   const themes = {
+    professional: {
+      front: 'bg-gradient-to-br from-cyan-400 to-blue-500',
+      back: 'bg-gradient-to-br from-cyan-500 to-blue-600',
+      accent: 'text-white'
+    },
     wallet: {
       front: 'bg-gradient-to-br from-orange-400 to-red-500',
       back: 'bg-gradient-to-br from-orange-500 to-red-600',
@@ -33,21 +73,6 @@
       back: 'bg-gradient-to-br from-blue-500 to-cyan-600',
       accent: 'text-white'
     },
-    emerald: {
-      front: 'bg-gradient-to-br from-emerald-400 to-teal-600',
-      back: 'bg-gradient-to-br from-emerald-500 to-teal-700',
-      accent: 'text-white'
-    },
-    royal: {
-      front: 'bg-gradient-to-br from-indigo-500 to-purple-600',
-      back: 'bg-gradient-to-br from-indigo-600 to-purple-700',
-      accent: 'text-white'
-    },
-    sunset: {
-      front: 'bg-gradient-to-br from-amber-400 to-orange-500',
-      back: 'bg-gradient-to-br from-amber-500 to-orange-600',
-      accent: 'text-white'
-    },
     solid: {
       front: 'bg-gray-800',
       back: 'bg-gray-900',
@@ -55,9 +80,17 @@
     }
   };
   
-  // Get theme colors based on component category
-  function getThemeForCategory(category: string) {
-    switch(category) {
+  // Get theme colors based on component category or prop
+  function getThemeForComponent() {
+    if (component.flip_card_color) {
+      return {
+        front: `bg-gradient-to-br ${component.flip_card_color}`,
+        back: `bg-gradient-to-br ${component.flip_card_color}`,
+        accent: 'text-white'
+      };
+    }
+    
+    switch(component.category) {
       case 'payment-processing':
         return themes.wallet;
       case 'data-visualization':
@@ -65,37 +98,13 @@
       case 'authentication':
         return themes.gradient;
       default:
-        return themes.solid;
+        return themes[theme] || themes.professional;
     }
   }
   
-  // Use dynamic colors from component data or theme fallback
-  $: currentTheme = component.flip_card_color ? {
-    front: `bg-gradient-to-br ${component.flip_card_color}`,
-    back: `bg-gradient-to-br ${component.flip_card_color}`,
-    accent: 'text-white'
-  } : getThemeForCategory(component.category);
+  $: currentTheme = getThemeForComponent();
   
-  // 🎨 Aspect ratio configurations (HEIGHT-ONLY adjustment)
-  // Width is controlled by flex grid (1-8 cards per row)
-  // These heights create different aspect ratios relative to flex width
-  const aspectRatios = {
-    square: {
-      height: 'auto', // Height = Width (perfect square)
-      aspectClass: 'aspect-square',
-      description: '1:1 Classic'
-    },
-    portrait: {
-      height: 'auto', // Height = Width * 4/3 (taller)
-      aspectClass: 'aspect-[3/4]',
-      description: '3:4 Modern'
-    },
-    postcard: {
-      height: 'auto', // Height = Width * 3/4 (wider)
-      aspectClass: 'aspect-[4/3]',
-      description: '4:3 Landscape'
-    }
-  };
+  // Icon SVGs
   const iconSvgs = {
     checkmark: `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -120,9 +129,13 @@
     `
   };
   
-  // Get appropriate icon based on component type
+  // Get appropriate icon
   function getComponentIcon(): string {
     if (customIconSvg) return customIconSvg;
+    
+    if (component.category === 'payment-processing') {
+      return iconSvgs.payment;
+    }
     
     switch (iconType) {
       case 'custom':
@@ -135,36 +148,54 @@
     }
   }
   
-  // Smart icon selection based on component category
-  function getSmartIcon(): string {
-    if (customIconSvg) return customIconSvg;
+  // Extract colors from gradient
+  function extractColors(gradient: string): string[] {
+    const colors = [];
+    const matches = gradient.match(/(#[0-9a-f]{6}|[a-z]+-\d+)/gi) || [];
     
-    if (component.category === 'payment-processing') {
-      return iconSvgs.payment;
+    // Convert Tailwind colors to hex approximations
+    const colorMap: Record<string, string> = {
+      'cyan-400': '#22d3ee',
+      'blue-500': '#3b82f6',
+      'orange-400': '#fb923c',
+      'red-500': '#ef4444',
+      'purple-500': '#a855f7',
+      'pink-500': '#ec4899'
+    };
+    
+    for (const match of matches.slice(0, 5)) {
+      if (match.startsWith('#')) {
+        colors.push(match);
+      } else if (colorMap[match]) {
+        colors.push(colorMap[match]);
+      }
     }
     
-    return getComponentIcon();
+    // Ensure we have 5 colors
+    while (colors.length < 5) {
+      colors.push('#' + Math.floor(Math.random()*16777215).toString(16));
+    }
+    
+    return colors.slice(0, 5);
   }
+  
+  $: extractedColors = extractColors(currentTheme.front);
+  
+  // Component visibility tags
+  $: visibleTags = component.tags?.slice(0, 3).map(tag => `#${tag}`) || ['#component', '#svelte', '#pro'];
   
   function handleFlip() {
     isFlipped = !isFlipped;
   }
   
-  function handleBuyNow(e: Event) {
+  function handleBuyNow(e: Event, tier: 'individual' | 'team' | 'enterprise') {
     e.stopPropagation();
-    dispatch('buy', component);
+    dispatch('buy', { component, tier });
   }
   
   function handleDemo(e: Event) {
     e.stopPropagation();
-    // Map component names to demo slugs
-    const demoSlugMap: { [key: string]: string } = {
-      'NOBS Pay': 'nobs-pay',
-      'DataViz Pro': 'dataviz-pro', 
-      'Auth Shield': 'auth-shield'
-    };
-    
-    const demoSlug = demoSlugMap[component.name] || component.slug || component.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const demoSlug = component.slug || component.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
     goto(`/marketplace/demo/${demoSlug}`);
   }
   
@@ -184,773 +215,498 @@
   }
 </script>
 
-<div 
-  class="flip-card {aspectRatios[aspectRatio].aspectClass}"
-  bind:this={cardElement}
-  on:click={handleFlip}
-  on:keydown={(e) => e.key === 'Enter' && handleFlip()}
-  role="button"
-  tabindex="0"
-  aria-label="Flip card for {component.name}"
->
-  <div class="flip-card-inner" class:flipped={isFlipped}>
-    <!-- Front of card -->
-    <div class="flip-card-front {currentTheme.front} {currentTheme.accent}">
-      <!-- Main content area -->
-      <div class="card-content">
-        <!-- Icon/Graphic area -->
-        <div class="icon-area">
-          <!-- Vector SVG Icon (Image) -->
-          <div class="svg-icon-container">
-            {@html getSmartIcon()}
-          </div>
+<!-- 🎨 COMPLETE FLIPCARD SYSTEM -->
+<div class="flipcard-container" style="width: {cardWidth}px;">
+  <!-- Settings Button -->
+  {#if !displayOnly}
+    <button class="settings-button" on:click|stopPropagation>
+      i
+    </button>
+  {/if}
+  
+  <!-- Main FlipCard -->
+  <div 
+    class="flipcard-wrapper"
+    class:flipped={isFlipped}
+    style="width: {cardWidth}px; height: {cardHeight}px;"
+    on:click={handleFlip}
+    bind:this={cardElement}
+  >
+    <!-- Front Side -->
+    <div class="flipcard-side flipcard-front {currentTheme.front}" style="border-radius: {borderRadius}px;">
+      <div class="flipcard-content" style="padding: {padding}px;">
+        <!-- Graphics Box (66.6% ratio) -->
+        <div class="graphics-box" style="width: {graphicsSize}px; height: {graphicsSize}px;">
+          {@html getComponentIcon()}
         </div>
         
         <!-- Title -->
-        <h3 class="card-title">{component.name}</h3>
+        <h3 class="card-title {currentTheme.accent}" style="font-size: {titleFontSize}px;">
+          {component.name}
+        </h3>
         
         <!-- Tagline -->
-        <p class="card-tagline">{component.consumer_tagline || component.tagline}</p>
+        <p class="card-tagline {currentTheme.accent}" style="font-size: {taglineFontSize}px;">
+          {component.consumer_tagline || 'Professional Component'}
+        </p>
       </div>
-      
-      <!-- Flip indicator (pure display mode) -->
-      {#if !displayOnly}
-        <div class="flip-indicator">
-          <button 
-            class="flip-icon-btn"
-            on:click|stopPropagation={handleFlip}
-            aria-label="Flip card to see details"
-            title="Flip card"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </button>
-        </div>
-      {/if}
     </div>
     
-    <!-- Back of card -->
-    <div class="flip-card-back {currentTheme.back} {currentTheme.accent}">
-      <div class="back-content">
-        <h3 class="back-title">{component.name}</h3>
+    <!-- Back Side (Minimum SIZE-5 for readability) -->
+    <div class="flipcard-side flipcard-back {currentTheme.back}" style="border-radius: {borderRadius}px;">
+      <div class="flipcard-back-content" style="padding: {padding}px;">
+        <h3 class="back-title {currentTheme.accent}">
+          {component.name}
+        </h3>
         
-        <!-- Description -->
-        <p class="back-description">{component.description}</p>
-        
-        <!-- Features -->
-        <div class="features-list">
-          <h4 class="features-title">Key Features:</h4>
-          <ul>
-            {#each (component.developer_features || ['Easy Integration', 'Full Documentation', 'TypeScript Support', 'Mobile Responsive']).slice(0, 4) as feature}
-              <li>{feature}</li>
-            {/each}
-          </ul>
-        </div>
-        
-        <!-- Tech stack -->
-        <div class="tech-stack">
-          {#each (component.tech_stack || ['Svelte', 'TypeScript', 'JavaScript']).slice(0, 3) as tech}
-            <span class="tech-badge">{tech}</span>
-          {/each}
-        </div>
-        
-        <!-- Pricing and Action Section -->
-        <div class="pricing-section">
-          <!-- All pricing tiers -->
-          <div class="pricing-tiers">
-            <div class="tier tier-primary">
-              <span class="tier-name">Individual</span>
-              <span class="tier-price">{formatPrice(component.price || component.price_individual)}</span>
-            </div>
-            {#if component.price_team}
-              <div class="tier">
-                <span class="tier-name">Team</span>
-                <span class="tier-price">{formatPrice(component.price_team)}</span>
-              </div>
-            {/if}
+        <div class="back-sections">
+          <!-- Overview Section -->
+          <div class="back-section">
+            <h4 class="section-title">📋 Overview</h4>
+            <p class="section-content">
+              {component.description || 'Professional component for modern web applications.'}
+            </p>
           </div>
           
-          <!-- Action buttons -->
-          <div class="back-actions">
-            <button 
-              class="btn-mint btn-buy-enhanced"
-              on:click={handleBuyNow}
-              aria-label="Buy {component.name}"
-              title="BUY ⚡️"
-            >
-              <span class="btn-buy-content">
-                <svg class="lightning-icon" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M13 2L3 14h6l-2 8 10-12h-6l2-8z"/>
-                </svg>
-                BUY
-              </span>
-            </button>
-            
-            <div class="secondary-actions">
-              {#if component.demo_url}
-                <button 
-                  class="btn-demo"
-                  on:click={handleDemo}
-                  aria-label="Try demo"
-                >
-                  Demo
-                </button>
-              {/if}
-              <button 
-                class="btn-details"
-                on:click={handleDetails}
-                aria-label="View details"
-              >
-                Explore
+          <!-- Technical Details -->
+          <div class="back-section">
+            <h4 class="section-title">📋 Technical Details</h4>
+            <ul class="tech-list">
+              {#each component.tech_stack || [] as tech}
+                <li>{tech}</li>
+              {/each}
+            </ul>
+          </div>
+          
+          <!-- Features -->
+          <div class="back-section">
+            <h4 class="section-title">📋 Key Features</h4>
+            <ul class="features-list">
+              {#each component.developer_features?.slice(0, 4) || [] as feature}
+                <li>{feature}</li>
+              {/each}
+            </ul>
+          </div>
+          
+          <!-- Action Buttons -->
+          {#if !displayOnly}
+            <div class="back-actions">
+              <button class="action-btn demo" on:click={handleDemo}>
+                👁️ View Demo
+              </button>
+              <button class="action-btn details" on:click={handleDetails}>
+                📄 Details
               </button>
             </div>
-          </div>
-        </div>
-        
-        <!-- Flip indicator (back) -->
-        <div class="flip-indicator">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
+          {/if}
         </div>
       </div>
     </div>
   </div>
+  
+  <!-- Color Palette Component -->
+  {#if showComponents.colorPalette && !displayOnly}
+    <div class="color-palette">
+      {#each extractedColors as color}
+        <div class="color-swatch" style="background-color: {color}"></div>
+      {/each}
+    </div>
+  {/if}
+  
+  <!-- Tags Bar -->
+  {#if showComponents.tags && !displayOnly}
+    <div class="tags-bar">
+      {#each visibleTags as tag}
+        <span class="tag">{tag}</span>
+      {/each}
+    </div>
+  {/if}
+  
+  <!-- Toolbar -->
+  {#if showComponents.toolbar && !displayOnly}
+    <div class="toolbar">
+      <button title="Download" on:click|stopPropagation>📥</button>
+      <button title="Share" on:click|stopPropagation>📤</button>
+      <button title="Email" on:click|stopPropagation>📧</button>
+      <button title="Mobile" on:click|stopPropagation>📱</button>
+      <button title="Link" on:click|stopPropagation>🔗</button>
+      <button title="Settings" on:click|stopPropagation>⚙️</button>
+    </div>
+  {/if}
+  
+  <!-- Enhanced Buy Component -->
+  {#if showComponents.buyComponent && !displayOnly}
+    <div class="buy-component">
+      <button class="favorite-btn" on:click|stopPropagation>❤️</button>
+      <div class="pricing-tiers">
+        <button 
+          class="price-btn individual" 
+          on:click={(e) => handleBuyNow(e, 'individual')}
+        >
+          💰 {formatPrice(component.price_individual || 19900)}
+        </button>
+        <button 
+          class="price-btn team" 
+          on:click={(e) => handleBuyNow(e, 'team')}
+        >
+          💼 {formatPrice(component.price_team || 49900)}
+        </button>
+        <button 
+          class="price-btn enterprise" 
+          on:click={(e) => handleBuyNow(e, 'enterprise')}
+        >
+          🏢 {formatPrice(component.price_enterprise || 149900)}
+        </button>
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
-  .flip-card {
-    width: 100%;
-    /* Height now controlled by aspect ratio */
+  .flipcard-container {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .settings-button {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-style: italic;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+  }
+  
+  .settings-button:hover {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .flipcard-wrapper {
+    position: relative;
     perspective: 1000px;
     cursor: pointer;
-    min-height: 300px; /* Ensure minimum height for content */
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  .flip-card:hover .flip-card-inner:not(.flipped) {
-    transform: rotateY(10deg);
-  }
-  
-  .flip-card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
-  }
-  
-  .flip-card-inner.flipped {
-    transform: rotateY(180deg);
-  }
-  
-  .flip-card-front,
-  .flip-card-back {
+  .flipcard-side {
     position: absolute;
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
-    border-radius: 1rem;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    overflow: visible; /* Changed from hidden to ensure BUY button shows */
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
-    min-height: 100%; /* Ensure full height usage */
+    transition: transform 0.6s;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
   }
   
-  .flip-card-front::before,
-  .flip-card-back::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-    pointer-events: none;
+  .flipcard-front {
+    z-index: 2;
   }
   
-  .flip-card-back {
+  .flipcard-back {
     transform: rotateY(180deg);
   }
   
-  /* Front styles */
-  .category-badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  .flipped .flipcard-front {
+    transform: rotateY(-180deg);
   }
   
-  .card-content {
-    flex: 1;
+  .flipped .flipcard-back {
+    transform: rotateY(0deg);
+  }
+  
+  .flipcard-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Changed from center to start */
+    justify-content: center;
+    height: 100%;
     text-align: center;
-    padding: 1.5rem 1rem 1rem 1rem; /* Reduced padding */
-    min-height: 0; /* Allow shrinking */
   }
   
-  .icon-area {
-    margin-bottom: 1.5rem;
-    position: relative;
-    padding: 1.5rem 1rem 1rem 1rem; /* Top padding modest, reduced bottom */
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;        /* Horizontal center (keep) */
-    justify-content: flex-start; /* Top align (changed from center) */
-  }
-  
-  /* 🎨 NEW: SVG Icon Container */
-  .svg-icon-container {
-    width: 6rem;
-    height: 6rem;
-    color: white;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-    animation: pulse 2s infinite;
+  .graphics-box {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 1rem;
   }
   
-  .svg-icon-container svg {
-    width: 100%;
-    height: 100%;
-    stroke-width: 2.5;
-  }
-  
-  /* 🎯 NEW: Text Below Icon */
-  .icon-text {
-    margin-top: 1rem;
-    text-align: center;
-  }
-  
-  .icon-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.5rem;
-    backdrop-filter: blur(10px);
-  }
-  
-  .checkmark-icon {
-    font-size: 6rem;
-    line-height: 1;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-    animation: pulse 2s infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% { 
-      opacity: 0.9;
-      transform: scale(1);
-    }
-    50% { 
-      opacity: 1;
-      transform: scale(1.05);
-    }
-  }
-  
-  .icon-placeholder {
-    width: 6rem;
-    height: 6rem;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
-    border-radius: 1.25rem;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .icon-placeholder::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
-    animation: shimmer 3s infinite;
-  }
-  
-  @keyframes shimmer {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-  }
-  
-  @keyframes pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 1; }
+  .graphics-box :global(svg) {
+    width: 66.6%;
+    height: 66.6%;
+    color: white;
   }
   
   .card-title {
-    font-size: 2.25rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    line-height: 1.2;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   
   .card-tagline {
-    font-size: 1.125rem;
+    font-weight: 500;
+    margin: 0;
     opacity: 0.9;
-    max-width: 90%;
-    line-height: 1.4;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   
-  .front-action {
-    margin-top: auto;
-    padding: 0.5rem 1rem 0.5rem 1rem; /* Added bottom padding */
-    flex-shrink: 0; /* Prevent shrinking */
-  }
-  
-  .btn-mint {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.9);
-    color: #1f2937;
-    padding: 0.875rem 1.5rem;
-    border-radius: 0.75rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 1rem;
-    backdrop-filter: blur(10px);
-  }
-  
-  .btn-mint:hover {
-    background: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  /* Enhanced BUY Button with Lightning Bolt & Feel-Good Factor */
-  .btn-buy-enhanced {
-    background: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(12px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-    border-radius: 12px; /* Rounded square - perfect for "BUY" text */
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .btn-buy-enhanced::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
+  /* Back Side Styles */
+  .flipcard-back-content {
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.5s ease;
-  }
-  
-  .btn-buy-enhanced:hover::before {
-    left: 100%;
-  }
-  
-  .btn-buy-enhanced:hover {
-    background: rgba(255, 255, 255, 0.95) !important;
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-  }
-  
-  .btn-buy-enhanced:active {
-    transform: translateY(-1px) scale(0.98);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-  
-  .btn-buy-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    position: relative;
-    z-index: 1;
-  }
-  
-  .lightning-icon {
-    width: 1rem;
-    height: 1rem;
-    color: #f59e0b; /* Amber for energy */
-    filter: drop-shadow(0 1px 2px rgba(245, 158, 11, 0.3));
-    transition: all 0.2s ease;
-  }
-  
-  .btn-buy-enhanced:hover .lightning-icon {
-    color: #f97316; /* Orange on hover for more energy */
-    transform: scale(1.1);
-    filter: drop-shadow(0 2px 4px rgba(249, 115, 22, 0.4));
-  }
-  
-  .price-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-  }
-  
-  .price {
-    font-size: 2.25rem;
-    font-weight: 700;
-  }
-  
-  .price-label {
-    font-size: 0.875rem;
-    opacity: 0.8;
-  }
-  
-  .action-buttons {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: center;
-  }
-  
-  .btn-primary,
-  .btn-secondary {
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .btn-primary {
-    background: rgba(255, 255, 255, 0.9);
-    color: #1f2937;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .btn-primary:hover {
-    background: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .buy-button {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white !important;
-    font-weight: 700;
-    letter-spacing: 0.025em;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-  }
-  
-  .buy-button:hover {
-    background: linear-gradient(135deg, #059669, #047857);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-  }
-  
-  .buy-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  .buy-button:hover::before {
-    left: 100%;
-  }
-  
-  .btn-secondary {
-    background: rgba(255, 255, 255, 0.2);
+    overflow-y: auto;
     color: white;
-    backdrop-filter: blur(10px);
-  }
-  
-  .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
-  
-  .flip-indicator {
-    position: absolute;
-    bottom: 0.75rem;
-    right: 0.75rem;
-    opacity: 0.6;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .flip-icon-btn, .compact-buy-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    border-radius: 50%;
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(10px);
-  }
-  
-  .flip-icon-btn {
-    color: rgba(255, 255, 255, 0.8);
-    animation: pulse 2s infinite;
-  }
-  
-  .compact-buy-btn {
-    background: rgba(255, 255, 255, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-  }
-  
-  .flip-icon-btn:hover, .compact-buy-btn:hover {
-    background: rgba(255, 255, 255, 0.6) !important;
-    transform: scale(1.15);
-    opacity: 1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-  }
-  
-  .lightning-icon-compact {
-    width: 1.1rem;
-    height: 1.1rem;
-    color: #f59e0b;
-    filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.4));
-  }
-  
-  .compact-buy-btn:hover .lightning-icon-compact {
-    color: #f97316;
-    transform: scale(1.1);
-  }
-  
-  @keyframes pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
-  
-  /* Back styles */
-  .back-content {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
   }
   
   .back-title {
     font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-  
-  .back-description {
-    font-size: 0.875rem;
-    line-height: 1.5;
-    opacity: 0.9;
-    margin-bottom: 1.5rem;
-  }
-  
-  .features-list {
-    margin-bottom: 1.5rem;
-  }
-  
-  .features-title {
-    font-size: 0.875rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    opacity: 0.8;
-  }
-  
-  .features-list ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .features-list li {
-    font-size: 0.75rem;
-    padding: 0.25rem 0;
-    padding-left: 1rem;
-    position: relative;
-  }
-  
-  .features-list li::before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    opacity: 0.8;
-  }
-  
-  .tech-stack {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-  }
-  
-  .tech-badge {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    backdrop-filter: blur(10px);
-  }
-  
-  .pricing-section {
-    margin-top: auto;
-  }
-  
-  .pricing-tiers {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .tier {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.75rem;
-    border-radius: 0.5rem;
+    margin: 0 0 1rem;
     text-align: center;
   }
   
-  .tier-primary {
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+  .back-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
   
-  .tier-name {
-    display: block;
-    font-size: 0.75rem;
-    opacity: 0.8;
-    margin-bottom: 0.25rem;
+  .back-section {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
   }
   
-  .tier-price {
-    display: block;
-    font-size: 1.125rem;
+  .section-title {
+    font-size: 0.875rem;
     font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+  
+  .section-content {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  
+  .tech-list,
+  .features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+  
+  .tech-list li,
+  .features-list li {
+    padding: 0.25rem 0;
+  }
+  
+  .tech-list li::before {
+    content: '🔧 ';
+  }
+  
+  .features-list li::before {
+    content: '✓ ';
   }
   
   .back-actions {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: auto;
+    gap: 0.5rem;
+    margin-top: 1rem;
   }
   
-  .back-actions .btn-mint {
-    background: rgba(255, 255, 255, 0.9);
-    color: #1f2937;
-    padding: 0.875rem 1.5rem;
-    border-radius: 0.75rem;
-    font-weight: 600;
+  .action-btn {
+    flex: 1;
+    padding: 0.5rem;
     border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  .action-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Component Styles */
+  .color-palette {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 0.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .back-actions .btn-mint:hover {
-    background: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  .color-swatch {
+    flex: 1;
+    height: 1.5rem;
+    border-radius: 0.25rem;
   }
   
-  .secondary-actions {
+  .tags-bar {
     display: flex;
     gap: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .btn-demo,
-  .btn-details {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 0.625rem 1rem;
-    border-radius: 0.375rem;
+  .tag {
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
     font-weight: 500;
+  }
+  
+  .toolbar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+  }
+  
+  .toolbar button {
+    width: 2rem;
+    height: 2rem;
     border: none;
+    background: #f3f4f6;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  
+  .toolbar button:hover {
+    background: #e5e7eb;
+  }
+  
+  .buy-component {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    align-items: center;
+  }
+  
+  .favorite-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: all 0.2s;
+  }
+  
+  .favorite-btn:hover {
+    border-color: #ef4444;
+    background: #fee2e2;
+  }
+  
+  .pricing-tiers {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+  }
+  
+  .price-btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 0.875rem;
-    backdrop-filter: blur(10px);
+    white-space: nowrap;
   }
   
-  .btn-demo:hover,
-  .btn-details:hover {
-    background: rgba(255, 255, 255, 0.3);
+  .price-btn.individual {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  
+  .price-btn.team {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  
+  .price-btn.enterprise {
+    background: #e0e7ff;
+    color: #4338ca;
+  }
+  
+  .price-btn:hover {
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
-  /* Dark mode adjustments */
-  :global(.dark) .btn-primary,
-  :global(.dark) .btn-details {
-    background: rgba(255, 255, 255, 0.9);
-    color: #1f2937;
+  /* Dark mode support */
+  :global(.dark) .color-palette,
+  :global(.dark) .tags-bar,
+  :global(.dark) .toolbar,
+  :global(.dark) .buy-component {
+    background: #1f2937;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
   
-  :global(.dark) .btn-primary:hover,
-  :global(.dark) .btn-details:hover {
-    background: white;
+  :global(.dark) .toolbar button {
+    background: #374151;
   }
   
-  /* Mobile responsive */
+  :global(.dark) .toolbar button:hover {
+    background: #4b5563;
+  }
+  
+  :global(.dark) .favorite-btn {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  :global(.dark) .favorite-btn:hover {
+    border-color: #ef4444;
+    background: #7f1d1d;
+  }
+  
+  /* Responsive adjustments */
   @media (max-width: 640px) {
-    .flip-card {
-      height: 400px;
-    }
-    
-    .card-title {
-      font-size: 1.5rem;
-    }
-    
-    .card-tagline {
-      font-size: 1rem;
-    }
-    
-    .icon-area {
-      padding: 1.25rem 1rem 1rem 1rem; /* Modest top padding for mobile */
-      margin-bottom: 1.25rem;
-    }
-    
-    .icon-placeholder {
-      width: 5rem;
-      height: 5rem;
-    }
-    
-    .card-content {
-      padding: 2rem 1rem;
-    }
-    
-    .back-actions {
-      gap: 0.5rem;
-    }
-    
-    .secondary-actions {
+    .pricing-tiers {
       flex-direction: column;
-      gap: 0.5rem;
     }
     
-    .btn-mint {
-      padding: 0.75rem 1rem;
-      font-size: 0.875rem;
+    .price-btn {
+      width: 100%;
     }
   }
 </style>
