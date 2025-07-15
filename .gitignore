@@ -141,3 +141,8 @@ cdp-sdk/
 
 # Documentation drafts
 SETUP-PAYMENT-KEYS.md
+
+
+# Project documentation (root .md files)
+# These are now tracked but future ones will be ignored
+/*.md
