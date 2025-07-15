@@ -5,120 +5,140 @@
   import NOBSPay from '$lib/components/NOBSPay';
   import type { PaymentResult } from '$lib/components/NOBSPay/types';
   import FlipCard from '$lib/components/marketplace/FlipCard.svelte';
-  import { BUYButton, ProductContainer } from '$lib/components/BUYButton';
   
   let components: Component[] = [];
   let loading = true;
+  
+  // View modes
   let viewMode: 'flip' | 'list' = 'flip';
+  let layoutMode: 'overlapping' | 'grid' = 'overlapping';
   
-  // FlipCard Width Control (1-8 cards per row)
-  let flipCardWidth: number = 3; // Default: 3 cards per row
-  let maxAllowedWidth: number = 8; // Changes based on screen size
+  // Mathematical SIZE control (1-9)
+  let flipCardSize: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 = 5; // Default: SIZE-5 (333px)
   
-  // Aspect Ratio Toggles (always at least one must be active)
-  let aspectRatios = {
-    square: true,     // 1:1 - Default ON
-    portrait: false,  // 3:4 - Default OFF  
-    postcard: false   // 4:3 - Default OFF
+  // Mathematical SIZE system - CRITICAL!
+  const SIZES = {
+    1: 88,   // 333 ÷ 4 = Micro Badge
+    2: 111,  // 333 ÷ 3 = Tiny Perfect  
+    3: 166,  // 333 ÷ 2 = Small Grid
+    4: 222,  // 333 × 2/3 = Compact
+    5: 333,  // 333 × 1 = Master Baseline ⭐
+    6: 444,  // 333 × 4/3 = Large Display
+    7: 555,  // 333 × 5/3 = Feature Hero
+    8: 777,  // 333 × 7/3 = Showcase
+    9: 999   // 333 × 3 = Mega Hero
   };
   
-  // Smart BUY button sizing based on grid width
-  function getBuyButtonSize(gridWidth: number): 'compact' | 'small' | 'medium' | 'large' {
-    if (gridWidth === 1 || gridWidth === 2) return 'large';    // Sizes 1-2: Large BUY
-    if (gridWidth === 3) return 'medium';                      // Size 3: Perfect (AMAZING!)
-    if (gridWidth === 4 || gridWidth === 5) return 'small';    // Sizes 4-5: Small BUY  
-    return 'compact';                                           // Sizes 6-8: Compact BUY
+  // Calculate optimal grid columns based on card size
+  function getOptimalColumns(size: number): number {
+    switch(size) {
+      case 1: // 88px
+      case 2: // 111px
+        return 8;
+      case 3: // 166px
+        return 6;
+      case 4: // 222px
+        return 5;
+      case 5: // 333px
+        return 4;
+      case 6: // 444px
+        return 3;
+      case 7: // 555px
+      case 8: // 777px
+        return 2;
+      case 9: // 999px
+        return 1;
+      default:
+        return 3;
+    }
   }
-  $: filteredComponents = components.map((component, originalIndex) => ({
-    ...component,
-    originalIndex,
-    // Assign aspect ratio based on product type (not position)
-    aspectRatio: component.id.startsWith('square-') ? 'square' : 
-                component.id.startsWith('portrait-') ? 'portrait' : 
-                component.id.startsWith('postcard-') ? 'postcard' : 'square'
-  })).filter(component => aspectRatios[component.aspectRatio]);
+  
+  // Dynamic grid columns
+  $: gridColumns = getOptimalColumns(flipCardSize);
+  
+  // Filtered components
+  $: filteredComponents = components;
   
   // Payment state
   let showPayment = false;
   let selectedComponent: Component | null = null;
+  let selectedTier: 'individual' | 'team' | 'enterprise' = 'individual';
   
   // Load components on mount
+  // Responsive offset calculation
+  let isMobile = false;
+  
   onMount(async () => {
     await loadComponents();
-    loadWidthPreference();
-    updateMaxAllowedWidth();
+    loadPreferences();
     
-    // Listen for window resize to update max allowed width
-    const handleResize = () => updateMaxAllowedWidth();
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+    // Check if mobile
+    if (typeof window !== 'undefined') {
+      isMobile = window.innerWidth < 768;
+      window.addEventListener('resize', () => {
+        isMobile = window.innerWidth < 768;
+      });
+    }
   });
   
-  // Responsive width limits based on screen size
-  function updateMaxAllowedWidth() {
-    if (typeof window === 'undefined') return;
-    
-    const width = window.innerWidth;
-    if (width < 768) {
-      // Mobile: max 2 cards
-      maxAllowedWidth = 2;
-      if (flipCardWidth > 2) flipCardWidth = 2;
-    } else if (width < 1024) {
-      // Tablet: max 4 cards  
-      maxAllowedWidth = 4;
-      if (flipCardWidth > 4) flipCardWidth = 4;
-    } else {
-      // Desktop: full range 1-8
-      maxAllowedWidth = 8;
-    }
-  }
+  // Calculate offsets based on screen size
+  $: offsetMultiplier = isMobile ? 10 : 20;
+  $: verticalOffset = isMobile ? 4 : 8;
   
-  // Load saved width preference from localStorage
-  function loadWidthPreference() {
+  // Load saved preferences
+  function loadPreferences() {
     if (typeof window === 'undefined') return;
     
-    const saved = localStorage.getItem('flipcard-width');
-    if (saved) {
-      const parsedWidth = parseInt(saved);
-      if (parsedWidth >= 1 && parsedWidth <= 8) {
-        flipCardWidth = parsedWidth;
+    const savedSize = localStorage.getItem('marketplace-flipcard-size');
+    if (savedSize) {
+      const parsedSize = parseInt(savedSize);
+      if (parsedSize >= 1 && parsedSize <= 9) {
+        flipCardSize = parsedSize as any;
       }
     }
+    
+    const savedLayout = localStorage.getItem('marketplace-layout-mode');
+    if (savedLayout === 'overlapping' || savedLayout === 'grid') {
+      layoutMode = savedLayout;
+    }
+    
+    const savedView = localStorage.getItem('marketplace-view-mode');
+    if (savedView === 'flip' || savedView === 'list') {
+      viewMode = savedView;
+    }
   }
   
-  // Save width preference to localStorage
-  function saveWidthPreference() {
+  // Save preferences
+  function savePreferences() {
     if (typeof window === 'undefined') return;
-    localStorage.setItem('flipcard-width', flipCardWidth.toString());
+    localStorage.setItem('marketplace-flipcard-size', flipCardSize.toString());
+    localStorage.setItem('marketplace-layout-mode', layoutMode);
+    localStorage.setItem('marketplace-view-mode', viewMode);
   }
   
-  // Handle width change
-  function setFlipCardWidth(newWidth: number) {
-    if (newWidth >= 1 && newWidth <= maxAllowedWidth) {
-      flipCardWidth = newWidth;
-      saveWidthPreference();
+  // Handle size change
+  function setFlipCardSize(newSize: number) {
+    if (newSize >= 1 && newSize <= 9) {
+      flipCardSize = newSize as any;
+      savePreferences();
     }
   }
   
-  // Aspect Ratio Toggle Logic (ensure at least one is always active)
-  function toggleAspectRatio(ratio: 'square' | 'portrait' | 'postcard') {
-    const currentlyActive = Object.values(aspectRatios).filter(Boolean).length;
-    
-    // If trying to turn off the last active ratio, prevent it
-    if (currentlyActive === 1 && aspectRatios[ratio]) {
-      return; // Don't allow turning off the last active ratio
-    }
-    
-    // Toggle the ratio
-    aspectRatios[ratio] = !aspectRatios[ratio];
+  // Toggle layout mode
+  function toggleLayoutMode() {
+    layoutMode = layoutMode === 'overlapping' ? 'grid' : 'overlapping';
+    savePreferences();
   }
   
-  // Get grid class based on current width
-  function getGridClass(width: number): string {
-    const gridClasses = {
+  // Toggle view mode
+  function toggleViewMode() {
+    viewMode = viewMode === 'flip' ? 'list' : 'flip';
+    savePreferences();
+  }
+  
+  // Get grid class
+  function getGridClass(cols: number): string {
+    const gridClasses: Record<number, string> = {
       1: 'grid-cols-1',
       2: 'grid-cols-2', 
       3: 'grid-cols-3',
@@ -128,7 +148,7 @@
       7: 'grid-cols-7',
       8: 'grid-cols-8'
     };
-    return gridClasses[width] || 'grid-cols-3';
+    return gridClasses[cols] || 'grid-cols-3';
   }
   
   async function loadComponents() {
@@ -143,168 +163,124 @@
     }
   }
   
-  // Mock data for development - 24 products for aspect ratio demo
+  // Mock data matching new FlipCard standard
   function getMockComponents(): Component[] {
     const products = [];
     
-    // 8 SQUARE products - All the same NOBS PAY style
-    const squareColors = [
-      { name: 'Red', theme: 'red', bg: 'from-red-500 to-red-600' },
-      { name: 'Orange', theme: 'orange', bg: 'from-orange-500 to-orange-600' },
-      { name: 'Yellow', theme: 'yellow', bg: 'from-yellow-500 to-yellow-600' },
-      { name: 'Green', theme: 'green', bg: 'from-green-500 to-green-600' },
-      { name: 'Blue', theme: 'blue', bg: 'from-blue-500 to-blue-600' },
-      { name: 'Indigo', theme: 'indigo', bg: 'from-indigo-500 to-indigo-600' },
-      { name: 'Purple', theme: 'purple', bg: 'from-purple-500 to-purple-600' },
-      { name: 'Pink', theme: 'pink', bg: 'from-pink-500 to-pink-600' }
+    // Sample products with FlipCard-style themes
+    const productData = [
+      { 
+        name: 'NOBS PAY', 
+        tagline: 'Done for You Billing',
+        theme: 'from-cyan-400 to-blue-500', 
+        category: 'payment-processing',
+        description: 'Universal payment processing with Stripe, PayPal, and crypto support.'
+      },
+      { 
+        name: 'DataViz Pro', 
+        tagline: 'Beautiful Data Stories',
+        theme: 'from-purple-500 to-pink-500', 
+        category: 'data-visualization',
+        description: 'Transform your data into stunning interactive visualizations.'
+      },
+      { 
+        name: 'Auth Shield', 
+        tagline: 'Enterprise Security',
+        theme: 'from-emerald-400 to-teal-600', 
+        category: 'authentication',
+        description: 'Complete authentication solution with OAuth, SSO, and 2FA.'
+      },
+      { 
+        name: 'Form Builder', 
+        tagline: 'Smart Form Creation',
+        theme: 'from-orange-400 to-red-500', 
+        category: 'forms',
+        description: 'Drag-and-drop form builder with validation and analytics.'
+      },
+      { 
+        name: 'API Gateway', 
+        tagline: 'Scalable Endpoints',
+        theme: 'from-blue-400 to-cyan-500', 
+        category: 'api',
+        description: 'Manage, monitor, and monetize your API endpoints.'
+      },
+      { 
+        name: 'Analytics Hub', 
+        tagline: 'Real-time Insights',
+        theme: 'from-indigo-500 to-purple-600', 
+        category: 'analytics',
+        description: 'Track user behavior and performance metrics in real-time.'
+      },
+      { 
+        name: 'Email Service', 
+        tagline: 'Transactional Email',
+        theme: 'from-amber-400 to-orange-500', 
+        category: 'email',
+        description: 'Send beautiful emails with templates and tracking.'
+      },
+      { 
+        name: 'File Manager', 
+        tagline: 'Cloud Storage API',
+        theme: 'from-rose-500 to-pink-600', 
+        category: 'files',
+        description: 'Secure file upload, storage, and CDN delivery.'
+      }
     ];
     
-    squareColors.forEach((color, index) => {
+    productData.forEach((product, index) => {
       products.push({
-        id: `square-${index + 1}`,
-        name: 'NOBS PAY CART',
-        slug: 'nobs-pay',
-        tagline: 'Done for You Billing system',
-        description: 'Universal payment component that handles Stripe, PayPal, and Crypto payments with a single interface.',
-        consumer_tagline: 'Done for You Billing system',
-        api_name: 'NOBS Pay',
-        formal_name: 'NOBS Pay Cart',
-        fintech_name: 'NOBS Pay',
-        price_individual: 100,
-        price_team: 300,
-        price_enterprise: 500,
-        category: 'payment-processing',
-        tags: ['payment', 'stripe', 'paypal', 'crypto'],
-        keywords: ['payment gateway', 'checkout', 'e-commerce'],
-        tech_stack: ['svelte', 'typescript', 'stripe-api'],
-        flip_card_theme: color.theme,
+        id: `component-${index + 1}`,
+        name: product.name,
+        slug: product.name.toLowerCase().replace(/\s+/g, '-'),
+        tagline: product.tagline,
+        description: product.description,
+        consumer_tagline: product.tagline,
+        api_name: product.name.replace(/\s+/g, ''),
+        formal_name: `${product.name} Professional`,
+        fintech_name: product.name,
+        price_individual: 19900, // $199
+        price_team: 49900,      // $499
+        price_enterprise: 149900, // $1499
+        category: product.category,
+        tags: [product.category.split('-')[0], 'component', 'pro', 'enterprise'],
+        keywords: [product.category, 'enterprise', 'solution', 'api'],
+        tech_stack: ['SvelteKit', 'TypeScript', 'Tailwind CSS'],
+        flip_card_theme: 'professional',
         flip_card_size: 'standard',
-        flip_card_color: color.bg,
-        rating: 5.0,
-        download_count: 0,
-        featured: index === 0,
+        flip_card_color: product.theme,
+        rating: 4.5 + (Math.random() * 0.5),
+        download_count: Math.floor(100 + Math.random() * 900),
+        featured: index < 3,
         is_api_product: true,
         is_active: true,
         is_published: true,
         created_at: new Date().toISOString(),
-        demo_url: '/marketplace/demo/nobs-pay',
-        developer_features: ['Universal payment gateway', 'Multi-processor support', 'TypeScript definitions']
-      });
-    });
-    
-    // 8 PORTRAIT products - "Portrait Cards" with gray shades
-    const grayShades = [
-      { name: 'Slate', bg: 'from-slate-400 to-slate-600' },
-      { name: 'Gray', bg: 'from-gray-400 to-gray-600' },
-      { name: 'Zinc', bg: 'from-zinc-400 to-zinc-600' },
-      { name: 'Neutral', bg: 'from-neutral-400 to-neutral-600' },
-      { name: 'Stone', bg: 'from-stone-400 to-stone-600' },
-      { name: 'Cool Gray', bg: 'from-gray-500 to-slate-700' },
-      { name: 'Warm Gray', bg: 'from-stone-500 to-neutral-700' },
-      { name: 'Blue Gray', bg: 'from-slate-500 to-gray-700' }
-    ];
-    
-    grayShades.forEach((shade, index) => {
-      products.push({
-        id: `portrait-${index + 1}`,
-        name: 'Portrait Cards',
-        slug: 'portrait-cards',
-        tagline: 'done for you cards',
-        description: 'Professional portrait-oriented card components perfect for mobile-first designs and vertical content layouts.',
-        consumer_tagline: 'done for you cards',
-        api_name: 'Portrait Cards',
-        formal_name: 'Portrait Card Components',
-        fintech_name: 'Portrait Cards',
-        price_individual: 150,
-        price_team: 400,
-        price_enterprise: 600,
-        category: 'ui-components',
-        tags: ['cards', 'mobile', 'portrait', 'ui'],
-        keywords: ['card design', 'mobile ui', 'vertical layout'],
-        tech_stack: ['svelte', 'typescript', 'tailwind'],
-        flip_card_theme: 'minimal',
-        flip_card_size: 'portrait',
-        flip_card_color: shade.bg,
-        rating: 4.8,
-        download_count: 0,
-        featured: false,
-        is_api_product: false,
-        is_active: true,
-        is_published: true,
-        created_at: new Date().toISOString(),
-        demo_url: '/marketplace/demo/portrait-cards',
-        developer_features: ['Portrait aspect ratio', 'Mobile optimized', 'Responsive design']
-      });
-    });
-    
-    // 8 POSTCARD products - "Postcards" with random gradients
-    const randomGradients = [
-      { name: 'Sunset', bg: 'from-orange-400 via-red-500 to-pink-500' },
-      { name: 'Ocean', bg: 'from-cyan-400 via-blue-500 to-indigo-600' },
-      { name: 'Forest', bg: 'from-green-400 via-emerald-500 to-teal-600' },
-      { name: 'Aurora', bg: 'from-purple-400 via-pink-500 to-red-500' },
-      { name: 'Desert', bg: 'from-yellow-400 via-orange-500 to-red-600' },
-      { name: 'Nebula', bg: 'from-indigo-400 via-purple-500 to-pink-600' },
-      { name: 'Tropical', bg: 'from-lime-400 via-green-500 to-emerald-600' },
-      { name: 'Cosmic', bg: 'from-blue-400 via-purple-500 to-indigo-700' }
-    ];
-    
-    randomGradients.forEach((gradient, index) => {
-      products.push({
-        id: `postcard-${index + 1}`,
-        name: 'Postcards',
-        slug: 'postcards',
-        tagline: 'done for you postcards',
-        description: 'Beautiful landscape-oriented postcard components with stunning gradient backgrounds perfect for hero sections and wide content.',
-        consumer_tagline: 'done for you postcards',
-        api_name: 'Postcards',
-        formal_name: 'Postcard Components',
-        fintech_name: 'Postcards',
-        price_individual: 200,
-        price_team: 500,
-        price_enterprise: 750,
-        category: 'ui-components',
-        tags: ['postcards', 'gradients', 'landscape', 'hero'],
-        keywords: ['postcard design', 'gradient backgrounds', 'wide layout'],
-        tech_stack: ['svelte', 'typescript', 'css-gradients'],
-        flip_card_theme: 'premium',
-        flip_card_size: 'postcard',
-        flip_card_color: gradient.bg,
-        rating: 4.9,
-        download_count: 0,
-        featured: false,
-        is_api_product: false,
-        is_active: true,
-        is_published: true,
-        created_at: new Date().toISOString(),
-        demo_url: '/marketplace/demo/postcards',
-        developer_features: ['Landscape aspect ratio', 'Gradient system', 'Hero sections']
+        demo_url: `/marketplace/demo/${product.name.toLowerCase().replace(/\s+/g, '-')}`,
+        developer_features: [
+          'Full TypeScript Support',
+          'Comprehensive Documentation', 
+          'Premium Support',
+          'Regular Updates',
+          'MIT License'
+        ]
       });
     });
     
     return products;
   }
   
-  // Payment handling functions
-  function handleBuyNow(component: Component) {
+  // Payment handlers
+  function handleBuyNow(event: CustomEvent) {
+    const { component, tier } = event.detail;
     selectedComponent = component;
+    selectedTier = tier;
     showPayment = true;
   }
   
   function handlePaymentSuccess(result: PaymentResult) {
     console.log('Payment successful!', result);
     showPayment = false;
-    
-    // Show success message
-    setTimeout(() => {
-      alert(`Success! You've purchased ${selectedComponent?.name}. Transaction ID: ${result.transactionId}`);
-      selectedComponent = null;
-    }, 100);
-  }
-  
-  function handlePaymentError(error: Error) {
-    console.error('Payment failed:', error);
-    alert(`Payment failed: ${error.message}`);
+    goto('/purchase-success');
   }
   
   function handlePaymentCancel() {
@@ -312,606 +288,709 @@
     selectedComponent = null;
   }
   
-  // Handle FlipCard events
-  function handleCardBuy(event: CustomEvent<Component>) {
-    handleBuyNow(event.detail);
+  function handleComponentClick(component: Component) {
+    // Don't navigate on click - let FlipCard handle the flip
+    // Navigation happens via demo/details buttons on the card
   }
   
-  // Utility functions
-  function formatPrice(cents: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(cents / 100);
-  }
-  
-  function handleDemoClick(component: Component) {
-    const demoSlugMap: { [key: string]: string } = {
-      'NOBS PAY CART': 'nobs-pay',
-      'DataViz Pro': 'dataviz-pro', 
-      'Auth Shield': 'auth-shield'
-    };
-    
-    const demoSlug = demoSlugMap[component.name] || component.slug || component.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-    goto(`/marketplace/demo/${demoSlug}`);
-  }
-  
-  function handleDetailsClick(component: Component) {
-    const productSlug = component.slug || component.id;
-    goto(`/marketplace/products/${productSlug}`);
-  }
-  
-  // Get tech stack display (concise, no fluff)
-  function getTechDisplay(component: Component): string {
-    const tech = component.tech_stack || ['TypeScript', 'Svelte', 'API'];
-    return tech.slice(0, 3).join(' • ');
-  }
-  
-  // Get concise description (4-5 words max)
-  function getShortDescription(component: Component): string {
-    const desc = component.consumer_tagline || component.tagline || component.description;
-    const words = desc.split(' ').slice(0, 5);
-    return words.join(' ');
+  // Get price based on tier
+  function getTierPrice(component: Component, tier: string): number {
+    switch(tier) {
+      case 'team':
+        return component.price_team || 49900;
+      case 'enterprise':
+        return component.price_enterprise || 149900;
+      default:
+        return component.price_individual || 19900;
+    }
   }
 </script>
 
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors pt-20">
-  <!-- Announcement Banner -->
-  <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4">
-    <div class="max-w-7xl mx-auto text-center">
-      <p class="text-sm font-medium">
-        🎉 <strong>Inaugural Launch:</strong> NOBS Pay is now available! The first product on theMarketplace - buy it using itself! 
-        <a href="/marketplace/demo/nobs-pay" class="underline hover:text-blue-200 ml-2">Try Demo →</a>
-      </p>
-    </div>
-  </div>
-  
-  <!-- Marketplace Hero -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-        Welcome to theMarketplace
+<svelte:head>
+  <title>Component Marketplace | theBlockchain.ai</title>
+  <meta name="description" content="Professional AI-powered components with mathematical precision scaling. Enterprise-ready solutions for modern applications." />
+</svelte:head>
+
+<div class="marketplace-page">
+  <!-- Header with Controls -->
+  <div class="marketplace-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        Component Marketplace
+        <span class="beta-badge">Beta</span>
       </h1>
-      <p class="text-lg text-gray-600 dark:text-gray-400">
-        The Google of Digital Components - Search, Discover, Build
+      <p class="page-subtitle">
+        Professional FlipCard components with mathematical SIZE system (88px → 999px)
       </p>
     </div>
-  </div>
-  
-  <!-- Search Bar -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Search functionality temporarily removed for stable deployment -->
-    <!-- TODO: Re-implement search with proper SearchBar component and stores -->
-  </div>
-
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-12">
-    {#if loading}
-      <div class="text-center py-12">
-        <div class="inline-flex items-center">
-          <svg class="animate-spin h-5 w-5 mr-3 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <span class="text-gray-600 dark:text-gray-300">Loading marketplace...</span>
-        </div>
-      </div>
-    {/if}
-
-    <!-- Component Grid -->
-    <div class="mt-8">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-          {#if components.some(c => c.featured)}
-            Featured Components
-          {:else}
-            All Components
-          {/if}
-        </h2>
-        
-        <!-- View Mode Toggle + FlipCard Width Control -->
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <!-- View Mode Toggle -->
-          <div class="flex gap-2">
-            <button
-              on:click={() => viewMode = 'flip'}
-              class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'flip' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
-            >
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Flip Cards
-            </button>
-            
-            <!-- Aspect Ratio Toggles (only show when FlipCard mode is active) -->
-            {#if viewMode === 'flip'}
-              <div class="flex gap-1 ml-2 border-l border-gray-300 dark:border-gray-600 pl-2">
-                <!-- Square (1:1) -->
-                <button
-                  on:click={() => toggleAspectRatio('square')}
-                  class="px-2 py-1 rounded text-xs font-medium transition-colors {aspectRatios.square ? 'bg-cyan-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'}"
-                  title="Square (1:1)"
-                >
-                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                    <rect x="6" y="6" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"/>
-                  </svg>
-                </button>
-                
-                <!-- Portrait (3:4) -->
-                <button
-                  on:click={() => toggleAspectRatio('portrait')}
-                  class="px-2 py-1 rounded text-xs font-medium transition-colors {aspectRatios.portrait ? 'bg-cyan-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'}"
-                  title="Portrait (3:4)"
-                >
-                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                    <rect x="8" y="4" width="8" height="16" stroke="currentColor" stroke-width="2" fill="none"/>
-                  </svg>
-                </button>
-                
-                <!-- Postcard/Landscape (4:3) -->
-                <button
-                  on:click={() => toggleAspectRatio('postcard')}
-                  class="px-2 py-1 rounded text-xs font-medium transition-colors {aspectRatios.postcard ? 'bg-cyan-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'}"
-                  title="Postcard (4:3)"
-                >
-                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                    <rect x="4" y="8" width="16" height="8" stroke="currentColor" stroke-width="2" fill="none"/>
-                  </svg>
-                </button>
-              </div>
-            {/if}
-            
-            <button
-              on:click={() => viewMode = 'list'}
-              class="px-3 py-1 rounded-md text-sm font-medium transition-colors {viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}"
-            >
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-              </svg>
-              List View
-            </button>
-          </div>
-          
-          <!-- FlipCard Width Control (only show when FlipCard mode is active) -->
-          {#if viewMode === 'flip'}
-            <div class="flex items-center gap-3">
-              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Width:
-              </span>
-              <div class="flex gap-1">
-                {#each Array.from({length: maxAllowedWidth}, (_, i) => i + 1) as width}
-                  <button
-                    on:click={() => setFlipCardWidth(width)}
-                    class="w-8 h-8 rounded-md text-sm font-medium transition-all duration-200 {flipCardWidth === width 
-                      ? 'bg-blue-600 text-white shadow-md scale-105' 
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 hover:scale-105'}"
-                    title="Show {width} card{width === 1 ? '' : 's'} per row"
-                    aria-label="Set width to {width} cards per row"
-                  >
-                    {width}
-                  </button>
-                {/each}
-              </div>
-              <span class="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                cards per row
-              </span>
-            </div>
-          {/if}
-        </div>
+    
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <!-- View Mode Toggle -->
+      <div class="view-toggle">
+        <button 
+          class:active={viewMode === 'flip'}
+          on:click={() => toggleViewMode()}
+        >
+          🎴 FlipCards
+        </button>
+        <button 
+          class:active={viewMode === 'list'}
+          on:click={() => toggleViewMode()}
+        >
+          📋 List View
+        </button>
       </div>
       
       {#if viewMode === 'flip'}
-        <!-- Dynamic FlipCards View with Container System -->
-        <div class="grid {getGridClass(flipCardWidth)} gap-6 transition-all duration-300">
-          {#each filteredComponents as component, index (component.id)}
-            <ProductContainer product={component}>
-              <FlipCard 
-                {component}
-                vectorSize={flipCardWidth}
-                aspectRatio={component.aspectRatio}
-                displayOnly={true}
-                iconType={component.category === 'payment-processing' ? 'payment' : 'checkmark'}
-                slot="product"
-              />
-              <BUYButton 
-                size={flipCardWidth >= 6 ? 'compact' : 'medium'}
-                style="lightning"
-                on:purchase={handleCardBuy}
-                slot="buy"
-              />
-            </ProductContainer>
-          {/each}
+        <!-- Layout Mode Toggle -->
+        <div class="layout-toggle">
+          <button 
+            class:active={layoutMode === 'overlapping'}
+            on:click={() => toggleLayoutMode()}
+          >
+            🎭 Fan/Deck
+          </button>
+          <button 
+            class:active={layoutMode === 'grid'}
+            on:click={() => toggleLayoutMode()}
+          >
+            ⚏ Grid
+          </button>
         </div>
         
-        <!-- FlipCard Width Info (helpful for users) -->
-        <div class="mt-6 text-center">
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Showing <span class="font-medium text-gray-700 dark:text-gray-300">{filteredComponents.length}</span> 
-            of <span class="font-medium text-gray-600 dark:text-gray-400">{components.length}</span> products
-            in <span class="font-medium text-blue-600 dark:text-blue-400">{flipCardWidth}</span> 
-            column{flipCardWidth === 1 ? '' : 's'} • 
-            <span class="hidden sm:inline">Use aspect ratio and width controls above to adjust view</span>
-            <span class="sm:hidden">Use controls above to filter</span>
-          </p>
-        </div>
-      {:else}
-        <!-- Legendary List View -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <!-- Desktop List -->
-          <div class="legendary-list-desktop">
-            <!-- List Header -->
-            <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 border-b border-gray-200 dark:border-gray-600">
-              <div class="grid grid-cols-12 gap-4 items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                <div class="col-span-1"></div> <!-- Icon space -->
-                <div class="col-span-3">Product</div>
-                <div class="col-span-3">Description</div>
-                <div class="col-span-3">Tech Stack</div>
-                <div class="col-span-1 text-right">Price</div>
-                <div class="col-span-1"></div> <!-- Actions space -->
-              </div>
-            </div>
-            
-            <!-- List Items -->
-            <div class="divide-y divide-gray-200 dark:divide-gray-600">
-              {#each filteredComponents as component, index (component.id)}
-                <div 
-                  class="legendary-list-row grid grid-cols-12 gap-4 items-center px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group cursor-pointer"
-                  on:click={() => handleDetailsClick(component)}
-                  on:keydown={(e) => e.key === 'Enter' && handleDetailsClick(component)}
-                  role="button"
-                  tabindex="0"
-                  aria-label="View details for {component.name}"
-                >
-                  <!-- ✅ Icon -->
-                  <div class="col-span-1 flex items-center justify-center">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br {component.flip_card_color || 'from-blue-500 to-blue-600'} flex items-center justify-center">
-                      <span class="text-white text-lg">✅</span>
-                    </div>
-                  </div>
-                  
-                  <!-- Product Name -->
-                  <div class="col-span-3">
-                    <h3 class="product-name font-semibold text-gray-900 dark:text-white transition-colors">
-                      {component.name}
-                    </h3>
-                    {#if component.featured}
-                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 mt-1">
-                        Featured
-                      </span>
-                    {/if}
-                  </div>
-                  
-                  <!-- 4-5 Word Description -->
-                  <div class="col-span-3">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                      {getShortDescription(component)}
-                    </p>
-                  </div>
-                  
-                  <!-- Tech Stack (No Fluff) -->
-                  <div class="col-span-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-sm text-gray-500 dark:text-gray-400 font-mono">
-                        {getTechDisplay(component)}
-                      </span>
-                      {#if component.rating}
-                        <div class="flex items-center ml-2">
-                          <span class="text-yellow-400 text-sm">★</span>
-                          <span class="text-xs text-gray-500 dark:text-gray-400 ml-0.5">
-                            {component.rating}
-                          </span>
-                        </div>
-                      {/if}
-                    </div>
-                  </div>
-                  
-                  <!-- Price -->
-                  <div class="col-span-1 text-right">
-                    <span class="font-bold text-gray-900 dark:text-white">
-                      {formatPrice(component.price || component.price_individual)}
-                    </span>
-                  </div>
-                  
-                  <!-- Actions -->
-                  <div class="col-span-1 flex items-center justify-end gap-1">
-                    {#if component.demo_url}
-                      <button 
-                        on:click={(e) => { e.stopPropagation(); handleDemoClick(component); }}
-                        class="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        title="Try Demo"
-                        aria-label="Try demo for {component.name}"
-                      >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.5a2.5 2.5 0 010 5H9m4.5-5H15m0 0l3 3m-3-3l3-3" />
-                        </svg>
-                      </button>
-                    {/if}
-                    <button 
-                      on:click={(e) => { e.stopPropagation(); handleBuyNow(component); }}
-                      class="p-1.5 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors"
-                      title="Buy Now"
-                      aria-label="Buy {component.name}"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5L3 21m0 0h5.5M7 13v8a2 2 0 002 2h6a2 2 0 002-2v-8m-8 0V9a2 2 0 012-2h4a2 2 0 012 2v4.01" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              {/each}
-            </div>
-          </div>
-          
-          <!-- Mobile List (Compact Cards) -->
-          <div class="legendary-list-mobile divide-y divide-gray-200 dark:divide-gray-600">
-            {#each components as component (component.id)}
-              <div 
-                class="legendary-list-row p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                on:click={() => handleDetailsClick(component)}
-                on:keydown={(e) => e.key === 'Enter' && handleDetailsClick(component)}
-                role="button"
-                tabindex="0"
-                aria-label="View details for {component.name}"
+        <!-- Mathematical SIZE Control -->
+        <div class="size-control">
+          <label>SIZE:</label>
+          <div class="size-buttons">
+            {#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as size}
+              <button 
+                class="size-btn"
+                class:active={flipCardSize === size}
+                on:click={() => setFlipCardSize(size)}
+                title="SIZE-{size} ({SIZES[size]}px)"
               >
-                <div class="flex items-center gap-3">
-                  <!-- ✅ Icon -->
-                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br {component.flip_card_color || 'from-blue-500 to-blue-600'} flex items-center justify-center flex-shrink-0">
-                    <span class="text-white text-lg">✅</span>
-                  </div>
-                  
-                  <!-- Content -->
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between">
-                      <h3 class="product-name font-semibold text-gray-900 dark:text-white transition-colors truncate">
-                        {component.name}
-                      </h3>
-                      <span class="font-bold text-gray-900 dark:text-white ml-2">
-                        {formatPrice(component.price || component.price_individual)}
-                      </span>
-                    </div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 truncate">
-                      {getShortDescription(component)}
-                    </p>
-                    <div class="flex items-center justify-between mt-1">
-                      <span class="text-xs text-gray-500 dark:text-gray-400 font-mono">
-                        {getTechDisplay(component)}
-                      </span>
-                      <div class="flex items-center gap-2">
-                        {#if component.demo_url}
-                          <button 
-                            on:click={(e) => { e.stopPropagation(); handleDemoClick(component); }}
-                            class="text-xs px-2 py-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                            aria-label="Try demo for {component.name}"
-                          >
-                            Demo
-                          </button>
-                        {/if}
-                        <button 
-                          on:click={(e) => { e.stopPropagation(); handleBuyNow(component); }}
-                          class="text-xs px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded transition-colors"
-                          aria-label="Buy {component.name}"
-                        >
-                          Buy
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                {size}
+              </button>
             {/each}
           </div>
-          
-          <!-- List Footer -->
-          {#if components.length > 5}
-            <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 border-t border-gray-200 dark:border-gray-600">
-              <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
-                {components.length} components • Use arrow keys for navigation • Tab to interact
-              </p>
-            </div>
-          {/if}
-        </div>
-      {/if}
-      
-      {#if components.length === 0 && !loading}
-        <div class="text-center py-12">
-          <p class="text-gray-500 dark:text-gray-400">No components available yet.</p>
-          <p class="text-sm text-gray-400 dark:text-gray-500 mt-2">Check back soon!</p>
+          <span class="size-label">{SIZES[flipCardSize]}px</span>
         </div>
       {/if}
     </div>
-
-    <!-- The Inception Teaser -->
-    {#if components.some(c => c.slug === 'nobs-pay')}
-      <div class="mt-12 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6 border border-blue-300 dark:border-blue-800">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          🎪 Experience the Inception
-        </h3>
-        <p class="text-gray-800 dark:text-gray-300 font-medium">
-          Try searching for "payment component" above, then purchase NOBS Pay using NOBS Pay itself! 
-          It's the ultimate proof that our marketplace works.
-        </p>
+  </div>
+  
+  <!-- Components Display -->
+  {#if loading}
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading FlipCard components...</p>
+    </div>
+  {:else if viewMode === 'flip'}
+    {#if layoutMode === 'overlapping'}
+      <!-- Fan/Deck View (Clean Overlapping Stack) -->
+      <div 
+        class="overlapping-container" 
+        style="
+          min-height: {SIZES[flipCardSize] + 200}px;
+          --flipcard-size: {SIZES[flipCardSize]}px;
+        "
+      >
+        <div class="fan-deck">
+          {#each filteredComponents as component, index}
+            <div 
+              class="overlapping-card"
+              style="
+                --index: {index};
+                --total: {filteredComponents.length};
+                --offset-x: {index * offsetMultiplier}px;
+                --offset-y: {index * verticalOffset}px;
+                --scale: {1 - (index * 0.02)};
+                z-index: {filteredComponents.length - index};
+              "
+            >
+              <FlipCard 
+                {component}
+                size={flipCardSize}
+                theme="professional"
+                on:buy={handleBuyNow}
+              />
+            </div>
+          {/each}
+        </div>
+      </div>
+    {:else}
+      <!-- Grid View (Clean Layout) -->
+      <div class="grid-container {getGridClass(gridColumns)}">
+        {#each filteredComponents as component}
+          <div class="grid-item">
+            <FlipCard 
+              {component}
+              size={flipCardSize}
+              theme="professional"
+              on:buy={handleBuyNow}
+            />
+          </div>
+        {/each}
       </div>
     {/if}
-  </main>
-  
-  <!-- NOBS Pay Modal -->
-  {#if showPayment && selectedComponent}
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full">
-        <div class="p-6">
-          <div class="flex justify-between items-start mb-4">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-              Complete Your Purchase
-            </h2>
-            <button 
-              on:click={handlePaymentCancel}
-              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+  {:else}
+    <!-- List View -->
+    <div class="list-container">
+      {#each filteredComponents as component}
+        <div class="list-item">
+          <div class="list-thumbnail">
+            <FlipCard 
+              {component}
+              size={3}
+              displayOnly={true}
+              showComponents={{
+                colorPalette: false,
+                tags: false,
+                toolbar: false,
+                buyComponent: false
+              }}
+            />
           </div>
-          <NOBSPay
-            amount={selectedComponent.price || selectedComponent.price_individual}
-            productName={selectedComponent.name}
-            productId={selectedComponent.id}
-            theme="brand"
-            testMode={true}
-            onSuccess={handlePaymentSuccess}
-            onError={handlePaymentError}
-            onCancel={handlePaymentCancel}
-          />
+          <div class="list-details">
+            <h3>{component.name}</h3>
+            <p class="tagline">{component.consumer_tagline}</p>
+            <p class="description">{component.description}</p>
+            <div class="list-meta">
+              <span class="category">{component.category.replace('-', ' ')}</span>
+              <span class="rating">⭐ {component.rating?.toFixed(1) || '5.0'}</span>
+              <span class="downloads">📥 {component.download_count || 0} downloads</span>
+            </div>
+          </div>
+          <div class="list-actions">
+            <button 
+              class="demo-btn" 
+              on:click={() => goto(component.demo_url || `/marketplace/demo/${component.slug}`)}
+            >
+              👁️ View Demo
+            </button>
+            <div class="price-buttons">
+              <button 
+                class="buy-btn individual" 
+                on:click={() => handleBuyNow({ detail: { component, tier: 'individual' } })}
+              >
+                💰 ${(component.price_individual / 100).toFixed(0)}
+              </button>
+              <button 
+                class="buy-btn team" 
+                on:click={() => handleBuyNow({ detail: { component, tier: 'team' } })}
+              >
+                💼 ${(component.price_team / 100).toFixed(0)}
+              </button>
+            </div>
+          </div>
         </div>
+      {/each}
+    </div>
+  {/if}
+  
+  <!-- Payment Modal -->
+  {#if showPayment && selectedComponent}
+    <div class="payment-modal">
+      <div class="modal-content">
+        <button class="close-btn" on:click={handlePaymentCancel}>×</button>
+        <h2>Purchase {selectedComponent.name}</h2>
+        <p class="tier-info">
+          {selectedTier === 'individual' ? 'Individual License' : 
+           selectedTier === 'team' ? 'Team License (up to 10 developers)' :
+           'Enterprise License (unlimited developers)'}
+        </p>
+        <NOBSPay
+          amount={getTierPrice(selectedComponent, selectedTier)}
+          productId={selectedComponent.id}
+          productName={`${selectedComponent.name} - ${selectedTier}`}
+          on:success={handlePaymentSuccess}
+          on:cancel={handlePaymentCancel}
+        />
       </div>
     </div>
   {/if}
 </div>
 
 <style>
-  /* Utility class for line clamping */
-  .line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+  .marketplace-page {
+    min-height: 100vh;
+    background: #f9fafb;
+    padding: 2rem;
   }
   
-  /* Search status area */
-  .search-status {
-    margin-top: 1rem;
+  /* Header */
+  .marketplace-header {
+    max-width: 1400px;
+    margin: 0 auto 3rem;
+  }
+  
+  .header-content {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .page-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    color: #111827;
+  }
+  
+  .beta-badge {
+    background: linear-gradient(135deg, #22d3ee, #3b82f6);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .page-subtitle {
+    font-size: 1.25rem;
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  /* Controls Bar */
+  .controls-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .view-toggle,
+  .layout-toggle {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+  }
+  
+  .view-toggle button,
+  .layout-toggle button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+  }
+  
+  .view-toggle button.active,
+  .layout-toggle button.active {
+    background: white;
+    color: #111827;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Size Control */
+  .size-control {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 1rem;
   }
   
-  .clear-search {
-    background: none;
-    border: none;
-    color: #06b6d4; /* Cyan color */
-    font-size: 0.875rem;
-    font-weight: 500;
+  .size-control label {
+    font-weight: 600;
+    color: #374151;
+  }
+  
+  .size-buttons {
+    display: flex;
+    gap: 0.25rem;
+  }
+  
+  .size-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 0.5rem;
+    font-weight: 600;
     cursor: pointer;
-    text-decoration: underline;
-    transition: color 0.2s;
+    transition: all 0.2s;
+    font-size: 0.875rem;
   }
   
-  .clear-search:hover {
-    color: #0891b2; /* Darker cyan on hover */
+  .size-btn:hover {
+    border-color: #9ca3af;
+    background: #f9fafb;
   }
   
-  :global(.dark) .clear-search {
-    color: #22d3ee;
+  .size-btn.active {
+    background: linear-gradient(135deg, #22d3ee, #3b82f6);
+    color: white;
+    border-color: transparent;
   }
   
-  :global(.dark) .clear-search:hover {
-    color: #06b6d4;
+  .size-label {
+    font-weight: 500;
+    color: #6b7280;
+    font-size: 0.875rem;
   }
   
-  /* FlipCard Width Control Enhancements */
-  .grid {
-    /* Smooth transitions when changing grid layout */
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  /* Width control button enhancements */
-  .width-control-btn {
+  /* Fan/Deck Container - Controlled Overlapping */
+  .overlapping-container {
     position: relative;
-    overflow: hidden;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Prevent any overflow */
   }
   
-  .width-control-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
+  .fan-deck {
+    position: relative;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Constrain the deck size based on flipcard size */
+    max-width: calc(var(--flipcard-size, 333px) + 400px);
+    max-height: calc(var(--flipcard-size, 333px) + 200px);
   }
   
-  .width-control-btn:hover::before {
-    left: 100%;
+  .overlapping-card {
+    position: absolute;
+    transform: 
+      translateX(var(--offset-x)) 
+      translateY(var(--offset-y))
+      scale(var(--scale, 1));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center center;
   }
   
-  /* Responsive grid adjustments */
-  @media (max-width: 640px) {
-    .grid-cols-3,
-    .grid-cols-4,
-    .grid-cols-5,
-    .grid-cols-6,
-    .grid-cols-7,
-    .grid-cols-8 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  .overlapping-card:hover {
+    transform: 
+      translateX(var(--offset-x)) 
+      translateY(calc(var(--offset-y) - 20px))
+      scale(1.03);
+    z-index: 100 !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    filter: brightness(1.05);
+  }
+  
+  /* Grid Container */
+  .grid-container {
+    display: grid;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    place-items: center;
+  }
+  
+  .grid-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* List View */
+  .list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .list-item {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    align-items: center;
+  }
+  
+  .list-thumbnail {
+    flex-shrink: 0;
+  }
+  
+  .list-details {
+    flex: 1;
+  }
+  
+  .list-details h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+    color: #111827;
+  }
+  
+  .tagline {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #3b82f6;
+    margin: 0 0 0.75rem;
+  }
+  
+  .description {
+    color: #6b7280;
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+  
+  .list-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .category {
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+  
+  .rating,
+  .downloads {
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+  }
+  
+  .list-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+    min-width: 180px;
+  }
+  
+  .demo-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    border: 2px solid #e5e7eb;
+    color: #374151;
+  }
+  
+  .demo-btn:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+  
+  .price-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .buy-btn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-size: 0.875rem;
+  }
+  
+  .buy-btn.individual {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  
+  .buy-btn.team {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  
+  .buy-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Loading State */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+  }
+  
+  .spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid #e5e7eb;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Payment Modal */
+  .payment-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 2rem;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  
+  .close-btn:hover {
+    background: #e5e7eb;
+  }
+  
+  .modal-content h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+  }
+  
+  .tier-info {
+    color: #6b7280;
+    margin: 0 0 1.5rem;
+  }
+  
+  /* Dark mode support */
+  :global(.dark) .marketplace-page {
+    background: #111827;
+  }
+  
+  :global(.dark) .controls-bar,
+  :global(.dark) .list-item,
+  :global(.dark) .modal-content {
+    background: #1f2937;
+  }
+  
+  :global(.dark) .page-title,
+  :global(.dark) .list-details h3,
+  :global(.dark) .modal-content h2 {
+    color: #f3f4f6;
+  }
+  
+  :global(.dark) .page-subtitle,
+  :global(.dark) .description,
+  :global(.dark) .tier-info {
+    color: #9ca3af;
+  }
+  
+  :global(.dark) .view-toggle,
+  :global(.dark) .layout-toggle {
+    background: #374151;
+  }
+  
+  :global(.dark) .view-toggle button.active,
+  :global(.dark) .layout-toggle button.active,
+  :global(.dark) .size-btn {
+    background: #1f2937;
+    color: #f3f4f6;
+  }
+  
+  :global(.dark) .size-btn.active {
+    background: linear-gradient(135deg, #22d3ee, #3b82f6);
+  }
+  
+  :global(.dark) .demo-btn {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .grid-container {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
     }
   }
   
-  @media (min-width: 641px) and (max-width: 1023px) {
-    .grid-cols-5,
-    .grid-cols-6,
-    .grid-cols-7,
-    .grid-cols-8 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-  
-  /* Legendary List Navigation */
-  .legendary-list-row {
-    outline: none;
-    transition: all 0.15s ease;
-  }
-  
-  .legendary-list-row:focus {
-    background-color: #dbeafe; /* blue-100 */
-    box-shadow: inset 3px 0 0 #2563eb; /* blue-600 left border */
-  }
-  
-  :global(.dark) .legendary-list-row:focus {
-    background-color: #1e3a8a; /* blue-900 */
-    box-shadow: inset 3px 0 0 #60a5fa; /* blue-400 left border */
-  }
-  
-  /* Smooth hover states */
-  .legendary-list-row:hover .product-name {
-    color: #2563eb; /* blue-600 */
-  }
-  
-  :global(.dark) .legendary-list-row:hover .product-name {
-    color: #60a5fa; /* blue-400 */
-  }
-  
-  /* Mobile responsiveness for list */
   @media (max-width: 768px) {
-    .legendary-list-desktop {
-      display: none;
+    .controls-bar {
+      flex-direction: column;
+      gap: 1rem;
     }
     
-    .legendary-list-mobile {
-      display: block;
-    }
-  }
-  
-  @media (min-width: 769px) {
-    .legendary-list-desktop {
-      display: block;
+    .size-buttons {
+      flex-wrap: wrap;
     }
     
-    .legendary-list-mobile {
-      display: none;
+    .list-item {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .list-thumbnail {
+      margin-bottom: 1rem;
+    }
+    
+    .list-actions {
+      width: 100%;
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+    
+    .demo-btn {
+      flex: 1;
+    }
+    
+    .overlapping-container {
+      overflow-x: auto;
+      padding: 2rem;
+    }
+    
+    .fan-deck {
+      min-width: calc(var(--flipcard-size, 333px) + 200px);
     }
   }
-  
-  /* Icon gradients matching FlipCard themes */
-  .icon-red { background: linear-gradient(135deg, #ef4444, #dc2626); }
-  .icon-orange { background: linear-gradient(135deg, #f97316, #ea580c); }
-  .icon-yellow { background: linear-gradient(135deg, #eab308, #ca8a04); }
-  .icon-green { background: linear-gradient(135deg, #22c55e, #16a34a); }
-  .icon-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-  .icon-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); }
-  .icon-purple { background: linear-gradient(135deg, #a855f7, #9333ea); }
-  .icon-pink { background: linear-gradient(135deg, #ec4899, #db2777); }
 </style>

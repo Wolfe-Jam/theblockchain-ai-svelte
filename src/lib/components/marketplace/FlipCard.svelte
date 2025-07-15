@@ -1,4 +1,4 @@
-<!-- Enhanced FlipCard.svelte with Mathematical Sizing System -->
+<!-- Enhanced FlipCard.svelte with Correct ImageBox Layout -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { goto } from '$app/navigation';
@@ -7,10 +7,10 @@
   // Props from parent 
   export let component: Component;
   export let theme: 'professional' | 'wallet' | 'neon' | 'gradient' | 'solid' = 'professional';
-  export let displayOnly: boolean = false; // Pure display mode (no BUY buttons)
+  export let displayOnly: boolean = false;
   export let iconType: 'checkmark' | 'custom' | 'component' = 'checkmark';
   export let customIconSvg: string = '';
-  export let size: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 = 5; // Mathematical SIZE system
+  export let size: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 = 5; // Mathematical SIZE everywhere!
   export let showComponents = {
     colorPalette: true,
     tags: true,
@@ -23,7 +23,7 @@
   let isFlipped = false;
   let cardElement: HTMLDivElement;
   
-  // 📐 MATHEMATICAL SIZE SYSTEM ⭐ CRITICAL
+  // 📐 MATHEMATICAL SIZE SYSTEM - Used EVERYWHERE!
   const MASTER_SIZE = 333; // SIZE-5 baseline
   const SIZES = {
     1: 88,   // 333 ÷ 4 = Micro Badge
@@ -37,57 +37,116 @@
     9: 999   // 333 × 3 = Mega Hero
   };
   
-  const GRAPHICS_RATIO = 2/3; // 66.6% of FlipCard size
+  // CRITICAL PROPORTIONS WITH PADDING: 
+  // - Card has 5% padding for framing (black border effect)
+  // - Content area uses 2/3 gradient + 1/3 text proportions
+  // - At SIZE-5: ~17px padding + 2/3 and 1/3 of remaining ~299px
+  const IMAGE_BOX_RATIO = 2/3; // EXACT: 66.66% for gradient box
   
+  // Smart text truncation for small sizes
+  $: displayName = size === 1 ? 
+    (component.name.includes(' ') ? component.name.split(' ')[0].substring(0, 4) : component.name.substring(0, 4)) :
+    size === 2 ? 
+    (component.name.includes(' ') ? component.name.split(' ')[0].substring(0, 6) : component.name.substring(0, 6)) :
+    component.name;
+  
+  $: displayTagline = size === 1 ? 
+    '' : // No tagline for SIZE-1 (too small)
+    size === 2 ?
+    'Tool' : // Simple tagline for SIZE-2
+    size <= 3 ? 
+    (component.consumer_tagline && component.consumer_tagline.length > 10 ? 
+      component.consumer_tagline.substring(0, 10) : 
+      component.consumer_tagline || 'Tool') :
+    component.consumer_tagline || 'Professional Component';
   // Smart flip sizing logic
   $: currentSize = isFlipped ? Math.max(size, 5) : size; // Back side minimum SIZE-5
   $: cardWidth = SIZES[currentSize];
   $: cardHeight = SIZES[currentSize];
-  $: graphicsSize = Math.round(cardWidth * GRAPHICS_RATIO);
+  $: padding = Math.max(4, Math.round(cardWidth * 0.05)); // Min 4px padding, scales to 5%
+  $: availableHeight = cardHeight - (padding * 2); // Content area after padding
+  $: imageBoxSize = Math.round(availableHeight * IMAGE_BOX_RATIO); // 2/3 of available height
   
-  // Scale text based on card size
-  $: titleFontSize = Math.round(36 * cardWidth / MASTER_SIZE);
-  $: taglineFontSize = Math.round(18 * cardWidth / MASTER_SIZE);
-  $: padding = Math.round(20 * cardWidth / MASTER_SIZE);
+  // Scale elements based on card size - optimized for readability at all sizes
+  $: titleFontSize = Math.max(8, Math.round(32 * cardWidth / MASTER_SIZE)); // Min 8px, scales to 32px at SIZE-5
+  $: taglineFontSize = Math.max(6, Math.round(18 * cardWidth / MASTER_SIZE)); // Min 6px, scales to 18px at SIZE-5
+  $: padding = Math.round(cardWidth * 0.05); // 5% padding
   $: borderRadius = Math.round(16 * cardWidth / MASTER_SIZE);
+  $: imageBoxRadius = Math.round(12 * cardWidth / MASTER_SIZE);
   
   // Theme configurations
   const themes = {
     professional: {
-      front: 'bg-gradient-to-br from-cyan-400 to-blue-500',
-      back: 'bg-gradient-to-br from-cyan-500 to-blue-600',
-      accent: 'text-white'
+      gradient: 'from-cyan-400 to-blue-500',
+      cardBg: '#000000',
+      textColor: '#ffffff'
     },
     wallet: {
-      front: 'bg-gradient-to-br from-orange-400 to-red-500',
-      back: 'bg-gradient-to-br from-orange-500 to-red-600',
-      accent: 'text-white'
+      gradient: 'from-orange-400 to-red-500',
+      cardBg: '#000000',
+      textColor: '#ffffff'
     },
     neon: {
-      front: 'bg-gradient-to-br from-purple-500 to-pink-500',
-      back: 'bg-gradient-to-br from-purple-600 to-pink-600',
-      accent: 'text-white'
+      gradient: 'from-purple-500 to-pink-500',
+      cardBg: '#000000',
+      textColor: '#ffffff'
     },
     gradient: {
-      front: 'bg-gradient-to-br from-blue-400 to-cyan-500',
-      back: 'bg-gradient-to-br from-blue-500 to-cyan-600',
-      accent: 'text-white'
+      gradient: 'from-blue-400 to-cyan-500',
+      cardBg: '#000000',
+      textColor: '#ffffff'
     },
     solid: {
-      front: 'bg-gray-800',
-      back: 'bg-gray-900',
-      accent: 'text-white'
+      gradient: 'from-gray-600 to-gray-800',
+      cardBg: '#000000',
+      textColor: '#ffffff'
     }
   };
   
-  // Get theme colors based on component category or prop
+  // Get theme configuration
   function getThemeForComponent() {
     if (component.flip_card_color) {
-      return {
-        front: `bg-gradient-to-br ${component.flip_card_color}`,
-        back: `bg-gradient-to-br ${component.flip_card_color}`,
-        accent: 'text-white'
-      };
+      // Handle custom gradient colors (from designer)
+      const customGradient = component.flip_card_color;
+      
+      // Extract hex colors from gradient string
+      const hexMatches = customGradient.match(/#[0-9a-f]{6}/gi) || [];
+      if (hexMatches.length >= 2) {
+        return {
+          gradient: customGradient,
+          gradientColors: hexMatches,
+          cardBg: '#000000',
+          textColor: '#ffffff'
+        };
+      }
+      
+      // Handle Tailwind gradient format like "from-cyan-400 to-blue-500"
+      if (customGradient.includes('from-') && customGradient.includes('to-')) {
+        // Convert Tailwind classes to CSS gradient
+        const colorMap: Record<string, string> = {
+          'cyan-400': '#22d3ee',
+          'blue-500': '#3b82f6',
+          'orange-400': '#fb923c',
+          'red-500': '#ef4444',
+          'purple-500': '#a855f7',
+          'pink-500': '#ec4899'
+        };
+        
+        const fromMatch = customGradient.match(/from-([a-z]+-\d+)/);
+        const toMatch = customGradient.match(/to-([a-z]+-\d+)/);
+        
+        if (fromMatch && toMatch) {
+          const fromColor = colorMap[fromMatch[1]] || '#22d3ee';
+          const toColor = colorMap[toMatch[1]] || '#3b82f6';
+          
+          return {
+            gradient: customGradient,
+            gradientColors: [fromColor, toColor],
+            cardBg: '#000000',
+            textColor: '#ffffff'
+          };
+        }
+      }
     }
     
     switch(component.category) {
@@ -126,6 +185,12 @@
         <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
         <line x1="1" y1="10" x2="23" y2="10"></line>
       </svg>
+    `,
+    refresh: `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+      </svg>
     `
   };
   
@@ -151,37 +216,60 @@
   // Extract colors from gradient
   function extractColors(gradient: string): string[] {
     const colors = [];
-    const matches = gradient.match(/(#[0-9a-f]{6}|[a-z]+-\d+)/gi) || [];
     
-    // Convert Tailwind colors to hex approximations
-    const colorMap: Record<string, string> = {
-      'cyan-400': '#22d3ee',
-      'blue-500': '#3b82f6',
-      'orange-400': '#fb923c',
-      'red-500': '#ef4444',
-      'purple-500': '#a855f7',
-      'pink-500': '#ec4899'
-    };
-    
-    for (const match of matches.slice(0, 5)) {
-      if (match.startsWith('#')) {
-        colors.push(match);
-      } else if (colorMap[match]) {
-        colors.push(colorMap[match]);
+    // First check if we have gradientColors array
+    if (currentTheme.gradientColors) {
+      colors.push(...currentTheme.gradientColors);
+    } else {
+      // Extract from gradient string
+      const hexMatches = gradient.match(/#[0-9a-f]{6}/gi) || [];
+      const matches = gradient.match(/(#[0-9a-f]{6}|[a-z]+-\d+)/gi) || [];
+      
+      const colorMap: Record<string, string> = {
+        'cyan-400': '#22d3ee',
+        'blue-500': '#3b82f6',
+        'orange-400': '#fb923c',
+        'red-500': '#ef4444',
+        'purple-500': '#a855f7',
+        'pink-500': '#ec4899'
+      };
+      
+      // Add hex colors first
+      colors.push(...hexMatches);
+      
+      // Then add mapped colors
+      for (const match of matches) {
+        if (!match.startsWith('#') && colorMap[match]) {
+          colors.push(colorMap[match]);
+        }
       }
     }
     
-    // Ensure we have 5 colors
+    // Generate variations if we don't have enough colors
+    while (colors.length < 5 && colors.length > 0) {
+      const baseColor = colors[0];
+      const variation = adjustColor(baseColor, 20 * (colors.length - 1));
+      colors.push(variation);
+    }
+    
+    // Fallback colors
     while (colors.length < 5) {
-      colors.push('#' + Math.floor(Math.random()*16777215).toString(16));
+      colors.push('#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'));
     }
     
     return colors.slice(0, 5);
   }
   
-  $: extractedColors = extractColors(currentTheme.front);
+  // Helper to adjust color brightness
+  function adjustColor(hex: string, amount: number): string {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+    const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+    const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+  }
   
-  // Component visibility tags
+  $: extractedColors = extractColors(currentTheme.gradient || '');
   $: visibleTags = component.tags?.slice(0, 3).map(tag => `#${tag}`) || ['#component', '#svelte', '#pro'];
   
   function handleFlip() {
@@ -215,14 +303,8 @@
   }
 </script>
 
-<!-- 🎨 COMPLETE FLIPCARD SYSTEM -->
+<!-- 🎨 FLIPCARD WITH CORRECT LAYOUT -->
 <div class="flipcard-container" style="width: {cardWidth}px;">
-  <!-- Settings Button -->
-  {#if !displayOnly}
-    <button class="settings-button" on:click|stopPropagation>
-      i
-    </button>
-  {/if}
   
   <!-- Main FlipCard -->
   <div 
@@ -233,30 +315,72 @@
     bind:this={cardElement}
   >
     <!-- Front Side -->
-    <div class="flipcard-side flipcard-front {currentTheme.front}" style="border-radius: {borderRadius}px;">
-      <div class="flipcard-content" style="padding: {padding}px;">
-        <!-- Graphics Box (66.6% ratio) -->
-        <div class="graphics-box" style="width: {graphicsSize}px; height: {graphicsSize}px;">
-          {@html getComponentIcon()}
-        </div>
-        
-        <!-- Title -->
-        <h3 class="card-title {currentTheme.accent}" style="font-size: {titleFontSize}px;">
-          {component.name}
-        </h3>
-        
-        <!-- Tagline -->
-        <p class="card-tagline {currentTheme.accent}" style="font-size: {taglineFontSize}px;">
-          {component.consumer_tagline || 'Professional Component'}
-        </p>
+    <div class="flipcard-side flipcard-front" style="
+      background-color: {currentTheme.cardBg};
+      border-radius: {borderRadius}px;
+      padding: {padding}px;
+      display: flex;
+      flex-direction: column;
+    ">
+      <!-- Settings Button (only show on SIZE-3 and above) -->
+      {#if !displayOnly && size >= 3}
+        <button class="settings-button" on:click|stopPropagation>
+          i
+        </button>
+      {/if}
+      
+      <!-- Gradient Box (2/3 of available content area) -->
+      <div class="image-box" style="
+        width: {imageBoxSize}px;
+        height: {imageBoxSize}px;
+        background: linear-gradient(135deg, {currentTheme.gradientColors ? currentTheme.gradientColors.join(', ') : currentTheme.gradient.replace('from-', '').replace(' to-', ', ')});
+        border-radius: {imageBoxRadius}px;
+        margin: 0 auto 0;
+      ">
       </div>
+      
+      <!-- Text Area (1/3 of available height with smart minimums) -->
+      <div class="text-content" style="height: {Math.max(size === 1 ? 16 : size === 2 ? 20 : 24, Math.round(availableHeight * (1/3)))}px;">
+        <h3 class="card-title" style="
+          color: {currentTheme.textColor};
+          font-size: {titleFontSize}px;
+          font-family: {component.titleFont || 'Inter'}, -apple-system, sans-serif;
+          font-weight: {component.titleWeight || 600};
+          margin-bottom: {size <= 2 && displayTagline ? '1px' : '0'};
+        ">
+          {displayName}
+        </h3>
+        {#if displayTagline}
+          <p class="card-tagline" style="
+            color: {currentTheme.textColor};
+            font-size: {taglineFontSize}px;
+            opacity: 0.9;
+            font-family: {component.taglineFont || 'Inter'}, -apple-system, sans-serif;
+            font-weight: {component.taglineWeight || 500};
+            margin: 0;
+          ">
+            {displayTagline}
+          </p>
+        {/if}
+      </div>
+      
+      <!-- Refresh Icon (only show on SIZE-3 and above) -->
+      {#if !displayOnly && size >= 3}
+        <button class="refresh-button" on:click|stopPropagation>
+          {@html iconSvgs.refresh}
+        </button>
+      {/if}
     </div>
     
-    <!-- Back Side (Minimum SIZE-5 for readability) -->
-    <div class="flipcard-side flipcard-back {currentTheme.back}" style="border-radius: {borderRadius}px;">
-      <div class="flipcard-back-content" style="padding: {padding}px;">
-        <h3 class="back-title {currentTheme.accent}">
-          {component.name}
+    <!-- Back Side -->
+    <div class="flipcard-side flipcard-back" style="
+      background-color: {currentTheme.cardBg};
+      border-radius: {borderRadius}px;
+      padding: {padding}px;
+    ">
+      <div class="flipcard-back-content">
+        <h3 class="back-title" style="color: {currentTheme.textColor};">
+          {displayName}
         </h3>
         
         <div class="back-sections">
@@ -306,7 +430,7 @@
   
   <!-- Color Palette Component -->
   {#if showComponents.colorPalette && !displayOnly}
-    <div class="color-palette">
+    <div class="color-palette" style="margin-top: {padding/2}px;">
       {#each extractedColors as color}
         <div class="color-swatch" style="background-color: {color}"></div>
       {/each}
@@ -315,7 +439,7 @@
   
   <!-- Tags Bar -->
   {#if showComponents.tags && !displayOnly}
-    <div class="tags-bar">
+    <div class="tags-bar" style="margin-top: {padding/2}px;">
       {#each visibleTags as tag}
         <span class="tag">{tag}</span>
       {/each}
@@ -324,7 +448,7 @@
   
   <!-- Toolbar -->
   {#if showComponents.toolbar && !displayOnly}
-    <div class="toolbar">
+    <div class="toolbar" style="margin-top: {padding/2}px;">
       <button title="Download" on:click|stopPropagation>📥</button>
       <button title="Share" on:click|stopPropagation>📤</button>
       <button title="Email" on:click|stopPropagation>📧</button>
@@ -336,7 +460,7 @@
   
   <!-- Enhanced Buy Component -->
   {#if showComponents.buyComponent && !displayOnly}
-    <div class="buy-component">
+    <div class="buy-component" style="margin-top: {padding/2}px;">
       <button class="favorite-btn" on:click|stopPropagation>❤️</button>
       <div class="pricing-tiers">
         <button 
@@ -367,9 +491,43 @@
     position: relative;
     display: inline-flex;
     flex-direction: column;
-    gap: 0.75rem;
   }
   
+  .flipcard-wrapper {
+    position: relative;
+    perspective: 1000px;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .flipcard-side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    transition: transform 0.6s;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .flipcard-front {
+    z-index: 2;
+    position: relative;
+  }
+  
+  .flipcard-back {
+    transform: rotateY(180deg);
+  }
+  
+  .flipped .flipcard-front {
+    transform: rotateY(-180deg);
+  }
+  
+  .flipped .flipcard-back {
+    transform: rotateY(0deg);
+  }
+  
+  /* Settings Button */
   .settings-button {
     position: absolute;
     top: 0.5rem;
@@ -388,6 +546,7 @@
     cursor: pointer;
     z-index: 10;
     transition: all 0.2s;
+    color: #000;
   }
   
   .settings-button:hover {
@@ -395,71 +554,74 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
   
-  .flipcard-wrapper {
-    position: relative;
-    perspective: 1000px;
-    cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Gradient Box (Pure gradient only - exactly 2/3 of card) */
+  .image-box {
+    flex-shrink: 0;
+    display: block;
   }
   
-  .flipcard-side {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    transition: transform 0.6s;
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2);
-  }
-  
-  .flipcard-front {
-    z-index: 2;
-  }
-  
-  .flipcard-back {
-    transform: rotateY(180deg);
-  }
-  
-  .flipped .flipcard-front {
-    transform: rotateY(-180deg);
-  }
-  
-  .flipped .flipcard-back {
-    transform: rotateY(0deg);
-  }
-  
-  .flipcard-content {
+  /* Text Content Below Gradient (exactly 1/3 of card with better spacing) */
+  .text-content {
+    text-align: center;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    height: 100%;
-    text-align: center;
-  }
-  
-  .graphics-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-  
-  .graphics-box :global(svg) {
-    width: 66.6%;
-    height: 66.6%;
-    color: white;
+    padding: 0 0.5rem;
+    min-height: 0; /* Allow shrinking */
+    overflow: hidden; /* Prevent text overflow from breaking layout */
   }
   
   .card-title {
-    font-weight: 600;
-    margin: 0 0 0.5rem;
+    font-weight: 700; /* Bolder for prominence */
+    margin: 0; /* Margin controlled inline based on size */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.0; /* Tighter line height for small cards */
+    text-align: center;
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Prevent text wrapping that causes cutoff */
   }
   
   .card-tagline {
-    font-weight: 500;
+    font-weight: 400; /* Lighter weight for contrast */
     margin: 0;
-    opacity: 0.9;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.1; /* Tighter line height for small cards */
+    text-align: center;
+    opacity: 0.85;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Prevent text wrapping that causes cutoff */
+  }
+  
+  /* Refresh Button */
+  .refresh-button {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .refresh-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  .refresh-button svg {
+    width: 1rem;
+    height: 1rem;
   }
   
   /* Back Side Styles */
@@ -492,12 +654,14 @@
     font-size: 0.875rem;
     font-weight: 600;
     margin: 0 0 0.5rem;
+    color: white;
   }
   
   .section-content {
     font-size: 0.875rem;
     line-height: 1.5;
     margin: 0;
+    color: rgba(255, 255, 255, 0.9);
   }
   
   .tech-list,
@@ -506,6 +670,7 @@
     padding: 0;
     margin: 0;
     font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.9);
   }
   
   .tech-list li,
