@@ -509,6 +509,7 @@
             <ProductContainer product={component}>
               <FlipCard 
                 {component}
+                vectorSize={flipCardWidth}
                 aspectRatio={component.aspectRatio}
                 displayOnly={true}
                 iconType={component.category === 'payment-processing' ? 'payment' : 'checkmark'}
