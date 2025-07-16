@@ -1,8 +1,64 @@
-<!-- Enhanced FlipCard.svelte with Correct ImageBox Layout -->
+<!-- Enhanced FlipCard.svelte with Global Preferences -->
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { goto } from '$app/navigation';
+  import { scale } from 'svelte/transition';
+  import { elasticOut, cubicOut } from 'svelte/easing';
   import type { Component } from '$lib/marketplace/types';
+  import { flipcardPreferences, flipcardPreferencesActions } from '$lib/stores/flipcardPreferences';
+  
+  // Directional flip transitions - forward (→) and backward (←)
+  function flipTransitionForward(node: Element, { duration = 800 }: { duration?: number } = {}) {
+    return {
+      duration,
+      easing: cubicOut,
+      css: (t: number) => {
+        const isBackSide = node.classList.contains('flipcard-back');
+        
+        if (isBackSide) {
+          // Back side: incoming from right (180° → 0°)
+          const rotateY = 180 - (t * 180);
+          return `
+            transform: perspective(1200px) rotateY(${rotateY}deg);
+            backface-visibility: hidden;
+          `;
+        } else {
+          // Front side: outgoing to right (0° → 180°)
+          const rotateY = t * 180;
+          return `
+            transform: perspective(1200px) rotateY(${rotateY}deg);
+            backface-visibility: hidden;
+          `;
+        }
+      }
+    };
+  }
+  
+  function flipTransitionBackward(node: Element, { duration = 800 }: { duration?: number } = {}) {
+    return {
+      duration,
+      easing: cubicOut,
+      css: (t: number) => {
+        const isBackSide = node.classList.contains('flipcard-back');
+        
+        if (isBackSide) {
+          // Back side: outgoing to left (0° → -180°, matching ← arrow)
+          const rotateY = -(t * 180);
+          return `
+            transform: perspective(1200px) rotateY(${rotateY}deg);
+            backface-visibility: hidden;
+          `;
+        } else {
+          // Front side: incoming from left (-180° → 0°)
+          const rotateY = -180 + (t * 180);
+          return `
+            transform: perspective(1200px) rotateY(${rotateY}deg);
+            backface-visibility: hidden;
+          `;
+        }
+      }
+    };
+  }
   
   // Props from parent 
   export let component: Component;
@@ -11,17 +67,66 @@
   export let iconType: 'checkmark' | 'custom' | 'component' = 'checkmark';
   export let customIconSvg: string = '';
   export let size: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 = 5; // Mathematical SIZE everywhere!
-  export let showComponents = {
-    colorPalette: true,
-    tags: true,
-    toolbar: true,
-    buyComponent: true
-  };
   
   const dispatch = createEventDispatcher();
   
+  // Global preferences state
+  let showPreferencesOnBack = false; // Show preferences instead of regular content
+  
   let isFlipped = false;
   let cardElement: HTMLDivElement;
+  
+  // 🎮 4-CORNER BUTTON SYSTEM STATE
+  let isLoved = false;
+  let cartItemAdded = false;
+  let cartCount = 0;
+  
+  // 🎯 4-CORNER BUTTON FUNCTIONS
+  
+  // TOP-LEFT: Settings/Preferences
+  function openPreferences() {
+    showPreferencesOnBack = true;
+    if (!isFlipped) {
+      isFlipped = true; // Flip to back to show preferences
+    }
+  }
+  
+  // TOP-RIGHT: Add to Cart  
+  function addToCart(event: Event) {
+    event.stopPropagation();
+    cartItemAdded = true;
+    cartCount++;
+    
+    // TODO: Update global cart state
+    dispatch('add-to-cart', { 
+      component: component,
+      count: cartCount 
+    });
+    
+    // Visual feedback
+    setTimeout(() => {
+      cartItemAdded = false;
+    }, 2000);
+  }
+  
+  // BOTTOM-LEFT: Love/Favorite
+  function toggleLove(event: Event) {
+    event.stopPropagation();
+    isLoved = !isLoved;
+    
+    // TODO: Update user favorites
+    dispatch('toggle-love', { 
+      component: component,
+      isLoved: isLoved 
+    });
+  }
+  
+  // BOTTOM-RIGHT: Flip Card
+  function toggleFlip(event: Event) {
+    event.stopPropagation();
+    isFlipped = !isFlipped;
+    showPreferencesOnBack = false; // Reset preferences view
+  }
   
   // 📐 MATHEMATICAL SIZE SYSTEM - Used EVERYWHERE!
   const MASTER_SIZE = 333; // SIZE-5 baseline
@@ -59,18 +164,20 @@
       component.consumer_tagline.substring(0, 10) : 
       component.consumer_tagline || 'Tool') :
     component.consumer_tagline || 'Professional Component';
-  // Smart flip sizing logic
-  $: currentSize = isFlipped ? Math.max(size, 5) : size; // Back side minimum SIZE-5
+  // Smart flip sizing logic - BACK SIDE MINIMUM SIZE-5 (333px) ⭐
+  $: currentSize = isFlipped ? Math.max(size, 5) : size; // Back side minimum SIZE-5 for comfortable reading
   $: cardWidth = SIZES[currentSize];
   $: cardHeight = SIZES[currentSize];
-  $: padding = Math.max(4, Math.round(cardWidth * 0.05)); // Min 4px padding, scales to 5%
+  
+  // VITAL: Consistent 40px padding across ALL sizes for perfect grid alignment
+  $: padding = 40; // Fixed 40px padding for all sizes ⭐
+  
   $: availableHeight = cardHeight - (padding * 2); // Content area after padding
   $: imageBoxSize = Math.round(availableHeight * IMAGE_BOX_RATIO); // 2/3 of available height
   
   // Scale elements based on card size - optimized for readability at all sizes
   $: titleFontSize = Math.max(8, Math.round(32 * cardWidth / MASTER_SIZE)); // Min 8px, scales to 32px at SIZE-5
   $: taglineFontSize = Math.max(6, Math.round(18 * cardWidth / MASTER_SIZE)); // Min 6px, scales to 18px at SIZE-5
-  $: padding = Math.round(cardWidth * 0.05); // 5% padding
   $: borderRadius = Math.round(16 * cardWidth / MASTER_SIZE);
   $: imageBoxRadius = Math.round(12 * cardWidth / MASTER_SIZE);
   
@@ -188,8 +295,10 @@
     `,
     refresh: `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="23 4 23 10 17 10"></polyline>
-        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+        <path d="M3 3v5h5"></path>
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+        <path d="M21 21v-5h-5"></path>
       </svg>
     `
   };
@@ -213,13 +322,51 @@
     }
   }
   
-  // Extract colors from gradient
-  function extractColors(gradient: string): string[] {
-    const colors = [];
+  // Calculate color contrast for better color selection
+  function getColorContrast(color1: string, color2: string): number {
+    // Convert hex to RGB and calculate relative luminance
+    function getLuminance(hex: string): number {
+      const rgb = parseInt(hex.replace('#', ''), 16);
+      const r = (rgb >> 16) & 0xff;
+      const g = (rgb >> 8) & 0xff;
+      const b = rgb & 0xff;
+      
+      // Convert to relative luminance
+      const rs = r / 255;
+      const gs = g / 255;
+      const bs = b / 255;
+      
+      const rLinear = rs <= 0.03928 ? rs / 12.92 : Math.pow((rs + 0.055) / 1.055, 2.4);
+      const gLinear = gs <= 0.03928 ? gs / 12.92 : Math.pow((gs + 0.055) / 1.055, 2.4);
+      const bLinear = bs <= 0.03928 ? bs / 12.92 : Math.pow((bs + 0.055) / 1.055, 2.4);
+      
+      return 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
+    }
     
-    // First check if we have gradientColors array
+    const lum1 = getLuminance(color1);
+    const lum2 = getLuminance(color2);
+    const brightest = Math.max(lum1, lum2);
+    const darkest = Math.min(lum1, lum2);
+    
+    return (brightest + 0.05) / (darkest + 0.05);
+  }
+  
+  // Extract colors in meaningful order: Background, Title, Best 3 from gradient
+  function extractColors(gradient: string): string[] {
+    const orderedColors = [];
+    
+    // 1. Background color of card (black in default example)
+    orderedColors.push(currentTheme.cardBg);
+    
+    // 2. Title color (white in default example)  
+    orderedColors.push(currentTheme.textColor);
+    
+    // 3-5. Extract best 3 colors from gradient using contrast analysis
+    const gradientColors = [];
+    
+    // Extract colors from gradient
     if (currentTheme.gradientColors) {
-      colors.push(...currentTheme.gradientColors);
+      gradientColors.push(...currentTheme.gradientColors);
     } else {
       // Extract from gradient string
       const hexMatches = gradient.match(/#[0-9a-f]{6}/gi) || [];
@@ -235,29 +382,54 @@
       };
       
       // Add hex colors first
-      colors.push(...hexMatches);
+      gradientColors.push(...hexMatches);
       
       // Then add mapped colors
       for (const match of matches) {
         if (!match.startsWith('#') && colorMap[match]) {
-          colors.push(colorMap[match]);
+          gradientColors.push(colorMap[match]);
         }
       }
     }
     
-    // Generate variations if we don't have enough colors
-    while (colors.length < 5 && colors.length > 0) {
-      const baseColor = colors[0];
-      const variation = adjustColor(baseColor, 20 * (colors.length - 1));
-      colors.push(variation);
+    // Generate variations and analyze contrast for best selection
+    const candidateColors = [...gradientColors];
+    
+    // Add variations of gradient colors
+    for (const baseColor of gradientColors) {
+      candidateColors.push(adjustColor(baseColor, 40));   // Lighter
+      candidateColors.push(adjustColor(baseColor, -40));  // Darker
+      candidateColors.push(adjustColor(baseColor, 80));   // Much lighter
+      candidateColors.push(adjustColor(baseColor, -80));  // Much darker
     }
     
-    // Fallback colors
-    while (colors.length < 5) {
-      colors.push('#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'));
+    // Remove duplicates and colors too similar to background/title
+    const uniqueColors = candidateColors.filter((color, index, self) => {
+      return self.indexOf(color) === index &&
+             color !== currentTheme.cardBg &&
+             color !== currentTheme.textColor &&
+             getColorContrast(color, currentTheme.cardBg) > 1.5; // Ensure some contrast
+    });
+    
+    // Sort by contrast against background for best utility
+    const bestColors = uniqueColors
+      .map(color => ({
+        color,
+        contrast: getColorContrast(color, currentTheme.cardBg)
+      }))
+      .sort((a, b) => b.contrast - a.contrast) // Highest contrast first
+      .slice(0, 3) // Take best 3
+      .map(item => item.color);
+    
+    // Add the 3 best contrasting colors
+    orderedColors.push(...bestColors);
+    
+    // Ensure we always have 5 colors
+    while (orderedColors.length < 5) {
+      orderedColors.push('#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'));
     }
     
-    return colors.slice(0, 5);
+    return orderedColors.slice(0, 5);
   }
   
   // Helper to adjust color brightness
@@ -274,6 +446,11 @@
   
   function handleFlip() {
     isFlipped = !isFlipped;
+    
+    // Reset preferences view when flipping back to front
+    if (!isFlipped) {
+      showPreferencesOnBack = false;
+    }
   }
   
   function handleBuyNow(e: Event, tier: 'individual' | 'team' | 'enterprise') {
@@ -306,149 +483,356 @@
 <!-- 🎨 FLIPCARD WITH CORRECT LAYOUT -->
 <div class="flipcard-container" style="width: {cardWidth}px;">
   
-  <!-- Main FlipCard -->
+  <!-- Main FlipCard with Svelte Transitions -->
   <div 
     class="flipcard-wrapper"
-    class:flipped={isFlipped}
     style="width: {cardWidth}px; height: {cardHeight}px;"
     on:click={handleFlip}
     bind:this={cardElement}
   >
-    <!-- Front Side -->
-    <div class="flipcard-side flipcard-front" style="
-      background-color: {currentTheme.cardBg};
-      border-radius: {borderRadius}px;
-      padding: {padding}px;
-      display: flex;
-      flex-direction: column;
-    ">
-      <!-- Settings Button (only show on SIZE-3 and above) -->
-      {#if !displayOnly && size >= 3}
-        <button class="settings-button" on:click|stopPropagation>
-          i
-        </button>
-      {/if}
-      
-      <!-- Gradient Box (2/3 of available content area) -->
-      <div class="image-box" style="
-        width: {imageBoxSize}px;
-        height: {imageBoxSize}px;
-        background: linear-gradient(135deg, {currentTheme.gradientColors ? currentTheme.gradientColors.join(', ') : currentTheme.gradient.replace('from-', '').replace(' to-', ', ')});
-        border-radius: {imageBoxRadius}px;
-        margin: 0 auto 0;
-      ">
-      </div>
-      
-      <!-- Text Area (1/3 of available height with smart minimums) -->
-      <div class="text-content" style="height: {Math.max(size === 1 ? 16 : size === 2 ? 20 : 24, Math.round(availableHeight * (1/3)))}px;">
-        <h3 class="card-title" style="
-          color: {currentTheme.textColor};
-          font-size: {titleFontSize}px;
-          font-family: {component.titleFont || 'Inter'}, -apple-system, sans-serif;
-          font-weight: {component.titleWeight || 600};
-          margin-bottom: {size <= 2 && displayTagline ? '1px' : '0'};
-        ">
-          {displayName}
-        </h3>
-        {#if displayTagline}
-          <p class="card-tagline" style="
-            color: {currentTheme.textColor};
-            font-size: {taglineFontSize}px;
-            opacity: 0.9;
-            font-family: {component.taglineFont || 'Inter'}, -apple-system, sans-serif;
-            font-weight: {component.taglineWeight || 500};
-            margin: 0;
-          ">
-            {displayTagline}
-          </p>
+    {#if isFlipped}
+      <!-- Back Side - Visible when flipped -->
+      <div 
+        class="flipcard-side flipcard-back" 
+        style="
+          background-color: {currentTheme.cardBg};
+          border-radius: {borderRadius}px;
+          padding: {padding}px;
+        " 
+        on:click|stopPropagation
+        transition:flipTransitionForward={{ duration: 800 }}
+      >
+        <!-- 🎮 3-CORNER BUTTON SYSTEM (Back Side) - ONLY SIZE 4+ -->
+        {#if !displayOnly && size >= 4}
+          <div class="corner-buttons-container">
+            <!-- TOP-LEFT: Settings -->
+            <button 
+              class="corner-btn top-left" 
+              on:click|stopPropagation={openPreferences}
+              title="Settings & Preferences"
+            >
+              i
+            </button>
+            
+            <!-- TOP-RIGHT: Add to Cart -->
+            <button 
+              class="corner-btn top-right" 
+              on:click|stopPropagation={addToCart}
+              title="Add to Cart"
+              class:cart-added={cartItemAdded}
+            >
+              🛒
+              {#if cartItemAdded}
+                <span class="cart-indicator">+1</span>
+              {/if}
+            </button>
+            
+            <!-- BOTTOM-LEFT: Love/Favorite -->
+            <button 
+              class="corner-btn bottom-left heart-btn" 
+              on:click|stopPropagation={toggleLove}
+              title="Add to Favorites"
+              class:loved={isLoved}
+            >
+              {isLoved ? '♥' : '♡'}
+            </button>
+            
+            <!-- BOTTOM-RIGHT: Keep original UFO system -->
+          </div>
         {/if}
-      </div>
-      
-      <!-- Refresh Icon (only show on SIZE-3 and above) -->
-      {#if !displayOnly && size >= 3}
-        <button class="refresh-button" on:click|stopPropagation>
-          {@html iconSvgs.refresh}
-        </button>
-      {/if}
-    </div>
-    
-    <!-- Back Side -->
-    <div class="flipcard-side flipcard-back" style="
-      background-color: {currentTheme.cardBg};
-      border-radius: {borderRadius}px;
-      padding: {padding}px;
-    ">
-      <div class="flipcard-back-content">
-        <h3 class="back-title" style="color: {currentTheme.textColor};">
-          {displayName}
-        </h3>
         
-        <div class="back-sections">
-          <!-- Overview Section -->
-          <div class="back-section">
-            <h4 class="section-title">📋 Overview</h4>
-            <p class="section-content">
-              {component.description || 'Professional component for modern web applications.'}
-            </p>
-          </div>
-          
-          <!-- Technical Details -->
-          <div class="back-section">
-            <h4 class="section-title">📋 Technical Details</h4>
-            <ul class="tech-list">
-              {#each component.tech_stack || [] as tech}
-                <li>{tech}</li>
-              {/each}
-            </ul>
-          </div>
-          
-          <!-- Features -->
-          <div class="back-section">
-            <h4 class="section-title">📋 Key Features</h4>
-            <ul class="features-list">
-              {#each component.developer_features?.slice(0, 4) || [] as feature}
-                <li>{feature}</li>
-              {/each}
-            </ul>
-          </div>
-          
-          <!-- Action Buttons -->
-          {#if !displayOnly}
-            <div class="back-actions">
-              <button class="action-btn demo" on:click={handleDemo}>
-                👁️ View Demo
-              </button>
-              <button class="action-btn details" on:click={handleDetails}>
-                📄 Details
-              </button>
+        <div class="flipcard-back-content">
+          {#if showPreferencesOnBack}
+            <!-- BACK ARROW for preferences navigation - ONLY SIZE 4+ -->
+            {#if size >= 4}
+              <div class="preferences-back-arrow">
+                <button 
+                  class="back-arrow-btn" 
+                  on:click|stopPropagation={() => { 
+                    showPreferencesOnBack = false; 
+                    isFlipped = false; 
+                  }}
+                  title="Back to FlipCard"
+                >
+                  ←
+                </button>
+              </div>
+            {/if}
+            
+            <!-- Compact Preferences Interface (No Title) -->
+            <div class="preferences-sections">
+              <!-- Live Status (moved to top) -->
+              <div class="live-status">
+                <div class="pulse-dot"></div>
+                <span class="tech-text">LIVE_SYNC >> all.flipcards.global()</span>
+              </div>
+              
+              <!-- Color Palette Toggle -->
+              <div class="pref-section">
+                <div class="pref-info">
+                  <span class="pref-icon">🎨</span>
+                  <span class="pref-label">Color Palette</span>
+                </div>
+                <div 
+                  class="flip-toggle" 
+                  class:checked={$flipcardPreferences.showPalette}
+                  on:click={() => flipcardPreferencesActions.toggle('showPalette')}
+                >
+                  <span class="toggle-slider"></span>
+                </div>
+              </div>
+              
+              <!-- Tags Toggle -->
+              <div class="pref-section">
+                <div class="pref-info">
+                  <span class="pref-icon">#️⃣</span>
+                  <span class="pref-label">Tags</span>
+                </div>
+                <div 
+                  class="flip-toggle" 
+                  class:checked={$flipcardPreferences.showTags}
+                  on:click={() => flipcardPreferencesActions.toggle('showTags')}
+                >
+                  <span class="toggle-slider"></span>
+                </div>
+              </div>
+              
+              <!-- Toolbar Toggle -->
+              <div class="pref-section">
+                <div class="pref-info">
+                  <span class="pref-icon">🔧</span>
+                  <span class="pref-label">Toolbar</span>
+                </div>
+                <div 
+                  class="flip-toggle" 
+                  class:checked={$flipcardPreferences.showToolbar}
+                  on:click={() => flipcardPreferencesActions.toggle('showToolbar')}
+                >
+                  <span class="toggle-slider"></span>
+                </div>
+              </div>
+              
+              <!-- Buy Button Toggle -->
+              <div class="pref-section">
+                <div class="pref-info">
+                  <span class="pref-icon">💳</span>
+                  <span class="pref-label">Buy Button</span>
+                </div>
+                <div 
+                  class="flip-toggle" 
+                  class:checked={$flipcardPreferences.showBuyButton}
+                  on:click={() => flipcardPreferencesActions.toggle('showBuyButton')}
+                >
+                  <span class="toggle-slider"></span>
+                </div>
+              </div>
+            </div>
+          {:else}
+            <!-- Regular Component Information -->
+            <h3 class="back-title" style="color: {currentTheme.textColor};">
+              {displayName}
+            </h3>
+            
+            <div class="back-sections">
+              <!-- Overview Section -->
+              <div class="back-section">
+                <h4 class="section-title">📋 Overview</h4>
+                <p class="section-content">
+                  {component.description || 'Professional component for modern web applications.'}
+                </p>
+              </div>
+              
+              <!-- Technical Details -->
+              <div class="back-section">
+                <h4 class="section-title">📋 Technical Details</h4>
+                <ul class="tech-list">
+                  {#each component.tech_stack || [] as tech}
+                    <li>{tech}</li>
+                  {/each}
+                </ul>
+              </div>
+              
+              <!-- Features -->
+              <div class="back-section">
+                <h4 class="section-title">📋 Key Features</h4>
+                <ul class="features-list">
+                  {#each component.developer_features?.slice(0, 4) || [] as feature}
+                    <li>{feature}</li>
+                  {/each}
+                </ul>
+              </div>
+              
+              <!-- Action Buttons -->
+              {#if !displayOnly}
+                <div class="back-actions">
+                  <button class="action-btn demo" on:click={handleDemo}>
+                    👁️ View Demo
+                  </button>
+                  <button class="action-btn details" on:click={handleDetails}>
+                    📄 Details
+                  </button>
+                </div>
+              {/if}
             </div>
           {/if}
         </div>
+        
+        <!-- Flip UFO on Back Side (bottom right - for return navigation) - ONLY SIZE 4+ -->
+        {#if !displayOnly && size >= 4}
+          <div class="flip-arrows-container" on:click|stopPropagation={handleFlip}>
+            <div 
+              class="flip-arrows" 
+              title="FlipCard Back"
+              transition:scale={{ duration: 400, easing: elasticOut }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12h18"></path>
+                <path d="M13 18l6-6-6-6"></path>
+                <path d="M11 6l-6 6 6 6"></path>
+              </svg>
+            </div>
+            
+            <!-- FlipCard Tooltip -->
+            <div class="tardis-tooltip">
+              FlipCard
+            </div>
+          </div>
+        {/if}
       </div>
-    </div>
+    {:else}
+      <!-- Front Side - Visible when not flipped -->
+      <div 
+        class="flipcard-side flipcard-front" 
+        style="
+          background-color: {currentTheme.cardBg};
+          border-radius: {borderRadius}px;
+          padding: {padding}px;
+          display: flex;
+          flex-direction: column;
+        "
+        transition:flipTransitionBackward={{ duration: 800 }}
+      >
+        <!-- 🎮 3-CORNER BUTTON SYSTEM (Front Side) - ONLY SIZE 4+ -->
+        {#if !displayOnly && size >= 4}
+          <div class="corner-buttons-container">
+            <!-- TOP-LEFT: Settings -->
+            <button 
+              class="corner-btn top-left" 
+              on:click|stopPropagation={openPreferences}
+              title="Settings & Preferences"
+            >
+              i
+            </button>
+            
+            <!-- TOP-RIGHT: Add to Cart -->
+            <button 
+              class="corner-btn top-right" 
+              on:click|stopPropagation={addToCart}
+              title="Add to Cart"
+              class:cart-added={cartItemAdded}
+            >
+              🛒
+              {#if cartItemAdded}
+                <span class="cart-indicator">+1</span>
+              {/if}
+            </button>
+            
+            <!-- BOTTOM-LEFT: Love/Favorite -->
+            <button 
+              class="corner-btn bottom-left heart-btn" 
+              on:click|stopPropagation={toggleLove}
+              title="Add to Favorites"
+              class:loved={isLoved}
+            >
+              {isLoved ? '♥' : '♡'}
+            </button>
+            
+            <!-- BOTTOM-RIGHT: Keep original UFO system -->
+          </div>
+        {/if}
+        
+        <!-- Gradient Box (2/3 of available content area) -->
+        <div class="image-box" style="
+          width: {imageBoxSize}px;
+          height: {imageBoxSize}px;
+          background: linear-gradient(135deg, {currentTheme.gradientColors ? currentTheme.gradientColors.join(', ') : currentTheme.gradient.replace('from-', '').replace(' to-', ', ')});
+          border-radius: {imageBoxRadius}px;
+          margin: 0 auto 0;
+        ">
+        </div>
+        
+        <!-- Text Area (1/3 of available height with smart minimums) -->
+        <div class="text-content" style="height: {Math.max(size === 1 ? 16 : size === 2 ? 20 : 24, Math.round(availableHeight * (1/3)))}px;">
+          <h3 class="card-title" style="
+            color: {currentTheme.textColor};
+            font-size: {titleFontSize}px;
+            font-family: {component.titleFont || 'Inter'}, -apple-system, sans-serif;
+            font-weight: {component.titleWeight || 600};
+            margin-bottom: {size <= 2 && displayTagline ? '1px' : '0'};
+          ">
+            {displayName}
+          </h3>
+          {#if displayTagline}
+            <p class="card-tagline" style="
+              color: {currentTheme.textColor};
+              font-size: {taglineFontSize}px;
+              opacity: 0.9;
+              font-family: {component.taglineFont || 'Inter'}, -apple-system, sans-serif;
+              font-weight: {component.taglineWeight || 500};
+              margin: 0;
+            ">
+              {displayTagline}
+            </p>
+          {/if}
+        </div>
+        
+        <!-- Flip Arrows (bottom right - critical UX discovery element) - ONLY SIZE 4+ -->
+        {#if !displayOnly && size >= 4}
+          <div class="flip-arrows-container" on:click|stopPropagation={handleFlip}>
+            <div 
+              class="flip-arrows" 
+              title="FlipCard Forward"
+              transition:scale={{ duration: 400, easing: elasticOut }}
+              on:mouseenter={() => {/* Tooltip handled by CSS */}}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12h18"></path>
+                <path d="M13 18l6-6-6-6"></path>
+                <path d="M11 6l-6 6 6 6"></path>
+              </svg>
+            </div>
+            
+            <!-- FlipCard Tooltip -->
+            <div class="tardis-tooltip">
+              FlipCard
+            </div>
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
   
-  <!-- Color Palette Component -->
-  {#if showComponents.colorPalette && !displayOnly}
-    <div class="color-palette" style="margin-top: {padding/2}px;">
+  <!-- Simple Tags - Directly Below Card -->
+  {#if $flipcardPreferences.showTags && !displayOnly && size >= 4}
+    <div class="simple-tags">
+      {#each visibleTags as tag}
+        <span class="simple-tag">{tag}</span>
+      {/each}
+    </div>
+  {/if}
+  
+  <!-- Color Palette Component - ONLY SIZE 4+ -->
+  {#if $flipcardPreferences.showPalette && !displayOnly && size >= 4}
+    <div class="color-palette">
       {#each extractedColors as color}
         <div class="color-swatch" style="background-color: {color}"></div>
       {/each}
     </div>
   {/if}
   
-  <!-- Tags Bar -->
-  {#if showComponents.tags && !displayOnly}
-    <div class="tags-bar" style="margin-top: {padding/2}px;">
-      {#each visibleTags as tag}
-        <span class="tag">{tag}</span>
-      {/each}
-    </div>
-  {/if}
-  
-  <!-- Toolbar -->
-  {#if showComponents.toolbar && !displayOnly}
-    <div class="toolbar" style="margin-top: {padding/2}px;">
+  <!-- Toolbar - ONLY SIZE 4+ -->
+  {#if $flipcardPreferences.showToolbar && !displayOnly && size >= 4}
+    <div class="toolbar">
       <button title="Download" on:click|stopPropagation>📥</button>
       <button title="Share" on:click|stopPropagation>📤</button>
       <button title="Email" on:click|stopPropagation>📧</button>
@@ -458,31 +842,14 @@
     </div>
   {/if}
   
-  <!-- Enhanced Buy Component -->
-  {#if showComponents.buyComponent && !displayOnly}
-    <div class="buy-component" style="margin-top: {padding/2}px;">
-      <button class="favorite-btn" on:click|stopPropagation>❤️</button>
-      <div class="pricing-tiers">
-        <button 
-          class="price-btn individual" 
-          on:click={(e) => handleBuyNow(e, 'individual')}
-        >
-          💰 {formatPrice(component.price_individual || 19900)}
-        </button>
-        <button 
-          class="price-btn team" 
-          on:click={(e) => handleBuyNow(e, 'team')}
-        >
-          💼 {formatPrice(component.price_team || 49900)}
-        </button>
-        <button 
-          class="price-btn enterprise" 
-          on:click={(e) => handleBuyNow(e, 'enterprise')}
-        >
-          🏢 {formatPrice(component.price_enterprise || 149900)}
-        </button>
-      </div>
-    </div>
+  <!-- ⚡️ ORIGINAL BUY BUTTON (Simple & Clean) -->
+  {#if $flipcardPreferences.showBuyButton && !displayOnly}
+    <button 
+      class="original-buy-btn" 
+      on:click={(e) => handleBuyNow(e, 'individual')}
+    >
+      ⚡ BUY
+    </button>
   {/if}
 </div>
 
@@ -491,67 +858,212 @@
     position: relative;
     display: inline-flex;
     flex-direction: column;
+    gap: 0.5rem; /* Consistent spacing between card and components */
   }
   
   .flipcard-wrapper {
     position: relative;
-    perspective: 1000px;
     cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    perspective: 1200px;
+    transform-style: preserve-3d;
   }
   
   .flipcard-side {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden;
-    transition: transform 0.6s;
     display: flex;
     flex-direction: column;
+    border-radius: inherit;
+    backface-visibility: hidden;
+    transform-origin: center center;
   }
   
-  .flipcard-front {
-    z-index: 2;
-    position: relative;
-  }
-  
-  .flipcard-back {
-    transform: rotateY(180deg);
-  }
-  
-  .flipped .flipcard-front {
-    transform: rotateY(-180deg);
-  }
-  
-  .flipped .flipcard-back {
-    transform: rotateY(0deg);
-  }
-  
-  /* Settings Button */
-  .settings-button {
+  /* 🎮 4-CORNER BUTTON SYSTEM */
+  .corner-buttons-container {
     position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none; /* Allow clicks through to card */
+    z-index: 10;
+  }
+
+  .corner-btn {
+    position: absolute;
+    pointer-events: auto; /* Enable clicks on buttons */
+    width: 28px; /* Exact same size for ALL corners */
+    height: 28px; /* Exact same size for ALL corners */
+    border: none;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.8rem; /* Same font size for all */
     font-weight: 600;
-    font-style: italic;
-    cursor: pointer;
-    z-index: 10;
-    transition: all 0.2s;
-    color: #000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .corner-btn:hover {
+    background: rgba(0, 0, 0, 0.95);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Corner Positions - MINIMAL PADDING, EXACT ALIGNMENT */
+  .top-left { 
+    top: 4px; 
+    left: 4px; 
   }
   
-  .settings-button:hover {
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  .top-right { 
+    top: 4px; 
+    right: 4px;
+  }
+  
+  .bottom-left { 
+    bottom: 4px; 
+    left: 4px; 
+  }
+  
+  .bottom-right { 
+    bottom: 4px; 
+    right: 4px; 
+  }
+
+  /* Special States */
+  .corner-btn.loved {
+    background: rgba(220, 38, 127, 0.9);
+  }
+
+  .corner-btn.cart-added {
+    background: rgba(34, 197, 94, 0.9);
+  }
+
+  /* Heart Button Styling - SAME SIZE AS ALL OTHERS */
+  .corner-btn.heart-btn {
+    font-size: 0.8rem; /* Same as all other corner buttons */
+  }
+
+  .corner-btn.heart-btn:not(.loved) {
+    color: rgba(255, 255, 255, 0.8); /* Outline heart - subtle */
+  }
+
+  .corner-btn.heart-btn.loved {
+    color: #ff1744; /* Solid heart - bright red */
+    background: rgba(220, 38, 127, 0.9);
+  }
+
+  .cart-indicator {
+    position: absolute;
+    top: -0.25rem;
+    right: -0.25rem;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  /* Responsive sizing - MAINTAIN EXACT 28px SIZE */
+  @media (max-width: 640px) {
+    .corner-btn {
+      width: 28px; /* Keep exact same size on mobile */
+      height: 28px; /* Keep exact same size on mobile */
+      font-size: 0.8rem; /* Keep same font size */
+    }
+  }
+  
+  /* Flip Arrows (bottom right discovery element) */
+  .flip-arrows-container {
+    position: absolute;
+    bottom: 0.375rem;
+    right: 0.375rem;
+    z-index: 5;
+  }
+  
+  .flip-arrows {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+    animation: flipHint 3s infinite;
+    pointer-events: auto; /* Allow clicks to pass through to wrapper */
+    cursor: pointer;
+  }
+  
+  .flip-arrows svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+  
+  @keyframes flipHint {
+    0%, 85%, 100% { 
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    90%, 95% { 
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+  
+  /* TARDIS Tooltip - Minimal UFO Style */
+  .tardis-tooltip {
+    position: absolute;
+    bottom: 2rem;
+    right: -0.25rem;
+    background: rgba(0, 0, 0, 0.85);
+    color: #00d4ff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(0.25rem) scale(0.8);
+    transition: all 0.15s ease-out;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    box-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
+    z-index: 25;
+    text-shadow: 0 0 4px rgba(0, 212, 255, 0.4);
+    letter-spacing: 0.05em;
+  }
+  
+  /* No arrow - clean minimal look */
+  
+  /* UFO hover triggers tooltip with quick poof effect */
+  .flip-arrows-container:hover .tardis-tooltip {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  /* Quick vanish when hover ends */
+  .flip-arrows-container:not(:hover) .tardis-tooltip {
+    opacity: 0;
+    transform: translateY(0.25rem) scale(0.8);
+    transition: all 0.1s ease-in;
+  }
+  
+  .flip-arrows-container:hover .flip-arrows {
+    opacity: 1;
+    transform: scale(1.15);
+    animation: none;
+    filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.3));
   }
   
   /* Gradient Box (Pure gradient only - exactly 2/3 of card) */
@@ -560,14 +1072,14 @@
     display: block;
   }
   
-  /* Text Content Below Gradient (exactly 1/3 of card with better spacing) */
+  /* Text Content Below Gradient - FULL WIDTH */
   .text-content {
     text-align: center;
     flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 0 0.5rem;
+    padding: 0; /* Remove horizontal padding for full width */
     min-height: 0; /* Allow shrinking */
     overflow: hidden; /* Prevent text overflow from breaking layout */
   }
@@ -596,39 +1108,69 @@
     white-space: nowrap; /* Prevent text wrapping that causes cutoff */
   }
   
-  /* Refresh Button */
-  .refresh-button {
+  /* Back Arrow for Preferences Navigation */
+  .preferences-back-arrow {
     position: absolute;
-    bottom: 0.5rem;
-    right: 0.5rem;
-    width: 1.5rem;
-    height: 1.5rem;
+    top: 4px;
+    left: 4px;
+    z-index: 20;
+  }
+
+  .back-arrow-btn {
+    width: 28px;
+    height: 28px;
     border: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
     border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
-  
-  .refresh-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+
+  .back-arrow-btn:hover {
+    background: rgba(0, 0, 0, 1);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
-  
-  .refresh-button svg {
-    width: 1rem;
-    height: 1rem;
-  }
-  
-  /* Back Side Styles */
+
+  /* Back Side Styles - FULL WIDTH */
   .flipcard-back-content {
     height: 100%;
     overflow-y: auto;
     color: white;
+    padding: 0; /* Remove any padding for full width */
+  }
+  
+  /* Dark Scrollbars */
+  .flipcard-back-content::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .flipcard-back-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  
+  .flipcard-back-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+  
+  .flipcard-back-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+  
+  /* Firefox scrollbar styling */
+  .flipcard-back-content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
   }
   
   .back-title {
@@ -712,146 +1254,128 @@
   /* Component Styles */
   .color-palette {
     display: flex;
-    gap: 0.25rem;
-    padding: 0.5rem;
+    gap: 0.375rem;
+    padding: 0.75rem;
     background: white;
     border-radius: 0.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    align-items: center;
   }
   
   .color-swatch {
-    flex: 1;
-    height: 1.5rem;
-    border-radius: 0.25rem;
+    width: 3.125rem;  /* 5:4 ratio width (2.5rem × 5/4) */
+    height: 2.5rem;   /* Same height as ❤️ button */
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  .tags-bar {
+  .color-swatch:hover {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 255, 255, 1);
+  }
+  
+  /* Simple Tags - Clean Text Only */
+  .simple-tags {
     display: flex;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    justify-content: center;
+    flex-wrap: wrap;
   }
   
-  .tag {
-    background: #e0e7ff;
-    color: #4338ca;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
+  .simple-tag {
+    color: #64748b;
     font-size: 0.75rem;
     font-weight: 500;
+    font-family: 'Inter', -apple-system, sans-serif;
+    transition: color 0.2s ease;
+  }
+  
+  .simple-tag:hover {
+    color: #475569;
   }
   
   .toolbar {
     display: flex;
     gap: 0.5rem;
-    padding: 0.5rem;
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .toolbar button {
-    width: 2rem;
-    height: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border: none;
-    background: #f3f4f6;
-    border-radius: 0.375rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.3s;
+    font-size: 1rem;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
   
   .toolbar button:hover {
-    background: #e5e7eb;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.15);
   }
   
-  .buy-component {
-    display: flex;
-    gap: 0.75rem;
-    padding: 0.5rem;
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    align-items: center;
-  }
-  
-  .favorite-btn {
-    width: 2.5rem;
-    height: 2.5rem;
-    border: 2px solid #e5e7eb;
-    background: white;
-    border-radius: 0.5rem;
+  /* ⚡️ ORIGINAL BUY BUTTON (Simple & Clean) */
+  .original-buy-btn {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: #000000;
+    color: white;
+    border: none;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
-    transition: all 0.2s;
-  }
-  
-  .favorite-btn:hover {
-    border-color: #ef4444;
-    background: #fee2e2;
-  }
-  
-  .pricing-tiers {
-    display: flex;
     gap: 0.5rem;
-    flex: 1;
+    margin-top: 0.5rem;
   }
-  
-  .price-btn {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
-    border: none;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  
-  .price-btn.individual {
-    background: #fef3c7;
-    color: #92400e;
-  }
-  
-  .price-btn.team {
-    background: #dbeafe;
-    color: #1e40af;
-  }
-  
-  .price-btn.enterprise {
-    background: #e0e7ff;
-    color: #4338ca;
-  }
-  
-  .price-btn:hover {
+
+  .original-buy-btn:hover {
+    background: #1f1f1f;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
-  
-  /* Dark mode support */
+
+  .original-buy-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Dark mode support for other components */
   :global(.dark) .color-palette,
-  :global(.dark) .tags-bar,
-  :global(.dark) .toolbar,
   :global(.dark) .buy-component {
     background: #1f2937;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
   
-  :global(.dark) .toolbar button {
-    background: #374151;
+  :global(.dark) .simple-tag {
+    color: #94a3b8;
   }
   
-  :global(.dark) .toolbar button:hover {
-    background: #4b5563;
+  :global(.dark) .simple-tag:hover {
+    color: #cbd5e1;
   }
   
   :global(.dark) .favorite-btn {
@@ -872,6 +1396,141 @@
     
     .price-btn {
       width: 100%;
+    }
+  }
+  
+  /* Preferences Interface Styles */
+  .preferences-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.25rem 0;
+    height: 100%;
+    justify-content: center;
+  }
+  
+  .pref-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+  }
+  
+  .pref-section:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .pref-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .pref-icon {
+    font-size: 1rem;
+    width: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .pref-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  /* FlipCard Toggle Switch */
+  .flip-toggle {
+    position: relative;
+    display: inline-block;
+    width: 2.25rem;
+    height: 1.125rem;
+    cursor: pointer;
+  }
+  
+  .toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 1.125rem;
+    transition: 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 0.875rem;
+    width: 0.875rem;
+    left: 0.125rem;
+    bottom: 0.125rem;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .flip-toggle.checked .toggle-slider {
+    background: rgba(59, 130, 246, 0.8);
+    border-color: rgba(59, 130, 246, 0.6);
+  }
+  
+  .flip-toggle.checked .toggle-slider:before {
+    transform: translateX(1.125rem);
+  }
+  
+  .toggle-slider:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+  
+  .flip-toggle.checked .toggle-slider:hover {
+    background: rgba(59, 130, 246, 0.9);
+  }
+  
+  /* Live Status */
+  .live-status {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.375rem;
+    margin-top: 0.25rem;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .tech-text {
+    font-family: 'Roboto Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    color: #10b981;
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+  }
+  
+  .pulse-dot {
+    width: 5px;
+    height: 5px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { 
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.7;
+      transform: scale(1.2);
     }
   }
 </style>

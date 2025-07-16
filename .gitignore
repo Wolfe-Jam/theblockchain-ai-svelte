@@ -100,6 +100,12 @@ docs/ToDo/*.md
 *STRATEGY*.md
 *CONFIDENTIAL*.md
 
+# Business Planning Documents (Private)
+STRATEGY-101-*.md
+BUSINESS-PLAN-*.md
+REVENUE-PROJECTIONS-*.md
+COMPETITIVE-ANALYSIS-*.md
+
 # Development Implementation Notes (Temporary)
 BUG-FIX-*.md
 DARK-MODE-*.md
