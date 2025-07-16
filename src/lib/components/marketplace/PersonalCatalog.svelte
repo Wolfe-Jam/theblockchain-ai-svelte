@@ -632,12 +632,7 @@
                 }}
                 size={2}
                 displayOnly={true}
-                showComponents={{
-                  colorPalette: false,
-                  tags: false,
-                  toolbar: false,
-                  buyComponent: false
-                }}
+              />
               />
             </div>
             
@@ -739,12 +734,7 @@
                       }}
                       size={1}
                       displayOnly={true}
-                      showComponents={{
-                        colorPalette: false,
-                        tags: false,
-                        toolbar: false,
-                        buyComponent: false
-                      }}
+                    />
                     />
                     <div class="table-product-info">
                       <strong>{product.name}</strong>

@@ -176,12 +176,6 @@
           <FlipCard 
             component={previewComponent}
             size={5}
-            showComponents={{
-              colorPalette: designConfig.showColorPalette,
-              tags: designConfig.showTags,
-              toolbar: designConfig.showToolbar,
-              buyComponent: designConfig.showBuyComponent
-            }}
           />
         </div>
       </div>
@@ -195,12 +189,6 @@
               <FlipCard 
                 component={previewComponent}
                 {size}
-                showComponents={{
-                  colorPalette: size >= 3,
-                  tags: size >= 4,
-                  toolbar: size >= 5,
-                  buyComponent: size >= 5
-                }}
               />
               <span class="size-label">SIZE-{size}</span>
             </div>

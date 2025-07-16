@@ -432,12 +432,7 @@
             <FlipCard 
               component={previewComponent}
               size={5}
-              showComponents={{
-                colorPalette: designState.showColorPalette,
-                tags: designState.showTags,
-                toolbar: designState.showToolbar,
-                buyComponent: designState.showBuyComponent
-              }}
+            />
             />
           </div>
           <div class="canvas-info">
@@ -456,12 +451,6 @@
               <FlipCard 
                 component={previewComponent}
                 {size}
-                showComponents={{
-                  colorPalette: size >= 5 && designState.showColorPalette,
-                  tags: size >= 4 && designState.showTags,
-                  toolbar: size >= 6 && designState.showToolbar,
-                  buyComponent: size >= 6 && designState.showBuyComponent
-                }}
               />
               <div class="preview-label">
                 SIZE-{size} ({SIZES[size]}px)
