@@ -75,15 +75,22 @@
     // Check if mobile
     if (typeof window !== 'undefined') {
       isMobile = window.innerWidth < 768;
-      window.addEventListener('resize', () => {
+      
+      const handleResize = () => {
         isMobile = window.innerWidth < 768;
-      });
+      };
+      
+      window.addEventListener('resize', handleResize);
+      
+      // Cleanup on destroy
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
     }
   });
   
-  // Calculate offsets based on screen size
-  $: offsetMultiplier = isMobile ? 10 : 20;
-  $: verticalOffset = isMobile ? 4 : 8;
+  // Simple playing card fan - each card shows ~50%
+  $: cardOverlap = SIZES[flipCardSize] * 0.6; // Show 60% of each card
   
   // Load saved preferences
   function loadPreferences() {
@@ -388,12 +395,14 @@
     </div>
   {:else if viewMode === 'flip'}
     {#if layoutMode === 'overlapping'}
-      <!-- Fan/Deck View (Clean Overlapping Stack) -->
+      <!-- Fan/Deck View (Playing Card Style) -->
       <div 
         class="overlapping-container" 
         style="
           min-height: {SIZES[flipCardSize] + 200}px;
           --flipcard-size: {SIZES[flipCardSize]}px;
+          --card-count: {filteredComponents.length};
+          --card-overlap: {cardOverlap}px;
         "
       >
         <div class="fan-deck">
@@ -403,11 +412,26 @@
               style="
                 --index: {index};
                 --total: {filteredComponents.length};
-                --offset-x: {index * offsetMultiplier}px;
-                --offset-y: {index * verticalOffset}px;
-                --scale: {1 - (index * 0.02)};
-                z-index: {filteredComponents.length - index};
+                --offset-x: {(index - (filteredComponents.length - 1) / 2) * cardOverlap}px;
+                --offset-y: 0px;
+                z-index: {index};
               "
+              on:click={(event) => {
+                // Bring clicked card to top temporarily
+                const card = event.currentTarget;
+                const originalZ = index;
+                card.style.zIndex = '100';
+                setTimeout(() => {
+                  card.style.zIndex = originalZ.toString();
+                }, 2000);
+              }}
+              on:keydown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.target.click();
+                }
+              }}
+              role="button"
+              tabindex="0"
             >
               <FlipCard 
                 {component}
@@ -444,12 +468,6 @@
               {component}
               size={3}
               displayOnly={true}
-              showComponents={{
-                colorPalette: false,
-                tags: false,
-                toolbar: false,
-                buyComponent: false
-              }}
             />
           </div>
           <div class="list-details">
@@ -641,7 +659,7 @@
     font-size: 0.875rem;
   }
   
-  /* Fan/Deck Container - Controlled Overlapping */
+  /* Fan/Deck Container - Playing Card Style */
   .overlapping-container {
     position: relative;
     max-width: 1400px;
@@ -650,39 +668,37 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden; /* Prevent any overflow */
+    overflow-x: auto;
   }
   
   .fan-deck {
     position: relative;
-    width: 100%;
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Constrain the deck size based on flipcard size */
-    max-width: calc(var(--flipcard-size, 333px) + 400px);
-    max-height: calc(var(--flipcard-size, 333px) + 200px);
+    /* Size based on card count and overlap */
+    width: calc(var(--flipcard-size, 333px) + (var(--card-count, 8) * var(--card-overlap, 200px)));
+    height: calc(var(--flipcard-size, 333px) + 100px);
   }
   
   .overlapping-card {
     position: absolute;
+    left: 50%; /* Center the fan */
+    top: 50%;
     transform: 
+      translate(-50%, -50%)
       translateX(var(--offset-x)) 
-      translateY(var(--offset-y))
-      scale(var(--scale, 1));
+      translateY(var(--offset-y));
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: center center;
+    cursor: pointer;
   }
   
   .overlapping-card:hover {
     transform: 
+      translate(-50%, -50%)
       translateX(var(--offset-x)) 
-      translateY(calc(var(--offset-y) - 20px))
-      scale(1.03);
-    z-index: 100 !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    filter: brightness(1.05);
+      translateY(calc(var(--offset-y) - 20px));
+    z-index: 99 !important;
   }
   
   /* Grid Container */
@@ -985,12 +1001,13 @@
     }
     
     .overlapping-container {
-      overflow-x: auto;
       padding: 2rem;
+      overflow-x: auto;
     }
     
     .fan-deck {
-      min-width: calc(var(--flipcard-size, 333px) + 200px);
+      /* Ensure horizontal scroll on mobile if cards extend beyond viewport */
+      min-width: max-content;
     }
   }
 </style>
